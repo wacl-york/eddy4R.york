@@ -137,27 +137,6 @@ wrap.uoy.ec.towr <- function(
     return(error_list)
 
   #--------------------------------------------------------------------------------------------
-  # Apply SND Correction
-  if(para$SND_correct){
-    error_catch =  tryCatch({
-      eddy.data = def.temp.snd(eddy.data,
-                               H2O_col = para$H2O_col,
-                               H2O_unit = para$H2O_unit)
-    },
-    error = function(e)
-      str_replace_all(e,",","") %>% str_replace_all(":","") %>% str_replace_all("\n","") %>% paste0("_err")
-    )
-
-    if("character" %in% class(error_catch)){
-      if(str_detect(error_catch,"_err"))
-        error_list = add_err(error_catch,error_list,"SND_cor","continue")
-    }
-
-    if(err_skip(error_list))
-      return(error_list)
-  }
-
-  #--------------------------------------------------------------------------------------------
   # Despike data before lag correction
   if(para$despike){
     error_catch =  tryCatch({
@@ -204,35 +183,7 @@ wrap.uoy.ec.towr <- function(
   progress_bar$pb$tick(tokens = list(file = file_count,
                                      tfile = progress_bar$total_file,
                                      praise = progress_bar$some_praise))
-  #--------------------------------------------------------------------------------------------
-  # resample lag-corrected data from high to low frequency
-  if(para$resample){
-    error_catch = tryCatch({
-      eddy.data = eddy4R.base::def.rsmp(data=eddy.data,
-                                        FreqInp=para$freqIN,
-                                        FreqOut=para$freqOUT,
-                                        MethRsmp="zoo",
-                                        ColDisc=NULL)
 
-      if("date" %in% names(eddy.data))
-        eddy.data$date <- as.POSIXct(eddy.data$date, origin="1970-01-01",tz="UTC")
-
-    },
-    error = function(e)
-      str_replace_all(e,",","") %>% str_replace_all(":","") %>% str_replace_all("\n","") %>% paste0("_err")
-    )
-
-    if("character" %in% class(error_catch)){
-      if(str_detect(error_catch,"_err"))
-        error_list = add_err(error_catch,error_list,"resample","continue")
-    }
-
-    if(err_skip(error_list))
-      return(error_list)
-  }
-  progress_bar$pb$tick(tokens = list(file = file_count,
-                                     tfile = progress_bar$total_file,
-                                     praise = progress_bar$some_praise))
   #--------------------------------------------------------------------------------------------
   # Handle missing values
   error_catch =  tryCatch({
@@ -249,6 +200,7 @@ wrap.uoy.ec.towr <- function(
 
   if(err_skip(error_list))
     return(error_list)
+
   #--------------------------------------------------------------------------------------------
   # Rotation of wind vectors
   error_catch =  tryCatch({
@@ -357,6 +309,7 @@ wrap.uoy.ec.towr <- function(
   progress_bar$pb$tick(tokens = list(file = file_count,
                                      tfile = progress_bar$total_file,
                                      praise = progress_bar$some_praise))
+
   #--------------------------------------------------------------------------------------------
   # integral turbulence scales, lengths and characteristics
   # called from global enviroment until pacakged
@@ -472,125 +425,6 @@ wrap.uoy.ec.towr <- function(
 
   if(err_skip(error_list))
     return(error_list)
-  progress_bar$pb$tick(tokens = list(file = file_count,
-                                     tfile = progress_bar$total_file,
-                                     praise = progress_bar$some_praise))
-
-  #--------------------------------------------------------------------------------------------
-  # high-frequency correction
-  error_catch = tryCatch({
-
-    wtdata <- data.frame(REYN$imfl %>% dplyr::select(.,c(w_hor,T_air)),
-                         REYN$imfl %>% dplyr::select(.,c(dplyr::contains("FD_mole"))))
-
-    if(sd(wtdata$FD_mole_H2O)==0)
-      wtdata <- wtdata %>% dplyr::select(.,-c(FD_mole_H2O))
-
-    #calculate frequency corrrection for sensible, latent heat and chemical fluxes
-    REYN$Nk12 <- eddy4R.turb::wrap.wave(dfInp=wtdata,
-                                        SI=REYN$mn$sigma,
-                                        FreqSamp = para$freqOUT,
-                                        vbrs = verbose)$cov %>%
-      unlist(.) %>% t(.) %>% data.frame(.) %>%
-      dplyr::select(.,contains(".fac")) %>%
-      dplyr::rename_at(.,vars(ends_with(".fac")),
-                       funs(gsub(".fac", "",.))) %>%
-      dplyr::rename_at(.,vars(starts_with("T_air")),
-                       funs(gsub("T_air", "F_H_kin",.))) %>%
-      dplyr::rename_at(.,vars(starts_with("FD_mole_")),
-                       funs(gsub("FD_mole_", "F_",.) %>%
-                              paste0(.,"_kin"))) %>%
-      dplyr::mutate_all(list(mass = ~ .)) %>%
-      dplyr::rename_at(.,vars(ends_with("_kin_mass")),
-                       funs(gsub("_kin_mass", "_mass",.))) %>%
-      dplyr::rename(.,F_H_en=F_H_mass)
-
-    if("FD_mole_H2O" %in% names(REYN$Nk12))
-      REYN$Nk12 <- REYN$Nk12 %>%
-      dplyr::rename_at(.,vars(ends_with("_H2O_kin")),
-                       funs(gsub("_H2O_kin", "_LE_kin",.))) %>%
-      dplyr::rename_at(.,vars(ends_with("_H2O_mass")),
-                       funs(gsub("_H2O_mass", "_LE_mass",.)))
-
-    #add date to dataframe
-    REYN$Nk12$date <- REYN$mn$date},
-
-    error = function(e)
-      str_replace_all(e,",","") %>% str_replace_all(":","") %>% str_replace_all("\n","") %>% paste0("_err"))
-
-  if("character" %in% class(error_catch)){
-    if(str_detect(error_catch,"_err"))
-      error_list = add_err(error_catch,error_list,"high_freq","continue")
-  }
-  if(err_skip(error_list))
-    return(error_list)
-
-  #--------------------------------------------------------------------------------------------
-  # calculate frequency-domain fluxes (wavelet EC)]
-  if(para$wav_ec){
-
-    error_catch = tryCatch({
-
-      wtdata <- data.frame(REYN$data %>% dplyr::select(.,c(date)),
-                           REYN$imfl %>% dplyr::select(.,c(u_hor,v_hor,w_hor,T_air,T_v_0)),
-                           REYN$imfl %>% dplyr::select(.,c(dplyr::contains("FD_mole")))) %>%
-        na.omit()
-
-      if(sd(wtdata$FD_mole_H2O)==0)
-        wtdata <- wtdata %>% dplyr::select(.,-c(FD_mole_H2O))
-
-      #CWT wavelet calculation
-      CWT <- def.cwt(data=wtdata,
-                     freq=para$freqOUT,
-                     PltfEc=para$PltfEc,
-                     mywave=Waves::morlet(),
-                     mydj=1/8,
-                     scal=c(5,10,30,60,90),
-                     dry=REYN$base$rho_dry,
-                     wet=REYN$base$rho_H2O,
-                     spcs=para$species,
-                     spcsRMM=para$species_RMM,
-                     Lv=REYN$data$Lv,
-                     uvw_aircraft=NULL)
-
-      #CWT averaging
-      WAVE <- para.cwt.ec(data=eddy.data,
-                          CWT=CWT,
-                          PltfEc=para$PltfEc,
-                          cntr=para$cwt_win,
-                          agr=para$cwt_agr,
-                          scale=para$cwt_mscal,
-                          tz=para$tz,
-                          para=para)
-
-      rm(wtdata)
-
-      # Tidy WAVE and CWT outputs
-      for(tt in names(WAVE)){names(WAVE[[tt]])[grep("date",names(WAVE[[tt]]))] <- "date"}
-      for(tt in names(WAVE)[1:3]){WAVE[[tt]]$date <- WAVE[[tt]]$date %>% as.character(.)}
-
-      for(tt in names(CWT$var)){CWT$var[[tt]] <- CWT$var[[tt]] %>% plyr::colwise(mean)(.,na.rm=T)}
-      for(tt in names(CWT$var)){names(CWT$var[[tt]]) <- paste0(names(CWT$var[[tt]]),"_",tt,"_KM")}
-      for(tt in names(CWT$var)){names(CWT$var[[tt]])[grep("date",names(CWT$var[[tt]]))] <- "date"}
-      for(tt in names(CWT$var)){CWT$var[[tt]]$date <- CWT$var[[tt]]$date %<>% as.character}
-      for(tt in names(CWT$cov)){CWT$cov[[tt]] <- CWT$cov[[tt]] %>% plyr::colwise(mean)(.,na.rm=T)}
-      for(tt in names(CWT$cov)){names(CWT$cov[[tt]]) <- paste0(names(CWT$cov[[tt]]),"_",tt,"_KM")}
-      for(tt in names(CWT$cov)){names(CWT$cov[[tt]])[grep("date",names(CWT$cov[[tt]]))] <- "date"}
-      for(tt in names(CWT$cov)){CWT$cov[[tt]]$date <- CWT$cov[[tt]]$date %<>% as.character}
-
-    },
-    error = function(e)
-      str_replace_all(e,",","") %>% str_replace_all(":","") %>% str_replace_all("\n","") %>% paste0("_err")
-    )
-
-    if("character" %in% class(error_catch)){
-      if(str_detect(error_catch,"_err"))
-        error_list = add_err(error_catch,error_list,"Wavelet","continue")
-    }
-    if(err_skip(error_list))
-      return(error_list)
-
-  }
 
   progress_bar$pb$tick(tokens = list(file = file_count,
                                      tfile = progress_bar$total_file,
