@@ -1,0 +1,639 @@
+##############################################################################################
+#' @title University of York Tower Eddy-Covariance turbulence processing
+#'
+#' @author
+#' Will S Drysdale \email{wsd500@york.ac.uk}\cr
+#' Adam R Vaughan \email{adam.vaughan@york.ac.uk} \cr
+#' Stefan Metzger \email{eddy4R.info@gmail.com} \cr
+#' Ke Xu \email{xuke2012abroad@gmail.com} \cr
+#' Andrei Serafimovich \email{andrei.serafimovich@gfz-potsdam.de}
+#'
+#' @description
+#' Workflow. Eddy-covariance flux processing.
+#'
+#' @param eddy.data
+#' @param para
+#' @param file_count
+#' @param skip_scalar
+#' @param verbose
+#' @param progress_bar
+#' @param thshFile The file directory where the threshold table are being saved. Default as NULL.
+#' @param diagSens Logical to state if the sensor diqgnostic flags are calculated. Default as FALSE.
+#'
+#' @return error_list
+#' @references Metzger, S., Junkermann, W., Mauder, M., Butterbach-Bahl, K., Trancsn y Widemann, B., Neidl, F., Schdfer, K., Wieneke, S., Zheng, X. H., Schmid, H. P., and Foken, T.: Spatially explicit regionalization of airborne flux measurements using environmental response functions, Biogeosciences, 10, 2193-2217, doi:10.5194/bg-10-2193-2013, 2013.
+#' @keywords eddy-covariance, turbulent flux, environmental response function, aircraft, tower
+#' @examples Currently none
+#' @seealso Currently none
+#'
+#' changelog and author contributions / copyrights
+#'   Adam R Vaughan (2018-07-23)
+#'     Upladed workflow from local to github, current eddy4R-Docker code base
+#'   Will S Drysdale (2019-01-24)
+#'     Convert old workflow into a wrapper function
+#'  Natchaya Pingintha-Durden (2019-09-09)
+#'     combine stationarity flags and ITCs flags into qfFinl
+
+
+wrap.uoy.ec.towr <- function(
+    eddy.data,
+    para,
+    file_count,
+    skip_scalar,
+    verbose = FALSE,
+    progress_bar,
+    agg_period,
+    thshFile = NULL,
+    diagSens = FALSE){
+
+  # Setup
+  error_list = list()
+  REYN = list()
+  lag_out = list()
+
+  #add missing H2O
+  if(!"FD_mole_H2O" %in% names(eddy.data))
+    eddy.data$FD_mole_H2O <- 1e-12
+
+  #assign eddy.data to be used in qfqm processing (not skip any missing scalar)
+  eddyInp <- eddy.data
+  #assign species name before skipping (will be used in qfqm processing)
+  qfPara <- list()
+  qfPara$species <- para$species
+  progress_bar$pb$tick(tokens = list(file = file_count,
+                                     tfile = progress_bar$total_file,
+                                     praise = progress_bar$some_praise))
+  # if optional scalars have been deemed invalid by def.vaild.input, recreate the relevent para entires to skip them this time
+  if(!is.null(skip_scalar)){
+    if(length(skip_scalar) > 0){
+      keepInt <- which(!para$cross_correlation_vars %in% def.spcs.name(skip_scalar, "mole")) #changed to make sure absolute lags match up with correct species
+
+      para$absolute_lag = para$absolute_lag[keepInt]
+      para$despike_threshold = para$despike_threshold[!para$despike_vars %in% def.spcs.name(skip_scalar,"mole")]
+      para$despike_vars = para$despike_vars[!para$despike_vars %in% def.spcs.name(skip_scalar,"mole")]
+      para$cross_correlation_vars = para$cross_correlation_vars[!para$cross_correlation_vars %in% def.spcs.name(skip_scalar,"mole")]
+
+      all_species = para$species
+      para$species = para$species[!para$species %in% skip_scalar]
+      if(length(para$species) == 0){
+        para$flux_species_mole = NULL
+        para$flux_species_mass = NULL
+        para$flux_species_kin = NULL
+        para$species_RMM = NULL
+      }else{
+        para$flux_species_mole = def.spcs.name(para$species,"mole")
+        para$flux_species_mass = def.spcs.name(para$species,"mass")
+        para$flux_species_kin = def.spcs.name(para$species,"kin")
+        para$species_RMM = para$species_RMM[!all_species %in% skip_scalar]
+      }
+
+      for(var in def.spcs.name(skip_scalar,"mole"))
+        eddy.data[,var] = NULL
+    }
+  }
+
+  #Apply plausibility function
+  #Plausibility testing function
+  if (!is.null(thshFile)){
+
+    qfInp <- wrap.qf.voc(data = eddyInp, thshFile = thshFile)
+
+    #remove bad data
+    #List of variables to check for flags to remove bad data
+    listVar <- names(qfInp)[names(qfInp) %in% names(eddy.data)]
+    #temporary place for qfInp will be use in bad data remove
+    qfTmp <- qfInp
+    if (length(listVar) > 0){
+      #Replace the flagged data with NaN
+      # TODO What happens if a critical value has all of its data removed?
+      # Maybe another call to def.valid.input is required, and another stage of removing flagged skip_scalars
+      # Should also include the skip_scalar block being converted to a function.
+      for (idxVar in listVar){
+        setBad <-  base::which(base::rowSums(qfTmp[[idxVar]] == 1) > 0)
+        #Remove the data for each variable according to the position vector identified
+        eddy.data[[idxVar]][setBad] <- NA
+      }
+    } else {
+      eddy.data <- eddy.data
+    }
+  }
+  rm(qfTmp)
+
+  #--------------------------------------------------------------------------------------------
+  # Apply Anemometer Corrections
+  error_catch =  tryCatch({
+    eddy.data = wrap.anem.cor(eddy.data,para)
+  },
+  error = function(e)
+    str_replace_all(e,",","") %>% str_replace_all(":","") %>% str_replace_all("\n","") %>% paste0("_err")
+  )
+
+  if("character" %in% class(error_catch)){
+    if(str_detect(error_catch,"_err"))
+      error_list = add_err(error_catch,error_list,"anem_cor","continue")
+  }
+
+  if(err_skip(error_list))
+    return(error_list)
+
+  #--------------------------------------------------------------------------------------------
+  # Apply SND Correction
+  if(para$SND_correct){
+    error_catch =  tryCatch({
+      eddy.data = def.temp.snd(eddy.data,
+                               H2O_col = para$H2O_col,
+                               H2O_unit = para$H2O_unit)
+    },
+    error = function(e)
+      str_replace_all(e,",","") %>% str_replace_all(":","") %>% str_replace_all("\n","") %>% paste0("_err")
+    )
+
+    if("character" %in% class(error_catch)){
+      if(str_detect(error_catch,"_err"))
+        error_list = add_err(error_catch,error_list,"SND_cor","continue")
+    }
+
+    if(err_skip(error_list))
+      return(error_list)
+  }
+
+  #--------------------------------------------------------------------------------------------
+  # Despike data before lag correction
+  if(para$despike){
+    error_catch =  tryCatch({
+      eddy.data = wrap.uoy.despike(eddy.data = eddy.data,
+                                   despike_vars = para$despike_vars,
+                                   despike_threshold = para$despike_threshold,
+                                   verbose)
+    },
+    error = function(e)
+      str_replace_all(e,",","") %>% str_replace_all(":","") %>% str_replace_all("\n","") %>% paste0("_err")
+    )
+
+    if("character" %in% class(error_catch)){
+      if(str_detect(error_catch,"_err"))
+        error_list = add_err(error_catch,error_list,"despike","continue")
+    }
+
+    if(err_skip(error_list))
+      return(error_list)
+  }
+  progress_bar$pb$tick(tokens = list(file = file_count,
+                                     tfile = progress_bar$total_file,
+                                     praise = progress_bar$some_praise))
+  #--------------------------------------------------------------------------------------------
+  # Maximize cross correlation
+  if(para$lag_correction){
+    error_catch =  tryCatch({
+      lag_out = wrap.uoy.lag(eddy.data,para,file_count)
+      eddy.data = lag_out$eddy.data
+      para = lag_out$para
+    },
+    error = function(e)
+      str_replace_all(e,",","") %>% str_replace_all(":","") %>% str_replace_all("\n","") %>% paste0("_err")
+    )
+
+    if("character" %in% class(error_catch)){
+      if(str_detect(error_catch,"_err"))
+        error_list = add_err(error_catch,error_list,"lag","skip")
+    }
+
+    if(err_skip(error_list))
+      return(error_list)
+  }
+  progress_bar$pb$tick(tokens = list(file = file_count,
+                                     tfile = progress_bar$total_file,
+                                     praise = progress_bar$some_praise))
+  #--------------------------------------------------------------------------------------------
+  # resample lag-corrected data from high to low frequency
+  if(para$resample){
+    error_catch = tryCatch({
+      eddy.data = eddy4R.base::def.rsmp(data=eddy.data,
+                                        FreqInp=para$freqIN,
+                                        FreqOut=para$freqOUT,
+                                        MethRsmp="zoo",
+                                        ColDisc=NULL)
+
+      if("date" %in% names(eddy.data))
+        eddy.data$date <- as.POSIXct(eddy.data$date, origin="1970-01-01",tz="UTC")
+
+    },
+    error = function(e)
+      str_replace_all(e,",","") %>% str_replace_all(":","") %>% str_replace_all("\n","") %>% paste0("_err")
+    )
+
+    if("character" %in% class(error_catch)){
+      if(str_detect(error_catch,"_err"))
+        error_list = add_err(error_catch,error_list,"resample","continue")
+    }
+
+    if(err_skip(error_list))
+      return(error_list)
+  }
+  progress_bar$pb$tick(tokens = list(file = file_count,
+                                     tfile = progress_bar$total_file,
+                                     praise = progress_bar$some_praise))
+  #--------------------------------------------------------------------------------------------
+  # Handle missing values
+  error_catch =  tryCatch({
+    eddy.data = def.miss.hndl(eddy.data,para)
+  },
+  error = function(e)
+    str_replace_all(e,",","") %>% str_replace_all(":","") %>% str_replace_all("\n","") %>% paste0("_err")
+  )
+
+  if("character" %in% class(error_catch)){
+    if(str_detect(error_catch,"_err"))
+      error_list = add_err(error_catch,error_list,"missing","skip")
+  }
+
+  if(err_skip(error_list))
+    return(error_list)
+  #--------------------------------------------------------------------------------------------
+  # Rotation of wind vectors
+  error_catch =  tryCatch({
+    eddy.data = wrap.rot(eddy.data,
+                         MethRot = para$MethRot,
+                         plnrFitCoef = para$plnrFitCoef,
+                         plnrFitType = para$plnrFitType)
+  },
+  error = function(e)
+    str_replace_all(e,",","") %>% str_replace_all(":","") %>% str_replace_all("\n","") %>% paste0("_err")
+  )
+
+  if("character" %in% class(error_catch)){
+    if(str_detect(error_catch,"_err"))
+      error_list = add_err(error_catch,error_list,"rotation","skip")
+  }
+
+  if(err_skip(error_list))
+    return(error_list)
+
+  #--------------------------------------------------------------------------------------------
+  # calculate time-domain fluxes (classical EC)
+  error_catch = tryCatch({
+    REYN = REYNflux_FD_mole_dry(data=eddy.data,
+                                AlgBase=para$AlgBase,
+                                FcorPOT=FALSE,
+                                FcorPOTl=eddy4R.base::IntlNatu$Pres00,
+                                PltfEc=para$PltfEc,
+                                flagCh4 = F,
+                                spcs = para$species,
+                                rmm = para$species_RMM,
+                                tempHead = para$tempHead)
+  },
+  error = function(e)
+    str_replace_all(e,",","") %>% str_replace_all(":","") %>% str_replace_all("\n","") %>% paste0("_err")
+  )
+
+  if("character" %in% class(error_catch)){
+    if(str_detect(error_catch,"_err"))
+      error_list = add_err(error_catch,error_list,"flux","skip")
+  }
+  if(err_skip(error_list))
+    return(error_list)
+  progress_bar$pb$tick(tokens = list(file = file_count,
+                                     tfile = progress_bar$total_file,
+                                     praise = progress_bar$some_praise))
+
+  #--------------------------------------------------------------------------------------------
+  #determine qfqm
+  if (!is.null(thshFile)) {
+    #initial define name of variable will detemine the flag
+    dp01TmpName <- c(names(eddyInp), "u_hor", "v_hor", "w_hor", "p_H2O", "rho_H2O", "rho_air",
+                     "rho_dry", "T_v", "Lv", "cph", "cvh", "Rh", "Kah", "T_air_0", "T_v_0", "PSI_uv",
+                     "u_star2_x", "u_star2_y", "u_star", "F_H_kin",
+                     "F_H_en", "F_H_kin_v_0", "F_H_en_v_0", "F_LE_kin", "F_LE_en",
+                     paste0("F_", qfPara$species, "_kin"), paste0("F_", qfPara$species, "_mass"),
+                     "I", "d_L_v_0", "sigma", "w_star", "t_star", "T_star_SL", "T_star_ML",
+                     "FD_mole_H2O_star_SL", "FD_mole_H2O_star_ML")
+    qfOut <- wrap.dp01.qfqm.eddy(qfInp = qfInp, MethMeas = "voc", RptExpd = TRUE, dp01 = dp01TmpName, qfSens = NULL)
+    #adding timestamp
+    for (idxDf in names(qfOut)){
+      if (idxDf == "qm"){
+        lapply(names(qfOut[[idxDf]]), function(x) {
+          qfOut[[idxDf]][[x]] <<- cbind(date = REYN$mn$date, qfOut[[idxDf]][[x]])
+        })#end lapply
+      } else {
+        qfOut[[idxDf]] <- cbind(date = REYN$mn$date, qfOut[[idxDf]])
+      }
+    }
+  }
+
+  #--------------------------------------------------------------------------------------------
+  # stationarity testing
+  # What should have stationarity tests applied?
+  whr_flux = c("u_star2_x", "u_star2_y", "u_star", "F_H_en")
+  if("FD_mole_H2O" %in% names(eddy.data))
+    whr_flux = c(whr_flux,"F_LE_en")
+
+  if(!is.null(para$species))
+    whr_flux = c(whr_flux,para$flux_species_mass)
+
+  error_catch = tryCatch({
+    REYN$stat = eddy4R.turb::def.stna(data=eddy.data,
+                                      MethStna=c(1, 2, 3)[3],
+                                      NumSubSamp=para$agg_period/300,
+                                      corTempPot=FALSE,
+                                      whrVar = whr_flux,
+                                      presTempPot=eddy4R.base::IntlNatu$Pres00,
+                                      PltfEc=para$PltfEc,
+                                      vrbs = F,
+                                      flagCh4 = F, # Pass these to ... for REYNflux_FD_mole_dry
+                                      spcs = para$species,
+                                      rmm = para$species_RMM,
+                                      tempHead = para$tempHead)
+  },
+  error = function(e)
+    str_replace_all(e,",","") %>% str_replace_all(":","") %>% str_replace_all("\n","") %>% paste0("_err")
+  )
+
+  if("character" %in% class(error_catch)){
+    if(str_detect(error_catch,"_err"))
+      error_list = add_err(error_catch,error_list,"stna","continue")
+  }
+  if(err_skip(error_list))
+    return(error_list)
+  progress_bar$pb$tick(tokens = list(file = file_count,
+                                     tfile = progress_bar$total_file,
+                                     praise = progress_bar$some_praise))
+  #--------------------------------------------------------------------------------------------
+  # integral turbulence scales, lengths and characteristics
+  # called from global enviroment until pacakged
+  error_catch = tryCatch({
+    REYN$isca = def.scales(REYN = REYN,
+                           lat = para$Lat,
+                           VarInp=c("veloXaxs", "veloZaxs", "temp", "all")[4],
+                           sd = data.frame(u_hor=REYN$sd$u_hor,w_hor=REYN$sd$w_hor,T_air=REYN$sd$T_air),
+                           varScal = data.frame(u_star=REYN$mn$u_star,T_star_SL=REYN$mn$T_star_SL),
+                           species = para$species)
+  },
+  error = function(e)
+    str_replace_all(e,",","") %>% str_replace_all(":","") %>% str_replace_all("\n","") %>% paste0("_err")
+  )
+
+  if("character" %in% class(error_catch)){
+    if(str_detect(error_catch,"_err"))
+      error_list = add_err(error_catch,error_list,"scales","continue")
+  }
+  if(err_skip(error_list))
+    return(error_list)
+  progress_bar$pb$tick(tokens = list(file = file_count,
+                                     tfile = progress_bar$total_file,
+                                     praise = progress_bar$some_praise))
+  #--------------------------------------------------------------------------------------------
+  #combine stationarity flags and ITCs flags into qfFinl
+  error_catch = tryCatch({
+    if (!is.null(thshFile)) {
+
+      # Save the current qfFinl values separatley
+      qfOut$qfFinl_raw = qfOut$qfFinl
+
+
+      # qf stat flag
+      lapply(names(qfOut$qfFinl), function(x)  {
+        if (x %in% names(REYN$stat$qf)) {
+          qfOut$qfFinl[[x]] <<- ifelse(REYN$stat$qf[[x]] == 0 & qfOut$qfFinl[[x]] == 0, 0, 1)}
+
+
+      })
+
+      # create sans flag before applying ITC rules
+      qfOut$qfFinl_sansITC = qfOut$qfFinl
+
+      # add ITC to qfFinl
+      lapply(names(qfOut$qfFinl), function(x)  {
+        if (x %in% names(REYN$isca$qfItc)) {
+          qfOut$qfFinl[[x]] <<- ifelse(REYN$isca$qfItc[[x]] == 0 & qfOut$qfFinl[[x]] == 0, 0, 1)}
+
+      })
+
+    }
+  },
+  error = function(e)
+    str_replace_all(e,",","") %>% str_replace_all(":","") %>% str_replace_all("\n","") %>% paste0("_err")
+  )
+
+  if("character" %in% class(error_catch)){
+    if(str_detect(error_catch,"_err"))
+      error_list = add_err(error_catch,error_list,"error","continue")
+  }
+
+  #--------------------------------------------------------------------------------------------
+  # flux error calculations
+  error_catch = tryCatch({
+    REYN$error = eddy4R.turb::def.ucrt.samp(data = NULL,
+                                            distIsca=REYN$isca,
+                                            valuMean=REYN$mn,
+                                            coefCorr=REYN$cor,
+                                            distMean=REYN$max$d_xy_flow,
+                                            timeFold = 0,
+                                            spcs = para$species)
+  },
+  error = function(e)
+    str_replace_all(e,",","") %>% str_replace_all(":","") %>% str_replace_all("\n","") %>% paste0("_err")
+  )
+
+  if("character" %in% class(error_catch)){
+    if(str_detect(error_catch,"_err"))
+      error_list = add_err(error_catch,error_list,"qaqc","continue")
+  }
+
+  if(err_skip(error_list))
+    return(error_list)
+  progress_bar$pb$tick(tokens = list(file = file_count,
+                                     tfile = progress_bar$total_file,
+                                     praise = progress_bar$some_praise))
+
+  #--------------------------------------------------------------------------------------------
+  # flux limit of detection calculations
+
+  error_catch = tryCatch({
+    REYN$lod  <-  def.lod(ref=REYN$imfl$w_hor,
+                          vars=REYN$imfl %>% dplyr::select(.,c(contains("FD_mole_"),"T_air")),
+                          spcs=para$species,
+                          rmm=para$species_RMM,
+                          rho_dry=REYN$mn$rho_dry,
+                          rho_H2O=REYN$mn$rho_H2O,
+                          Lv=REYN$mn$Lv,
+                          freq=para$freqOUT,
+                          conf=95)
+
+    REYN$lod$date <- REYN$mn$date
+  },
+  error = function(e)
+    str_replace_all(e,",","") %>% str_replace_all(":","") %>% str_replace_all("\n","") %>% paste0("_err")
+  )
+
+  if("character" %in% class(error_catch)){
+    if(str_detect(error_catch,"_lod"))
+      error_list = add_err(error_catch,error_list,"lod","continue")
+  }
+
+  if(err_skip(error_list))
+    return(error_list)
+  progress_bar$pb$tick(tokens = list(file = file_count,
+                                     tfile = progress_bar$total_file,
+                                     praise = progress_bar$some_praise))
+
+  #--------------------------------------------------------------------------------------------
+  # high-frequency correction
+  error_catch = tryCatch({
+
+    wtdata <- data.frame(REYN$imfl %>% dplyr::select(.,c(w_hor,T_air)),
+                         REYN$imfl %>% dplyr::select(.,c(dplyr::contains("FD_mole"))))
+
+    if(sd(wtdata$FD_mole_H2O)==0)
+      wtdata <- wtdata %>% dplyr::select(.,-c(FD_mole_H2O))
+
+    #calculate frequency corrrection for sensible, latent heat and chemical fluxes
+    REYN$Nk12 <- eddy4R.turb::wrap.wave(dfInp=wtdata,
+                                        SI=REYN$mn$sigma,
+                                        FreqSamp = para$freqOUT,
+                                        vbrs = verbose)$cov %>%
+      unlist(.) %>% t(.) %>% data.frame(.) %>%
+      dplyr::select(.,contains(".fac")) %>%
+      dplyr::rename_at(.,vars(ends_with(".fac")),
+                       funs(gsub(".fac", "",.))) %>%
+      dplyr::rename_at(.,vars(starts_with("T_air")),
+                       funs(gsub("T_air", "F_H_kin",.))) %>%
+      dplyr::rename_at(.,vars(starts_with("FD_mole_")),
+                       funs(gsub("FD_mole_", "F_",.) %>%
+                              paste0(.,"_kin"))) %>%
+      dplyr::mutate_all(list(mass = ~ .)) %>%
+      dplyr::rename_at(.,vars(ends_with("_kin_mass")),
+                       funs(gsub("_kin_mass", "_mass",.))) %>%
+      dplyr::rename(.,F_H_en=F_H_mass)
+
+    if("FD_mole_H2O" %in% names(REYN$Nk12))
+      REYN$Nk12 <- REYN$Nk12 %>%
+      dplyr::rename_at(.,vars(ends_with("_H2O_kin")),
+                       funs(gsub("_H2O_kin", "_LE_kin",.))) %>%
+      dplyr::rename_at(.,vars(ends_with("_H2O_mass")),
+                       funs(gsub("_H2O_mass", "_LE_mass",.)))
+
+    #add date to dataframe
+    REYN$Nk12$date <- REYN$mn$date},
+
+    error = function(e)
+      str_replace_all(e,",","") %>% str_replace_all(":","") %>% str_replace_all("\n","") %>% paste0("_err"))
+
+  if("character" %in% class(error_catch)){
+    if(str_detect(error_catch,"_err"))
+      error_list = add_err(error_catch,error_list,"high_freq","continue")
+  }
+  if(err_skip(error_list))
+    return(error_list)
+
+  #--------------------------------------------------------------------------------------------
+  # calculate frequency-domain fluxes (wavelet EC)]
+  if(para$wav_ec){
+
+    error_catch = tryCatch({
+
+      wtdata <- data.frame(REYN$data %>% dplyr::select(.,c(date)),
+                           REYN$imfl %>% dplyr::select(.,c(u_hor,v_hor,w_hor,T_air,T_v_0)),
+                           REYN$imfl %>% dplyr::select(.,c(dplyr::contains("FD_mole")))) %>%
+        na.omit()
+
+      if(sd(wtdata$FD_mole_H2O)==0)
+        wtdata <- wtdata %>% dplyr::select(.,-c(FD_mole_H2O))
+
+      #CWT wavelet calculation
+      CWT <- def.cwt(data=wtdata,
+                     freq=para$freqOUT,
+                     PltfEc=para$PltfEc,
+                     mywave=Waves::morlet(),
+                     mydj=1/8,
+                     scal=c(5,10,30,60,90),
+                     dry=REYN$base$rho_dry,
+                     wet=REYN$base$rho_H2O,
+                     spcs=para$species,
+                     spcsRMM=para$species_RMM,
+                     Lv=REYN$data$Lv,
+                     uvw_aircraft=NULL)
+
+      #CWT averaging
+      WAVE <- para.cwt.ec(data=eddy.data,
+                          CWT=CWT,
+                          PltfEc=para$PltfEc,
+                          cntr=para$cwt_win,
+                          agr=para$cwt_agr,
+                          scale=para$cwt_mscal,
+                          tz=para$tz,
+                          para=para)
+
+      rm(wtdata)
+
+      # Tidy WAVE and CWT outputs
+      for(tt in names(WAVE)){names(WAVE[[tt]])[grep("date",names(WAVE[[tt]]))] <- "date"}
+      for(tt in names(WAVE)[1:3]){WAVE[[tt]]$date <- WAVE[[tt]]$date %>% as.character(.)}
+
+      for(tt in names(CWT$var)){CWT$var[[tt]] <- CWT$var[[tt]] %>% plyr::colwise(mean)(.,na.rm=T)}
+      for(tt in names(CWT$var)){names(CWT$var[[tt]]) <- paste0(names(CWT$var[[tt]]),"_",tt,"_KM")}
+      for(tt in names(CWT$var)){names(CWT$var[[tt]])[grep("date",names(CWT$var[[tt]]))] <- "date"}
+      for(tt in names(CWT$var)){CWT$var[[tt]]$date <- CWT$var[[tt]]$date %<>% as.character}
+      for(tt in names(CWT$cov)){CWT$cov[[tt]] <- CWT$cov[[tt]] %>% plyr::colwise(mean)(.,na.rm=T)}
+      for(tt in names(CWT$cov)){names(CWT$cov[[tt]]) <- paste0(names(CWT$cov[[tt]]),"_",tt,"_KM")}
+      for(tt in names(CWT$cov)){names(CWT$cov[[tt]])[grep("date",names(CWT$cov[[tt]]))] <- "date"}
+      for(tt in names(CWT$cov)){CWT$cov[[tt]]$date <- CWT$cov[[tt]]$date %<>% as.character}
+
+    },
+    error = function(e)
+      str_replace_all(e,",","") %>% str_replace_all(":","") %>% str_replace_all("\n","") %>% paste0("_err")
+    )
+
+    if("character" %in% class(error_catch)){
+      if(str_detect(error_catch,"_err"))
+        error_list = add_err(error_catch,error_list,"Wavelet","continue")
+    }
+    if(err_skip(error_list))
+      return(error_list)
+
+  }
+
+  progress_bar$pb$tick(tokens = list(file = file_count,
+                                     tfile = progress_bar$total_file,
+                                     praise = progress_bar$some_praise))
+
+  #--------------------------------------------------------------------------------------------
+  ## Write output
+
+  # Tidy file name
+  fn = agg_period[file_count,1] %>%
+    as.character() %>%
+    stringr::str_replace_all(":","") %>%
+    stringr::str_replace_all("-","") %>%
+    stringr::str_replace_all(" ","_")
+
+  if(nchar(fn) <= 8)
+    fn = paste0(fn,"_000000")
+
+  # determine if qf will write out
+  if (is.null(thshFile))
+    qfOut <- NULL
+  else
+    qfOut <- qfOut
+
+  # write classical
+  write.REYN(REYN = REYN,
+             lag_time = lag_out$lag_time,
+             ACF = lag_out$ACF,
+             para = para,
+             file_name = fn,
+             qfOut = qfOut)
+
+  # write wavelet if calculated successfully
+  if(exists("CWT"))
+    write.WAVE(CWT=CWT,
+               WAVE=WAVE,
+               para = para)
+
+  progress_bar$pb$tick(tokens = list(file = file_count,
+                                     tfile = progress_bar$total_file,
+                                     praise = progress_bar$some_praise))
+  #--------------------------------------------------------------------------------------------
+  # Return error
+  return(error_list)
+
+}
