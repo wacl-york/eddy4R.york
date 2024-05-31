@@ -444,12 +444,6 @@ wrap.towr <- function(
              file_name = fn,
              qfOut = qfOut)
 
-  # write wavelet if calculated successfully
-  if(exists("CWT"))
-    write.WAVE(CWT=CWT,
-               WAVE=WAVE,
-               para = para)
-
   progress_bar$pb$tick(tokens = list(file = file_count,
                                      tfile = progress_bar$total_file,
                                      praise = progress_bar$some_praise))
