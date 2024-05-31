@@ -3,8 +3,12 @@ Title: eddy4R.york
 Version: 0.0.0.9000
 Authors@R: 
     person("Will", "Drysdake", , "will.drysdale@york.ac.uk", role = c("aut", "cre"))
-Description: Extends the eddy4R suite of packages for use with the WACL-York flux workflows.
+Description: Extends the eddy4R suite of packages for use with the WACL-York flux workflows. 
+  Depends on the eddy4R suite of packages, and as such is recommended to be used with the associate docker image.
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
 License: AGPL (>= 3)
+Imports: 
+    dplyr,
+    stringr

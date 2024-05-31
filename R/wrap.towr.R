@@ -1,41 +1,28 @@
-##############################################################################################
-#' @title University of York Tower Eddy-Covariance turbulence processing
+#' Wrap Tower
 #'
-#' @author
-#' Will S Drysdale \email{wsd500@york.ac.uk}\cr
-#' Adam R Vaughan \email{adam.vaughan@york.ac.uk} \cr
-#' Stefan Metzger \email{eddy4R.info@gmail.com} \cr
-#' Ke Xu \email{xuke2012abroad@gmail.com} \cr
-#' Andrei Serafimovich \email{andrei.serafimovich@gfz-potsdam.de}
+#' University of York Tower Eddy-Covariance turbulence processing.
+#' Based on earlier workflows with contributions from: \cr
+#' Adam R Vaughan \cr
+#' Stefan Metzger \cr
+#' Ke Xu \cr
+#' Andrei Serafimovich \cr
 #'
-#' @description
-#' Workflow. Eddy-covariance flux processing.
 #'
-#' @param eddy.data
-#' @param para
-#' @param file_count
-#' @param skip_scalar
-#' @param verbose
-#' @param progress_bar
+#' @param eddy.data input data
+#' @param para params list
+#' @param file_count file number (used for progress only)
+#' @param skip_scalar character vector of any scalars to be skipped for this file only
+#' @param verbose boolean, suppresses some chatty functions
+#' @param progress_bar progress bar object
 #' @param thshFile The file directory where the threshold table are being saved. Default as NULL.
 #' @param diagSens Logical to state if the sensor diqgnostic flags are calculated. Default as FALSE.
 #'
-#' @return error_list
-#' @references Metzger, S., Junkermann, W., Mauder, M., Butterbach-Bahl, K., Trancsn y Widemann, B., Neidl, F., Schdfer, K., Wieneke, S., Zheng, X. H., Schmid, H. P., and Foken, T.: Spatially explicit regionalization of airborne flux measurements using environmental response functions, Biogeosciences, 10, 2193-2217, doi:10.5194/bg-10-2193-2013, 2013.
-#' @keywords eddy-covariance, turbulent flux, environmental response function, aircraft, tower
-#' @examples Currently none
-#' @seealso Currently none
+#' @author W. S. Drysdale
 #'
-#' changelog and author contributions / copyrights
-#'   Adam R Vaughan (2018-07-23)
-#'     Upladed workflow from local to github, current eddy4R-Docker code base
-#'   Will S Drysdale (2019-01-24)
-#'     Convert old workflow into a wrapper function
-#'  Natchaya Pingintha-Durden (2019-09-09)
-#'     combine stationarity flags and ITCs flags into qfFinl
+#' @export
 
 
-wrap.uoy.ec.towr <- function(
+wrap.towr <- function(
     eddy.data,
     para,
     file_count,
@@ -129,7 +116,7 @@ wrap.uoy.ec.towr <- function(
   )
 
   if("character" %in% class(error_catch)){
-    if(str_detect(error_catch,"_err"))
+    if(stringr::str_detect(error_catch,"_err"))
       error_list = add_err(error_catch,error_list,"anem_cor","continue")
   }
 
@@ -150,7 +137,7 @@ wrap.uoy.ec.towr <- function(
     )
 
     if("character" %in% class(error_catch)){
-      if(str_detect(error_catch,"_err"))
+      if(stringr::str_detect(error_catch,"_err"))
         error_list = add_err(error_catch,error_list,"despike","continue")
     }
 
@@ -173,7 +160,7 @@ wrap.uoy.ec.towr <- function(
     )
 
     if("character" %in% class(error_catch)){
-      if(str_detect(error_catch,"_err"))
+      if(stringr::str_detect(error_catch,"_err"))
         error_list = add_err(error_catch,error_list,"lag","skip")
     }
 
@@ -194,7 +181,7 @@ wrap.uoy.ec.towr <- function(
   )
 
   if("character" %in% class(error_catch)){
-    if(str_detect(error_catch,"_err"))
+    if(stringr::str_detect(error_catch,"_err"))
       error_list = add_err(error_catch,error_list,"missing","skip")
   }
 
@@ -214,7 +201,7 @@ wrap.uoy.ec.towr <- function(
   )
 
   if("character" %in% class(error_catch)){
-    if(str_detect(error_catch,"_err"))
+    if(stringr::str_detect(error_catch,"_err"))
       error_list = add_err(error_catch,error_list,"rotation","skip")
   }
 
@@ -239,7 +226,7 @@ wrap.uoy.ec.towr <- function(
   )
 
   if("character" %in% class(error_catch)){
-    if(str_detect(error_catch,"_err"))
+    if(stringr::str_detect(error_catch,"_err"))
       error_list = add_err(error_catch,error_list,"flux","skip")
   }
   if(err_skip(error_list))
@@ -301,7 +288,7 @@ wrap.uoy.ec.towr <- function(
   )
 
   if("character" %in% class(error_catch)){
-    if(str_detect(error_catch,"_err"))
+    if(stringr::str_detect(error_catch,"_err"))
       error_list = add_err(error_catch,error_list,"stna","continue")
   }
   if(err_skip(error_list))
@@ -326,7 +313,7 @@ wrap.uoy.ec.towr <- function(
   )
 
   if("character" %in% class(error_catch)){
-    if(str_detect(error_catch,"_err"))
+    if(stringr::str_detect(error_catch,"_err"))
       error_list = add_err(error_catch,error_list,"scales","continue")
   }
   if(err_skip(error_list))
@@ -368,7 +355,7 @@ wrap.uoy.ec.towr <- function(
   )
 
   if("character" %in% class(error_catch)){
-    if(str_detect(error_catch,"_err"))
+    if(stringr::str_detect(error_catch,"_err"))
       error_list = add_err(error_catch,error_list,"error","continue")
   }
 
@@ -388,7 +375,7 @@ wrap.uoy.ec.towr <- function(
   )
 
   if("character" %in% class(error_catch)){
-    if(str_detect(error_catch,"_err"))
+    if(stringr::str_detect(error_catch,"_err"))
       error_list = add_err(error_catch,error_list,"qaqc","continue")
   }
 
@@ -403,7 +390,7 @@ wrap.uoy.ec.towr <- function(
 
   error_catch = tryCatch({
     REYN$lod  <-  def.lod(ref=REYN$imfl$w_hor,
-                          vars=REYN$imfl %>% dplyr::select(.,c(contains("FD_mole_"),"T_air")),
+                          vars=REYN$imfl %>% dplyr::select(.,c(dplyr::contains("FD_mole_"),"T_air")),
                           spcs=para$species,
                           rmm=para$species_RMM,
                           rho_dry=REYN$mn$rho_dry,
@@ -419,7 +406,7 @@ wrap.uoy.ec.towr <- function(
   )
 
   if("character" %in% class(error_catch)){
-    if(str_detect(error_catch,"_lod"))
+    if(stringr::str_detect(error_catch,"_lod"))
       error_list = add_err(error_catch,error_list,"lod","continue")
   }
 
