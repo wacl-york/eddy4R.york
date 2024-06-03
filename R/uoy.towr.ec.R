@@ -9,6 +9,10 @@
 #' @param resume
 #' @param thshFile The file directory where the threshold table are being saved. Default as NULL.
 #' @param diagSens Logical to state if the sensor diqgnostic flags are calculated. Default as FALSE.
+#'
+#' @author W. S. Drysdale
+#'
+#' @export
 
 uoy.towr.ec = function(agg_files,
                        agg_period,
@@ -60,15 +64,15 @@ uoy.towr.ec = function(agg_files,
     error_workflow = list()
     # If the input file has not been flagged to skip
     if(!err_skip(error_input))
-      error_workflow = wrap.uoy.ec.towr(eddy.data = eddy.data,
-                                        para = para,
-                                        file_count = i,
-                                        skip_scalar = valid$skip_scalar,
-                                        verbose = FALSE,
-                                        progress_bar = progress_bar,
-                                        agg_period = agg_period,
-                                        thshFile = thshFile,
-                                        diagSens = diagSens)
+      error_workflow = wrap.towr(eddy.data = eddy.data,
+                                 para = para,
+                                 file_count = i,
+                                 skip_scalar = valid$skip_scalar,
+                                 verbose = FALSE,
+                                 progress_bar = progress_bar,
+                                 agg_period = agg_period,
+                                 thshFile = thshFile,
+                                 diagSens = diagSens)
     # collate errors
     errors = c(error_input,error_workflow)
 
@@ -80,9 +84,9 @@ uoy.towr.ec = function(agg_files,
       out_file_name = paste0(para$DirOut, "/", para$analysis, "/", para$analysis,"_", para$run_id, "_error_log", ".csv")
 
       if(!file.exists(out_file_name))
-        write.table(errors, file = out_file_name, na = "NA", row.names = F,sep = ",",col.names = T)
+        utils::write.table(errors, file = out_file_name, na = "NA", row.names = F,sep = ",",col.names = T)
       else
-        write.table(errors, file = out_file_name, na = "NA", row.names = F,append = T,sep = ",",col.names = F)
+        utils::write.table(errors, file = out_file_name, na = "NA", row.names = F,append = T,sep = ",",col.names = F)
     }
 
 
