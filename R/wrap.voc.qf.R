@@ -41,7 +41,7 @@ wrap.qf.voc <- function(
   }
 
   #read-in thresholds table
-  dfThsh <- read.csv(file = thshFile, header = TRUE,stringsAsFactors = F)
+  dfThsh <- utils::read.csv(file = thshFile, header = TRUE,stringsAsFactors = F)
 
   # select data that has corresponding thresholds table entries
   data_qf = data[,which(names(data) %in% (dfThsh$varName))]

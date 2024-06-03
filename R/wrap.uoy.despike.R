@@ -2,10 +2,10 @@
 #'
 #' Contains the despiking loop
 #'
-#' @param eddy.data
-#' @param despike_vars
-#' @param despike_threshold
-#' @param verbose
+#' @param eddy.data eddy.data object
+#' @param despike_vars character vector of variables to be despiked
+#' @param despike_threshold number of standard deviations to qualify as a spike
+#' @param verbose boolean - when false the messages from \code{def.dspk.br86} are suppressed
 #'
 #' @author W. S. Drysdale
 #'

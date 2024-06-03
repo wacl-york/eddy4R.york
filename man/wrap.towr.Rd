@@ -21,13 +21,16 @@ wrap.towr(
 
 \item{para}{params list}
 
-\item{file_count}{file number (used for progress only)}
+\item{file_count}{index of the loop in the above function (e.g uoy.towr.ec) for use in the progress bar}
 
 \item{skip_scalar}{character vector of any scalars to be skipped for this file only}
 
 \item{verbose}{boolean, suppresses some chatty functions}
 
 \item{progress_bar}{progress bar object}
+
+\item{agg_period}{from \code{def.avg} containing all the aggregation period defintions.
+TODO is this actually needed or can we just get this from para?}
 
 \item{thshFile}{The file directory where the threshold table are being saved. Default as NULL.}
 

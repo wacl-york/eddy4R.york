@@ -15,6 +15,9 @@
 
 def.lod <- function(ref,vars,spcs,rmm,rho_dry,rho_H2O,Lv,freq,conf=95){
 
+  # Satisfy CMD Check
+  . = lag = sd = NULL
+
   #LOD export list
   export <- data.frame(matrix(ncol = ncol(vars), nrow = 1))
   colnames(export) <- names(vars)
@@ -22,11 +25,16 @@ def.lod <- function(ref,vars,spcs,rmm,rho_dry,rho_H2O,Lv,freq,conf=95){
   for(dd in names(vars)){
 
     #Langford et al., (2015), Eddy-covariance data with low signal-to-noise ratio, page 4201
-    spec <- ccf(ref,vars[[dd]],type="covariance",lag.max=180*freq,plot=F)
+    spec <- stats::ccf(ref,vars[[dd]],type="covariance",lag.max=180*freq,plot=F)
     spec <- data.frame(lag=spec$lag,acf=spec$acf)
-    spec2 <- spec %>% dplyr::filter(.,lag > (150*freq) & lag < (180*freq))
-    spec3 <- spec %>% dplyr::filter(.,lag > ((-180)*freq) & lag < ((-150)*freq))
-    spec4 <- spec2 %>% rbind(.,spec3)
+    spec2 <- spec %>%
+      dplyr::filter(lag > (150*freq) & lag < (180*freq))
+
+    spec3 <- spec %>%
+      dplyr::filter(lag > ((-180)*freq) & lag < ((-150)*freq))
+
+    spec4 <- spec2 %>%
+      rbind(spec3)
 
     er <- sd(spec4$acf,na.rm=T)
 

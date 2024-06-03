@@ -10,12 +10,14 @@
 #'
 #' @param eddy.data input data
 #' @param para params list
-#' @param file_count file number (used for progress only)
+#' @param file_count index of the loop in the above function (e.g uoy.towr.ec) for use in the progress bar
 #' @param skip_scalar character vector of any scalars to be skipped for this file only
 #' @param verbose boolean, suppresses some chatty functions
 #' @param progress_bar progress bar object
 #' @param thshFile The file directory where the threshold table are being saved. Default as NULL.
 #' @param diagSens Logical to state if the sensor diqgnostic flags are calculated. Default as FALSE.
+#' @param agg_period from \code{def.avg} containing all the aggregation period defintions.
+#' TODO is this actually needed or can we just get this from para?
 #'
 #' @author W. S. Drysdale
 #'
@@ -32,6 +34,9 @@ wrap.towr <- function(
     agg_period,
     thshFile = NULL,
     diagSens = FALSE){
+
+  # satisfy CMD Check
+  . = NULL
 
   # Setup
   error_list = list()
@@ -112,7 +117,10 @@ wrap.towr <- function(
     eddy.data = wrap.anem.cor(eddy.data,para)
   },
   error = function(e)
-    str_replace_all(e,",","") %>% str_replace_all(":","") %>% str_replace_all("\n","") %>% paste0("_err")
+    stringr::str_replace_all(e,",","") %>%
+    stringr::str_replace_all(":","") %>%
+    stringr::str_replace_all("\n","") %>%
+    paste0("_err")
   )
 
   if("character" %in% class(error_catch)){
@@ -133,7 +141,10 @@ wrap.towr <- function(
                                    verbose)
     },
     error = function(e)
-      str_replace_all(e,",","") %>% str_replace_all(":","") %>% str_replace_all("\n","") %>% paste0("_err")
+      stringr::str_replace_all(e,",","") %>%
+      stringr::str_replace_all(":","") %>%
+      stringr::str_replace_all("\n","") %>%
+      paste0("_err")
     )
 
     if("character" %in% class(error_catch)){
@@ -156,7 +167,10 @@ wrap.towr <- function(
       para = lag_out$para
     },
     error = function(e)
-      str_replace_all(e,",","") %>% str_replace_all(":","") %>% str_replace_all("\n","") %>% paste0("_err")
+      stringr::str_replace_all(e,",","") %>%
+      stringr::str_replace_all(":","") %>%
+      stringr::str_replace_all("\n","") %>%
+      paste0("_err")
     )
 
     if("character" %in% class(error_catch)){
@@ -177,7 +191,10 @@ wrap.towr <- function(
     eddy.data = def.miss.hndl(eddy.data,para)
   },
   error = function(e)
-    str_replace_all(e,",","") %>% str_replace_all(":","") %>% str_replace_all("\n","") %>% paste0("_err")
+    stringr::str_replace_all(e,",","") %>%
+    stringr::str_replace_all(":","") %>%
+    stringr::str_replace_all("\n","") %>%
+    paste0("_err")
   )
 
   if("character" %in% class(error_catch)){
@@ -197,7 +214,10 @@ wrap.towr <- function(
                          plnrFitType = para$plnrFitType)
   },
   error = function(e)
-    str_replace_all(e,",","") %>% str_replace_all(":","") %>% str_replace_all("\n","") %>% paste0("_err")
+    stringr::str_replace_all(e,",","") %>%
+    stringr::str_replace_all(":","") %>%
+    stringr::str_replace_all("\n","") %>%
+    paste0("_err")
   )
 
   if("character" %in% class(error_catch)){
@@ -222,7 +242,10 @@ wrap.towr <- function(
                                 tempHead = para$tempHead)
   },
   error = function(e)
-    str_replace_all(e,",","") %>% str_replace_all(":","") %>% str_replace_all("\n","") %>% paste0("_err")
+    stringr::str_replace_all(e,",","") %>%
+    stringr::str_replace_all(":","") %>%
+    stringr::str_replace_all("\n","") %>%
+    paste0("_err")
   )
 
   if("character" %in% class(error_catch)){
@@ -246,7 +269,7 @@ wrap.towr <- function(
                      paste0("F_", qfPara$species, "_kin"), paste0("F_", qfPara$species, "_mass"),
                      "I", "d_L_v_0", "sigma", "w_star", "t_star", "T_star_SL", "T_star_ML",
                      "FD_mole_H2O_star_SL", "FD_mole_H2O_star_ML")
-    qfOut <- wrap.dp01.qfqm.eddy(qfInp = qfInp, MethMeas = "voc", RptExpd = TRUE, dp01 = dp01TmpName, qfSens = NULL)
+    qfOut <- eddy4R.qaqc::wrap.dp01.qfqm.eddy(qfInp = qfInp, MethMeas = "voc", RptExpd = TRUE, dp01 = dp01TmpName, qfSens = NULL)
     #adding timestamp
     for (idxDf in names(qfOut)){
       if (idxDf == "qm"){
@@ -284,7 +307,10 @@ wrap.towr <- function(
                                       tempHead = para$tempHead)
   },
   error = function(e)
-    str_replace_all(e,",","") %>% str_replace_all(":","") %>% str_replace_all("\n","") %>% paste0("_err")
+    stringr::str_replace_all(e,",","") %>%
+    stringr::str_replace_all(":","") %>%
+    stringr::str_replace_all("\n","") %>%
+    paste0("_err")
   )
 
   if("character" %in% class(error_catch)){
@@ -309,7 +335,10 @@ wrap.towr <- function(
                            species = para$species)
   },
   error = function(e)
-    str_replace_all(e,",","") %>% str_replace_all(":","") %>% str_replace_all("\n","") %>% paste0("_err")
+    stringr::str_replace_all(e,",","") %>%
+    stringr::str_replace_all(":","") %>%
+    stringr::str_replace_all("\n","") %>%
+    paste0("_err")
   )
 
   if("character" %in% class(error_catch)){
@@ -351,7 +380,10 @@ wrap.towr <- function(
     }
   },
   error = function(e)
-    str_replace_all(e,",","") %>% str_replace_all(":","") %>% str_replace_all("\n","") %>% paste0("_err")
+    stringr::str_replace_all(e,",","") %>%
+    stringr::str_replace_all(":","") %>%
+    stringr::str_replace_all("\n","") %>%
+    paste0("_err")
   )
 
   if("character" %in% class(error_catch)){
@@ -371,7 +403,10 @@ wrap.towr <- function(
                                             spcs = para$species)
   },
   error = function(e)
-    str_replace_all(e,",","") %>% str_replace_all(":","") %>% str_replace_all("\n","") %>% paste0("_err")
+    stringr::str_replace_all(e,",","") %>%
+    stringr::str_replace_all(":","") %>%
+    stringr::str_replace_all("\n","") %>%
+    paste0("_err")
   )
 
   if("character" %in% class(error_catch)){
@@ -402,7 +437,10 @@ wrap.towr <- function(
     REYN$lod$date <- REYN$mn$date
   },
   error = function(e)
-    str_replace_all(e,",","") %>% str_replace_all(":","") %>% str_replace_all("\n","") %>% paste0("_err")
+    stringr::str_replace_all(e,",","") %>%
+    stringr::str_replace_all(":","") %>%
+    stringr::str_replace_all("\n","") %>%
+    paste0("_err")
   )
 
   if("character" %in% class(error_catch)){

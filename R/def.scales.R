@@ -1,15 +1,28 @@
-##############################################################################################
-#' @title Definition function: Wrapper function for calculating integral scale lengths and turbulence characteristics.
-
+#' Definition function: Wrapper function for calculating integral scale lengths and turbulence characteristics.
+#'
+#' Function defintion. Wrapper function for calculating integral scale lengths and turbulence characteristics.
+#'
 #' @author
 #' Adam Vaughan \email{adam.vaughan@york.ac.uk}
-
-#' @description
-#' Function defintion. Wrapper function for calculating integral scale lengths and turbulence characteristics.
-
-#' @param \code{REYN} Output list from eddy4R.turb REYNflux function. [-]
-#' @param \code{WAVE} Output list from eddy4R.turb Wavelet analysis. [-]
-#' @param \code{VarInp} A vector of class "character" containing the name of variables to be performed integral turbulence characteristics test. VarInp = c("veloXaxs","veloZaxs","temp","all"), where "veloXaxs" is along-axis horizontal wind speed, "veloZaxs" is vertical-axis wind speed, "temp" is air temperature, and "all" is all three variables. Defaults to "all".[-]
+#'
+#' @param REYN Output list from eddy4R.turb REYNflux function.
+#' @param species names of scalars to be passed to \code{def.spcs.name}
+#' @param lat Latitude and of class "numeric".
+#' @param VarInp A vector of class "character" containing the name of variables
+#' to be performed integral turbulence characteristics test. VarInp =
+#' c("veloXaxs","veloZaxs","temp","all"), where "veloXaxs" is along-axis horizontal
+#' wind speed, "veloZaxs" is vertical-axis wind speed, "temp" is air temperature,
+#' and "all" is all three variables. Defaults to "all".
+#' @param sd A vector or data frame containing standard deviation of VarInp and
+#' of class "numeric". If VarInp = "all", sd shall contain in the follwing orders,
+#' standard deviation of along-axis horizontal wind speed, standard deviation of
+#' vertical-axis wind speed, and standard deviation of air temperature.
+#' @param varScal A vector or data frame containing the scaling variables of VarInp
+#' and of class "numeric". If VarInp = "all", varScal shall contain in the follwing
+#' orders, scaling variable of wind speed (friction velocity will be used for both
+#' "veloXaxs" and "veloZaxs") and scaling variable of air temperature.
+#'
+#' @export
 #'
 #' Changelog
 #'  Will Drysdale (2019-01-29)
@@ -18,8 +31,6 @@
 #'    added determination of qfItc for each flux
 #'  Natchaya Pingintha-Durden (2019-10-24)
 #'    update to use itc from w_hor to represent itc of F_H_en
-
-#' @export
 
 def.scales <- function(REYN,
                        lat,
@@ -54,9 +65,9 @@ def.scales <- function(REYN,
   #save whr_flux name before delete by whr_not; will use later in qfItc
   qfColName <- whr_flux
 
-  isca_vari <- data.frame(t(sapply(whr_scal,function(x) def.dist.isca(scalEddy=REYN$data$d_xy_flow,data=REYN$imfl[,x]^2))))
+  isca_vari <- data.frame(t(sapply(whr_scal,function(x) eddy4R.turb::def.dist.isca(scalEddy=REYN$data$d_xy_flow,data=REYN$imfl[,x]^2))))
 
-  isca_scal <- data.frame(t(sapply(whr_scal, function(x) def.dist.isca(
+  isca_scal <- data.frame(t(sapply(whr_scal, function(x) eddy4R.turb::def.dist.isca(
     scalEddy=REYN$data$d_xy_flow,
     data=REYN$imfl[,x]))))
 
@@ -68,7 +79,7 @@ def.scales <- function(REYN,
   else
     whr_flux <-  whr_flux[-whr_not]
 
-  isca_flux <- data.frame(t(sapply(whr_flux, function(x) def.dist.isca(
+  isca_flux <- data.frame(t(sapply(whr_flux, function(x) eddy4R.turb::def.dist.isca(
     scalEddy=REYN$data$d_xy_flow,
     data=REYN$imfl[,x]))))
 

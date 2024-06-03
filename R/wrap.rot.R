@@ -3,7 +3,7 @@
 #' Perform various types of wind vector rotations incl. single, double, planar fit.
 #'
 #' @param data data.frame containing u_met, v_met and w_met \cr
-#'             vectors should be defined correspondingly as u/v/w == E/N/U == x/y/z [data.frame]
+#'             vectors should be defined correspondingly as u/v/w == E/N/U == x/y/z (data.frame)
 #' @param MethRot method of rotation to be used, one of: \itemize{
 #'                \item "single" - rotate into the mean wind
 #'                \item "double" - apply single rotation and additionally rotate to align w and z (minimise w)
@@ -12,14 +12,14 @@
 #'                \item "autoPlanrFit" - determine and apply the planar fit coefficeints from data.
 #'                \item "none" - perform no rotation
 #' }
-#' @param plnrFitCoef coefficients for planar fit. [numeric vector or data.frame] \cr
+#' @param plnrFitCoef coefficients for planar fit. (numeric vector or data.frame) \cr
 #' Depending on plnrFitType, plnrFitCoef should be supplied as the following structure: \itemize{
 #'                    \item simple - numeric vector constant of coefficeients, or coefficeients
 #'                          that are controlled from the workflow. c(al,be,b0)
 #'                    \item time - data.frame with columns date, al, be, b0. values with date nearest to mean(data$date) will be used
 #'                    \item wind - data.frame with columns PSI_uv, al, be, b0. values with PSI_uv nearest to average PSI_uv will be used
 #'                    }
-#' @param plnrFitType type of planar fit, "simple", "date" or "wind". [character vector]
+#' @param plnrFitType type of planar fit, "simple", "date" or "wind". (character vector)
 #'
 #' @return Data object with rotated wind vectors names as u/v/w_rot
 #'
@@ -95,9 +95,9 @@ wrap.rot = function(data,
       if(length(intersect(intersect(which(!is.na(data$u_met)),which(!is.na(data$v_met))),which(!is.na(data$soni$w_met)))) > 2) {
 
         # determine planar fit coefficients in units radians and m s-1
-        coefPf <- eddy4R.turb::PFIT_det(u = data$u_met,
-                                        v = data$v_met,
-                                        w = data$w_met)
+        coefPf <- eddy4R.turb::def.pf.derv.coef(u = data$u_met,
+                                                v = data$v_met,
+                                                w = data$w_met)
 
         plnrFitCoef = c(coefPf$al,coefPf$be,coefPf$b0)
 
@@ -117,7 +117,7 @@ wrap.rot = function(data,
         stop("When plnrFitType == simple, plnrFitCoef must be a numeric vector")
 
       # Apply planar fit
-      plnrFitData = PFIT_apply(
+      plnrFitData = eddy4R.turb::def.pf.rot(
         u_m = data.frame(
           xaxs = data$u_met,
           yaxs = data$v_met,
@@ -143,7 +143,7 @@ wrap.rot = function(data,
       } # for wind, the nearest plnrFitCoef to the mean PSI_uv is selected
 
       # Apply planar fit
-      plnrFitData = PFIT_apply(
+      plnrFitData = eddy4R.turb::def.pf.rot(
         u_m = data.frame(
           xaxs = data$u_met,
           yaxs = data$v_met,

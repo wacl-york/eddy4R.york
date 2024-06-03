@@ -5,7 +5,7 @@
 #' * drop rows containing missing values
 #' * fill missing values with column mean
 #'
-#' @param eddy.data
+#' @param eddy.data eddy.data data frame
 #' @param para parameters created by def.uoy.para
 #'
 #' @author W. S. Drysdale

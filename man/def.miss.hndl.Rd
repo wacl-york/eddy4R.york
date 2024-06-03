@@ -7,6 +7,8 @@
 def.miss.hndl(eddy.data, para)
 }
 \arguments{
+\item{eddy.data}{eddy.data data frame}
+
 \item{para}{parameters created by def.uoy.para}
 }
 \value{

@@ -2,8 +2,8 @@
 #'
 #' Wrapper for def.lag to use in UoY workflows. Returns data lag times and acf information
 #'
-#' @param eddy.data
-#' @param para
+#' @param eddy.data eddy.data object
+#' @param para parameter list from \code{def.uoy.para}
 #' @param agg_count # to use when implementing drifting lags - to do
 
 wrap.uoy.lag = function(eddy.data,para,agg_count){
@@ -26,7 +26,7 @@ wrap.uoy.lag = function(eddy.data,para,agg_count){
                                        DirPlot = paste(para$DirOut,"/",para$analysis,sep=""))
       }
       if(para$lag_type == "fft"){
-        lag_data = na.omit(eddy.data[,c("w_met",var)])
+        lag_data = stats::na.omit(eddy.data[,c("w_met",var)])
         lagged = def.lag.fft(lag_data[,"w_met"],lag_data[,var],trim = 40*para$freqIN,lagNgtvPstv = para$lagNgtvPstv)
       }
 
@@ -49,7 +49,7 @@ wrap.uoy.lag = function(eddy.data,para,agg_count){
 
     # peform lag operation
     if(!is.na(lagged$lag))
-      eddy.data[[var]] <- DataCombine:::shift(VarVect = eddy.data[[var]],shiftBy = -lagged$lag, reminder = FALSE)
+      eddy.data[[var]] <- DataCombine::shift(VarVect = eddy.data[[var]],shiftBy = -lagged$lag, reminder = FALSE)
 
     #create outputs
     if(dum_run == 1) {
@@ -71,7 +71,7 @@ wrap.uoy.lag = function(eddy.data,para,agg_count){
           ACF = cbind(ACF,lagged$corr$acf)
         }
         if(para$lag_type == "fft"){
-          ACF = left_join(ACF,lagged$corr,"index")
+          ACF = dplyr::left_join(ACF,lagged$corr,"index")
         }
       }
     }
@@ -104,7 +104,7 @@ wrap.uoy.lag = function(eddy.data,para,agg_count){
     para$flux_species_mole = def.spcs.name(para$species,"mole")
     para$flux_species_mass = def.spcs.name(para$species,"mass")
     para$flux_species_kin = def.spcs.name(para$species,"kin")
-    para$species_RMM[[(length(para$species_RMM)+1)]] = IntlNatu$MolmNO2
+    para$species_RMM[[(length(para$species_RMM)+1)]] = eddy4R.base::IntlNatu$MolmNO2
     names(para$species_RMM)[length(para$species_RMM)] = "NOXASNO2"
   }
 

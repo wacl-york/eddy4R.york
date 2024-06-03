@@ -7,6 +7,10 @@
 wrap.uoy.lag(eddy.data, para, agg_count)
 }
 \arguments{
+\item{eddy.data}{eddy.data object}
+
+\item{para}{parameter list from \code{def.uoy.para}}
+
 \item{agg_count}{to use when implementing drifting lags - to do}
 }
 \description{

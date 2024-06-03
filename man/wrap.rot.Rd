@@ -13,7 +13,7 @@ wrap.rot(
 }
 \arguments{
 \item{data}{data.frame containing u_met, v_met and w_met \cr
-vectors should be defined correspondingly as u/v/w == E/N/U == x/y/z \link{data.frame}}
+vectors should be defined correspondingly as u/v/w == E/N/U == x/y/z (data.frame)}
 
 \item{MethRot}{method of rotation to be used, one of: \itemize{
 \item "single" - rotate into the mean wind
@@ -24,7 +24,7 @@ Note that these coefficients should be determined in the coordinate system they 
 \item "none" - perform no rotation
 }}
 
-\item{plnrFitCoef}{coefficients for planar fit. \link{numeric vector or data.frame} \cr
+\item{plnrFitCoef}{coefficients for planar fit. (numeric vector or data.frame) \cr
 Depending on plnrFitType, plnrFitCoef should be supplied as the following structure: \itemize{
 \item simple - numeric vector constant of coefficeients, or coefficeients
 that are controlled from the workflow. c(al,be,b0)
@@ -32,7 +32,7 @@ that are controlled from the workflow. c(al,be,b0)
 \item wind - data.frame with columns PSI_uv, al, be, b0. values with PSI_uv nearest to average PSI_uv will be used
 }}
 
-\item{plnrFitType}{type of planar fit, "simple", "date" or "wind". \link{character vector}}
+\item{plnrFitType}{type of planar fit, "simple", "date" or "wind". (character vector)}
 }
 \value{
 Data object with rotated wind vectors names as u/v/w_rot

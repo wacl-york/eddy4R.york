@@ -14,19 +14,27 @@ def.scales(
 )
 }
 \arguments{
-\item{\code{REYN}}{Output list from eddy4R.turb REYNflux function. \link{-}}
+\item{REYN}{Output list from eddy4R.turb REYNflux function.}
 
-\item{\code{WAVE}}{Output list from eddy4R.turb Wavelet analysis. \link{-}}
+\item{lat}{Latitude and of class "numeric".}
 
-\item{\code{VarInp}}{A vector of class "character" containing the name of variables to be performed integral turbulence characteristics test. VarInp = c("veloXaxs","veloZaxs","temp","all"), where "veloXaxs" is along-axis horizontal wind speed, "veloZaxs" is vertical-axis wind speed, "temp" is air temperature, and "all" is all three variables. Defaults to "all".\link{-}
+\item{VarInp}{A vector of class "character" containing the name of variables
+to be performed integral turbulence characteristics test. VarInp =
+c("veloXaxs","veloZaxs","temp","all"), where "veloXaxs" is along-axis horizontal
+wind speed, "veloZaxs" is vertical-axis wind speed, "temp" is air temperature,
+and "all" is all three variables. Defaults to "all".}
 
-Changelog
-Will Drysdale (2019-01-29)
-Removed SiteInfo dependance, added switches as explicit variables
-Natchaya Pingintha-Durden (2019-09-09)
-added determination of qfItc for each flux
-Natchaya Pingintha-Durden (2019-10-24)
-update to use itc from w_hor to represent itc of F_H_en}
+\item{sd}{A vector or data frame containing standard deviation of VarInp and
+of class "numeric". If VarInp = "all", sd shall contain in the follwing orders,
+standard deviation of along-axis horizontal wind speed, standard deviation of
+vertical-axis wind speed, and standard deviation of air temperature.}
+
+\item{varScal}{A vector or data frame containing the scaling variables of VarInp
+and of class "numeric". If VarInp = "all", varScal shall contain in the follwing
+orders, scaling variable of wind speed (friction velocity will be used for both
+"veloXaxs" and "veloZaxs") and scaling variable of air temperature.}
+
+\item{species}{names of scalars to be passed to \code{def.spcs.name}}
 }
 \description{
 Function defintion. Wrapper function for calculating integral scale lengths and turbulence characteristics.
