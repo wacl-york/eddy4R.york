@@ -8,4 +8,6 @@ COPY docker/eddy4R.turb /home/eddy/eddy4R/pack/eddy4R.turb/
 
 RUN Rscript install.r $GITHUB_AUTH
 
+LABEL org.opencontainers.image.source=https://github.com/wacl-york/eddy4R.york
+
 EXPOSE 8787
