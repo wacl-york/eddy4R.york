@@ -18,7 +18,7 @@ The major feature allows for flux workflows to be defined by relatively short co
 
 As eddy4R is provided as a docker image and as such eddy4R.york provides updated image - currently based on the [eddy4R:deve](https://quay.io/repository/battelleecology/eddy4r) image, but this will change to the stable annual releases when available.
 
-> :page_facing_up: <span style="color:#01C400;font-weight:bold"> Note </span> \
+> :page_facing_up: **Note**  \
 > Currently eddy4R.york uses development versions of `eddy4R.turb::wrap.flux()` and `eddy4R.turb::def.stna()` to enable the use of custom scalars. When these features are pulled in upstream it will no longer make direct changes to any of the base image's packages.
 
 ## Installation
@@ -38,5 +38,5 @@ docker run --name eddy4r.york --rm -d -p 8787:8787 -v <extDir>:/home/rstudio/dat
 ```
 Where `<extDir>` is the path to the volume you wish to mount on your machine
 
-> :page_facing_up: <span style="color:#01C400;font-weight:bold"> Note </span> \
+> :page_facing_up: **Note** \
 > The eddy4R.york image sets `DISABLE_AUTH=true` by default, which is different from the `eddy4R` and `rocker` images
