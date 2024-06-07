@@ -29,7 +29,7 @@ read_e4r_input = function(DirInp,
     if(file_type==".csv"){
       for(j in 1:length(agg_f)){#load files relevant to aggregation period
         if (j == 1){
-          flux_agg = utils::read.csv(paste0(DirInp,"/",agg_f[j])) %>%
+          flux_agg = utils::read.csv(file.path(DirInp,agg_f[j])) %>%
             dplyr::mutate(date = lubridate::ymd_hms(date,tz = Tz))
         }else{
           temp = utils::read.csv(paste0(DirInp,"/",agg_f[j])) %>%
