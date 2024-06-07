@@ -84,6 +84,6 @@ def.avg = function(files,
   #return
   list(
     agg_files = agg_files,
-    avg_period = avg_period)
+    avg_period = tibble::tibble(avg_period))
 }
 

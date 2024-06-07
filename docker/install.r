@@ -6,3 +6,5 @@ devtools::install_github("wacl-york/eddy4R.york", auth_token = at, force = T)
 devtools::install("/home/eddy/eddy4R/pack/eddy4R.turb/")
 
 install.packages("progress")
+
+options(digits.secs=3)

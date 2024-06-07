@@ -15,7 +15,7 @@
 #' @param para params list
 #' @param file_count current iteration of aggregation period loop
 #'
-#'
+#' @export
 
 def.valid.input = function(eddy.data,para,file_count){
 

@@ -3,8 +3,6 @@
 #' Handles file reading, progress and error logging. Calls wrap.uoy.ec.towr on valid input files.
 #' Can resume the loop from an agg_files index, supplied to resume
 #'
-#' @param agg_files
-#' @param agg_period
 #' @param para
 #' @param resume
 #' @param thshFile The file directory where the threshold table are being saved. Default as NULL.
@@ -14,24 +12,55 @@
 #'
 #' @export
 
-uoy.towr.ec = function(agg_files,
-                       agg_period,
-                       para,
+begin.towr.ec = function(para,
                        resume = NULL,
                        thshFile = NULL,
                        diagSens = FALSE){
 
-  if(is.null(resume))
+  if(is.null(resume)){
     start = 1
-  else
+  }else{
     start = resume
+  }
 
-  save(para,file = paste0(para$DirOut,"/",para$analysis,"/",para$analysis,"_para.Rdata"))
+  setwd(para$DirWrk)
+  # input directory
+  if(!dir.exists(para$DirInp)){
+    dir.create(para$DirInp)
+  }
+
+  # output directory
+  if(!dir.exists(para$DirOut)){
+    dir.create(para$DirOut,recursive = T)
+  }
+
+  # Fast data dir if required
+  if(para$write_fast_data){
+    if(!dir.exists(para$DirFast)){
+      dir.create(para$DirFast,recursive = T)
+    }
+  }
+
+  saveRDS(para,file = file.path(para$DirOut, paste0(para$analysis,"_para.RDS")))
+
+  #determine flux aggregation
+  det_avg = eddy4R.york::def.avg(files = para$files,
+                                 mask = para$file_mask,
+                                 file_duration = para$file_duration,
+                                 aggr_dur = para$agg_period,
+                                 freq = para$freqIN,
+                                 tz = para$Tz,
+                                 first_file_begin = para$first_file_begin,
+                                 final_file_begin = para$final_file_begin)
+
+  agg_files = det_avg$agg_files
+  avg_period = det_avg$avg_period
 
   for(i in start:length(agg_files)){
     # if there are no files for this aggregationg period, skip
-    if(is.na(agg_files[i]))
+    if(is.na(agg_files[i])){
       next
+    }
     # create progress bar
     pb = progress::progress_bar$new(
       format = " :file/:tfile [:bar] :percent | :praise", total = 12)
@@ -50,43 +79,46 @@ uoy.towr.ec = function(agg_files,
                                        praise = progress_bar$some_praise))
 
     # Read data
-    eddy.data = read.e4r_input(DirInp = para$DirInp,
-                               agg_f = agg_files[[i]],
-                               agg_p = agg_period[i,],
-                               Tz = para$Tz,
-                               freq = para$freqIN,
-                               file_type = para$file_type_in,
-                               PltfEc=para$PltfEc)
+    eddy.data = eddy4R.york::read_e4r_input(DirInp = para$DirInp,
+                                            agg_f = agg_files[[i]],
+                                            agg_p = avg_period[i,],
+                                            Tz = para$Tz,
+                                            freq = para$freqIN,
+                                            file_type = para$file_type_in,
+                                            PltfEc=para$PltfEc)
 
     # Check input file
-    valid = def.valid.input(eddy.data,para,i)
+    valid = eddy4R.york::def.valid.input(eddy.data, para, i)
     error_input = valid$error_list
     error_workflow = list()
     # If the input file has not been flagged to skip
-    if(!err_skip(error_input))
-      error_workflow = wrap.towr(eddy.data = eddy.data,
-                                 para = para,
-                                 file_count = i,
-                                 skip_scalar = valid$skip_scalar,
-                                 verbose = FALSE,
-                                 progress_bar = progress_bar,
-                                 agg_period = agg_period,
-                                 thshFile = thshFile,
-                                 diagSens = diagSens)
+    if(!eddy4R.york::err_skip(error_input)){
+      error_workflow = eddy4R.york::wrap.towr(eddy.data = eddy.data,
+                                              para = para,
+                                              file_count = i,
+                                              skip_scalar = valid$skip_scalar,
+                                              verbose = FALSE,
+                                              progress_bar = progress_bar,
+                                              agg_period = agg_period,
+                                              thshFile = thshFile,
+                                              diagSens = diagSens)
+    }
+
     # collate errors
     errors = c(error_input,error_workflow)
 
     # If there was an error, update the log
     if(length(errors) > 0){
-      errors = error_list_to_df(errors,file = paste0(agg_period$avg_start[i],collapse = "_"))
+      errors = eddy4R.york::error_list_to_df(errors,file = paste0(agg_period$avg_start[i],collapse = "_"))
 
       # save errors
       out_file_name = paste0(para$DirOut, "/", para$analysis, "/", para$analysis,"_", para$run_id, "_error_log", ".csv")
 
-      if(!file.exists(out_file_name))
+      if(!file.exists(out_file_name)){
         utils::write.table(errors, file = out_file_name, na = "NA", row.names = F,sep = ",",col.names = T)
-      else
+      }else{
         utils::write.table(errors, file = out_file_name, na = "NA", row.names = F,append = T,sep = ",",col.names = F)
+      }
     }
 
 

@@ -15,7 +15,13 @@
 #'
 #' @export
 
-read.e4r_input = function(DirInp,agg_f,agg_p,Tz,freq,file_type,PltfEc){
+read_e4r_input = function(DirInp,
+                          agg_f,
+                          agg_p,
+                          Tz,
+                          freq,
+                          file_type,
+                          PltfEc){
 
   #load Tower analysis files, with option to time clip
   if(PltfEc=="towr"){
@@ -25,8 +31,7 @@ read.e4r_input = function(DirInp,agg_f,agg_p,Tz,freq,file_type,PltfEc){
         if (j == 1){
           flux_agg = utils::read.csv(paste0(DirInp,"/",agg_f[j])) %>%
             dplyr::mutate(date = lubridate::ymd_hms(date,tz = Tz))
-        }
-        else{
+        }else{
           temp = utils::read.csv(paste0(DirInp,"/",agg_f[j])) %>%
             dplyr::mutate(date = lubridate::ymd_hms(date,tz = Tz))
           flux_agg = rbind(flux_agg,temp)
