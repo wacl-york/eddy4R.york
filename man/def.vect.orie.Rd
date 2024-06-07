@@ -16,7 +16,7 @@ wind vector column with transformation applied
 }
 \description{
 Apply a transformation to a wind vector based on particular codes: \cr
-e.g +u_met will return the positive u_met column, -u_met will return u_met*-1 \cr
+e.g +veloXaxs will return the positive veloXaxs column, -veloXaxs will return veloXaxs*-1 \cr
 Used in wrapper to apply user defined wind vector corrections \cr
 Function returns the column only so that the wrapper can handle reasssignment to data.frame \cr
 this is to avoid issues surrounding the order in which the function is applied

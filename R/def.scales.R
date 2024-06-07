@@ -23,14 +23,6 @@
 #' "veloXaxs" and "veloZaxs") and scaling variable of air temperature.
 #'
 #' @export
-#'
-#' Changelog
-#'  Will Drysdale (2019-01-29)
-#'    Removed SiteInfo dependance, added switches as explicit variables
-#'  Natchaya Pingintha-Durden (2019-09-09)
-#'    added determination of qfItc for each flux
-#'  Natchaya Pingintha-Durden (2019-10-24)
-#'    update to use itc from w_hor to represent itc of F_H_en
 
 def.scales <- function(REYN,
                        lat,

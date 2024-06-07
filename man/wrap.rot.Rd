@@ -12,7 +12,7 @@ wrap.rot(
 )
 }
 \arguments{
-\item{data}{data.frame containing u_met, v_met and w_met \cr
+\item{data}{data.frame containing veloXaxs, veloYaxs and veloZaxs \cr
 vectors should be defined correspondingly as u/v/w == E/N/U == x/y/z (data.frame)}
 
 \item{MethRot}{method of rotation to be used, one of: \itemize{
@@ -35,7 +35,7 @@ that are controlled from the workflow. c(al,be,b0)
 \item{plnrFitType}{type of planar fit, "simple", "date" or "wind". (character vector)}
 }
 \value{
-Data object with rotated wind vectors names as u/v/w_rot
+Data object with rotated wind vectors names as u/v/veloZaxs
 }
 \description{
 Perform various types of wind vector rotations incl. single, double, planar fit.

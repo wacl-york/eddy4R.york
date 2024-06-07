@@ -24,9 +24,9 @@
 #'                  For CSAT 3, anemometer offset should be positve from north. For other, anemomet offset should be +ve for clockwise correction, \cr
 #'                  negative for anticlockwise
 #' @param anemometer_offset rotation angle for uv plane of wind vectors [degrees]
-#' @param u_met wind vector definition for wrap.anem.cor
-#' @param v_met wind vector definition for wrap.anem.cor
-#' @param w_met wind vector definition for wrap.anem.cor
+#' @param veloXaxs wind vector definition for wrap.anem.cor
+#' @param veloYaxs wind vector definition for wrap.anem.cor
+#' @param veloZaxs wind vector definition for wrap.anem.cor
 #' @param lag_correction Should lag correction be undertaken? T/F
 #' @param determine_lag Should the lag be determined via crosscorrelation? T/F
 #' @param lag_type Calculate lag via def.lag or def.laf.fft. "ccf"/"fft"
@@ -94,7 +94,7 @@ def.para = function(file_duration = 3600,# Input Data information
                     # columns must be nominally present to pass def.valid.input()
                     required_para = c("date","t_utc","d_z_m","d_xy_flow","p_air","d_z_ABL"),
                     # these must have greater than the missing_thresh to pass def.valid.input()
-                    critical_variable = c("u_met","v_met","w_met","T_air","uv_met"),
+                    critical_variable = c("veloXaxs","veloYaxs","veloZaxs","T_air","uv_met"),
                     SND_correct = FALSE,
                     # Eddy Covariance Settings
                     AlgBase = "trnd",
@@ -107,9 +107,9 @@ def.para = function(file_duration = 3600,# Input Data information
                     ## Anemometer
                     anem_type = c("other","CSAT3"),
                     anemometer_offset = NULL,
-                    u_met = "+u_met",
-                    v_met = "+v_met",
-                    w_met = "+w_met",
+                    veloXaxs = "+veloXaxs",
+                    veloYaxs = "+veloYaxs",
+                    veloZaxs = "+veloZaxs",
                     w_boost = F,
 
                     ## Lag

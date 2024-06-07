@@ -13,7 +13,6 @@ wrap.anem.cor(eddy.data, para)
 }
 \description{
 Apply transformations to wind vectors easily. Steps in order: \cr
-Use def.vect.orie to reorient and invert vectors - para$u_met,v_met,w_met \cr
 Use def.rot.mat to rotate around the uv plane - para$anemometer_offset \cr
 Apply W-boost correction to Gill Anemometers - para$w_boost
 }

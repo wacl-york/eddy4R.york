@@ -32,9 +32,6 @@ def.valid.input = function(eddy.data,para,file_count){
   }
 
   # Are all sets of data nominally present?
-  req_names = c("date","t_utc","d_z_m","d_xy_flow","u_met",
-                "v_met","w_met","uv_met","T_air","p_air",
-                "d_z_ABL",para$flux_species_mole)
   req_names = c(para$required_para,
                 para$critical_variable,
                 para$flux_species_mole)

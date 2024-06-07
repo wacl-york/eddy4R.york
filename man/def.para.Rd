@@ -8,13 +8,15 @@ def.para(
   file_duration = 3600,
   file_mask = "NOx_5Hz_yymmdd_HHMM0_170322_000015_cor_temp.nc",
   species,
+  speciesRatioName = NULL,
+  speciesUnit = NULL,
   freqIN = 5,
   freqOUT = 5,
   files = NULL,
   Tz = "GMT",
   file_type_in = ".csv",
   required_para = c("date", "t_utc", "d_z_m", "d_xy_flow", "p_air", "d_z_ABL"),
-  critical_variable = c("u_met", "v_met", "w_met", "T_air", "uv_met"),
+  critical_variable = c("veloXaxs", "veloYaxs", "veloZaxs", "T_air", "uv_met"),
   SND_correct = FALSE,
   AlgBase = "trnd",
   agg_period = 3600,
@@ -24,9 +26,9 @@ def.para(
   tempHead = c("T_sonic", "T_air", "T_v_0")[2:3],
   anem_type = c("other", "CSAT3"),
   anemometer_offset = NULL,
-  u_met = "+u_met",
-  v_met = "+v_met",
-  w_met = "+w_met",
+  veloXaxs = "+veloXaxs",
+  veloYaxs = "+veloYaxs",
+  veloZaxs = "+veloZaxs",
   w_boost = F,
   lag_correction = T,
   determine_lag = T,
@@ -79,7 +81,11 @@ def.para(
 
 \item{file_mask}{mask to pass mask_extract_date for detection of start date}
 
-\item{species}{vector of species names. Match with IntlNatu naming to auto complete species_RMM}
+\item{species}{vector of species names. Match with IntlNatu naming}
+
+\item{speciesRatioName}{created automatically from species. name of gas species following the rtioMoleDry\if{html}{\out{<spc>}} format}
+
+\item{speciesUnit}{defaults to "mol\if{html}{\out{<spc>}} mol-1 Dry" for all species.}
 
 \item{freqIN}{input frequency \link{Hz}}
 
@@ -113,11 +119,11 @@ negative for anticlockwise}
 
 \item{anemometer_offset}{rotation angle for uv plane of wind vectors \link{degrees}}
 
-\item{u_met}{wind vector definition for wrap.anem.cor}
+\item{veloXaxs}{wind vector definition for wrap.anem.cor}
 
-\item{v_met}{wind vector definition for wrap.anem.cor}
+\item{veloYaxs}{wind vector definition for wrap.anem.cor}
 
-\item{w_met}{wind vector definition for wrap.anem.cor}
+\item{veloZaxs}{wind vector definition for wrap.anem.cor}
 
 \item{lag_correction}{Should lag correction be undertaken? T/F}
 

@@ -7,7 +7,7 @@
 def.wind.dir.flow(eddy.data, freq)
 }
 \arguments{
-\item{eddy.data}{data.frame containing u_met and v_met}
+\item{eddy.data}{data.frame containing veloXaxs and veloYaxs}
 
 \item{freq}{time resolution of data in Hz}
 }
