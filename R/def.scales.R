@@ -49,15 +49,15 @@ def.scales <- function(REYN,
   attributes(REYN$data$d_xy_flow)$unit <- "m"
 
   whr_scal <- c("u_hor", "v_hor", "w_hor", "T_air", "T_air_0", "T_v_0")
-  if("FD_mole_H2O" %in% names(REYN$imfl))
-    if(sd(REYN$imfl$FD_mole_H2O)>0)
-      whr_scal <- c(whr_scal,"FD_mole_H2O")
+  if("ratioMoleDryH2o" %in% names(REYN$imfl))
+    if(sd(REYN$imfl$ratioMoleDryH2o)>0)
+      whr_scal <- c(whr_scal,"ratioMoleDryH2o")
   if(!is.null(species))
     whr_scal <- c(whr_scal,def.spcs.name(species,"mole"))
 
   whr_flux=c("u_star2_x", "u_star2_y", "u_star", "F_H_en")
   if("F_LE_en" %in% names(REYN$imfl))
-    if(sd(REYN$imfl$FD_mole_H2O)>0)
+    if(sd(REYN$imfl$ratioMoleDryH2o)>0)
       whr_flux <- c(whr_flux,"F_LE_en")
   if(!is.null(species))
     whr_flux <- c(whr_flux, def.spcs.name(species,"mass"))

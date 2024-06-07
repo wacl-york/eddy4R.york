@@ -44,8 +44,8 @@ wrap.towr <- function(
   lag_out = list()
 
   #add missing H2O
-  if(!"FD_mole_H2O" %in% names(eddy.data))
-    eddy.data$FD_mole_H2O <- 1e-12
+  if(!"ratioMoleDryH2o" %in% names(eddy.data))
+    eddy.data$ratioMoleDryH2o <- 1e-12
 
   #assign eddy.data to be used in qfqm processing (not skip any missing scalar)
   eddyInp <- eddy.data
@@ -230,16 +230,11 @@ wrap.towr <- function(
 
   #--------------------------------------------------------------------------------------------
   # calculate time-domain fluxes (classical EC)
+
   error_catch = tryCatch({
-    REYN = REYNflux_FD_mole_dry(data=eddy.data,
-                                AlgBase=para$AlgBase,
-                                FcorPOT=FALSE,
-                                FcorPOTl=eddy4R.base::IntlNatu$Pres00,
-                                PltfEc=para$PltfEc,
-                                flagCh4 = F,
-                                spcs = para$species,
-                                rmm = para$species_RMM,
-                                tempHead = para$tempHead)
+    REYN = eddy4R.turb::wrap.flux(data = eddy.data,
+                                  AlgBase = para$AlgBase,
+                                  ListGasSclr = para$ListGasSclr)
   },
   error = function(e)
     stringr::str_replace_all(e,",","") %>%
@@ -254,6 +249,7 @@ wrap.towr <- function(
   }
   if(err_skip(error_list))
     return(error_list)
+
   progress_bar$pb$tick(tokens = list(file = file_count,
                                      tfile = progress_bar$total_file,
                                      praise = progress_bar$some_praise))
@@ -268,8 +264,10 @@ wrap.towr <- function(
                      "F_H_en", "F_H_kin_v_0", "F_H_en_v_0", "F_LE_kin", "F_LE_en",
                      paste0("F_", qfPara$species, "_kin"), paste0("F_", qfPara$species, "_mass"),
                      "I", "d_L_v_0", "sigma", "w_star", "t_star", "T_star_SL", "T_star_ML",
-                     "FD_mole_H2O_star_SL", "FD_mole_H2O_star_ML")
+                     "ratioMoleDryH2o_star_SL", "ratioMoleDryH2o_star_ML")
+
     qfOut <- eddy4R.qaqc::wrap.dp01.qfqm.eddy(qfInp = qfInp, MethMeas = "voc", RptExpd = TRUE, dp01 = dp01TmpName, qfSens = NULL)
+
     #adding timestamp
     for (idxDf in names(qfOut)){
       if (idxDf == "qm"){

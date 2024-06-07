@@ -119,11 +119,11 @@ def.valid.input = function(eddy.data,para,file_count){
   }
 
   # TODO probably should move this to the preprocessing
-  if("FD_mole_H2O" %in% names(eddy.data)){
-    missing_h2o = eddy.data$FD_mole_H2O[is.na(eddy.data$FD_mole_H2O)] %>% length()
+  if("ratioMoleDryH2o" %in% names(eddy.data)){
+    missing_h2o = eddy.data$ratioMoleDryH2o[is.na(eddy.data$ratioMoleDryH2o)] %>% length()
 
     if(missing_h2o/nrow(eddy.data) > para$missing_thresh)
-      eddy.data$FD_mole_H2O = 1e-12
+      eddy.data$ratioMoleDryH2o = 1e-12
   }
 
   if(!nrow(eddy.data)>((1-para$missing_thresh) * para$agg_period * para$freqIN)){

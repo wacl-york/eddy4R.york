@@ -7,7 +7,7 @@
 def.para(
   file_duration = 3600,
   file_mask = "NOx_5Hz_yymmdd_HHMM0_170322_000015_cor_temp.nc",
-  species = c("NO", "NO2"),
+  species,
   freqIN = 5,
   freqOUT = 5,
   files = NULL,
@@ -15,8 +15,6 @@ def.para(
   file_type_in = ".csv",
   required_para = c("date", "t_utc", "d_z_m", "d_xy_flow", "p_air", "d_z_ABL"),
   critical_variable = c("u_met", "v_met", "w_met", "T_air", "uv_met"),
-  H2O_col = "FD_mole_H2O",
-  H2O_unit = "molH2o mol-1Dry",
   SND_correct = FALSE,
   AlgBase = "trnd",
   agg_period = 3600,
@@ -42,21 +40,19 @@ def.para(
   MethRot = c("single", "double", "planarFit")[2],
   plnrFitCoef = NULL,
   plnrFitType = c("simple", "time", "wind")[1],
-  resample = F,
   wlp_cor = F,
   plot_acf = F,
   highfreq_cor = T,
   file_id = "NOx_5Hz",
   run_id = "BT_Tower",
-  docker_name = "willdrysdale",
   file_type_out = c("csv"),
   site_name = NULL,
-  analysis = "BT_Tower_Analysis",
-  case = "BT_Tower",
+  analysis,
   write_fast_data = F,
   DirInp,
   DirWrk,
   DirOut = NULL,
+  DirFast = NULL,
   PltfEc = "towr",
   TimeDiffUtcLt = 0,
   ZoneUtm = data.frame(Zone = 30, Estg = 698478, Nthg = 5711690),
@@ -64,10 +60,6 @@ def.para(
   ElevAglSens = 177,
   ElevAglDisp = 0,
   Lat = 51.521381,
-  flux_species_mole = NULL,
-  flux_species_mass = NULL,
-  flux_species_kin = NULL,
-  species_RMM = NULL,
   first_file_begin = NULL,
   final_file_begin = NULL,
   cross_correlation_vars = NULL,
@@ -155,8 +147,6 @@ either numeric vector for plnrFitType = "simple" or data.frame for plnrFitType =
 \item time - data.frame with columns date, al, be, b0. values with date nearest to mn$date are used
 \item time - data.frame with columns PSI_uv, al, be, b0. values with date nearest to mn$PSI_uv are used}}
 
-\item{resample}{Should the data be resampled T/F}
-
 \item{wlp_cor}{Should fast water vapour be used to correct NO and NO2 concentrations.}
 
 \item{plot_acf}{Plot the lag output for each aggregation period for each species}
@@ -167,23 +157,19 @@ either numeric vector for plnrFitType = "simple" or data.frame for plnrFitType =
 
 \item{run_id}{Used in file nameing}
 
-\item{docker_name}{docker username so that file paths can be found/created}
-
 \item{file_type_out}{output file type, currently only supports .csv}
 
 \item{site_name}{Used in file nameing}
 
 \item{analysis}{Used in file nameing}
 
-\item{case}{Used in file nameing}
-
 \item{write_fast_data}{should high frequency intermediates be writen (imfl,data,base outputs from REYN)}
 
-\item{DirInp}{directory of input data}
+\item{DirWrk}{root of the data directory}
 
-\item{DirWrk}{created of docker name}
+\item{DirOut}{by default is created as \code{file.path(DirWrk,"out",site_name, run_id, analysis)}, can be overridden here.}
 
-\item{DirOut}{created based of file naming params}
+\item{DirFast}{directory where to save fast data outputs. Usuallt just within DirOut but can be overridden here.}
 
 \item{PltfEc}{switch for eddy4r functions between tower and aircraft. towr,airc}
 
@@ -199,14 +185,6 @@ either numeric vector for plnrFitType = "simple" or data.frame for plnrFitType =
 
 \item{Lat}{latitude of tower location}
 
-\item{flux_species_mole}{created by def.spcs.name}
-
-\item{flux_species_mass}{created by def.spcs.name}
-
-\item{flux_species_kin}{created by def.spcs.name}
-
-\item{species_RMM}{looked up from IntlNatu, if species are not already defined, supply numeric vector of masses in kg mol-1}
-
 \item{first_file_begin}{used to aid def.avg - should be created internally}
 
 \item{final_file_begin}{used to aid def.avg - should be created internally}
@@ -217,7 +195,7 @@ either numeric vector for plnrFitType = "simple" or data.frame for plnrFitType =
 
 \item{wavelet_ec}{supply argument true or false for conducting wavelet eddy-covariance}
 
-\item{wavelet_av}{supply argument "mean" or "band" for conducting wavelet eddy-covariance avergaing.}
+\item{wavelet_av}{supply argument "mean" or "band" for conducting wavelet eddy-covariance averaging.}
 
 \item{wavelet_win}{supply value for data window to use for wavelet averaging. Tower setup give value in minutes, e.g. 5. Aircraft give distance in meters.}
 
@@ -231,7 +209,9 @@ either numeric vector for plnrFitType = "simple" or data.frame for plnrFitType =
 
 \item{...}{supply arguments that have not been given an explicit definition yet here}
 
-\item{DirSup}{= directory of any support files}
+\item{docker_name}{docker username so that file paths can be found/created}
+
+\item{DirIn}{must be supplied - relative to DirWrk}
 }
 \description{
 Create para list, use arguments to overide defaults

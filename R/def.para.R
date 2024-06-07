@@ -4,7 +4,9 @@
 #'
 #' @param file_duration expected duration of a complete input file [Hz]
 #' @param file_mask mask to pass mask_extract_date for detection of start date
-#' @param species vector of species names. Match with IntlNatu naming to auto complete species_RMM
+#' @param species vector of species names. Match with IntlNatu naming
+#' @param speciesRatioName created automatically from species. name of gas species following the rtioMoleDry<spc> format
+#' @param speciesUnit defaults to "mol<spc> mol-1 Dry" for all species.
 #' @param freqIN input frequency [Hz]
 #' @param freqOUT resample frequency [Hz]
 #' @param files list of file names
@@ -41,7 +43,6 @@
 #'                    \item simple - numeric vector constant of coefficeients, or coefficeients that are controlled from the workflow. c(al,be,b0)
 #'                    \item time - data.frame with columns date, al, be, b0. values with date nearest to mn$date are used
 #'                    \item time - data.frame with columns PSI_uv, al, be, b0. values with date nearest to mn$PSI_uv are used}
-#' @param resample Should the data be resampled T/F
 #' @param wlp_cor Should fast water vapour be used to correct NO and NO2 concentrations.
 #' @param plot_acf Plot the lag output for each aggregation period for each species
 #' @param highfreq_cor Should high frequency corrections be performed
@@ -59,10 +60,6 @@
 #' @param ElevAglSens Tower elevation above ground
 #' @param ElevAglDisp Displacement Height
 #' @param Lat latitude of tower location
-#' @param flux_species_mole created by def.spcs.name
-#' @param flux_species_mass created by def.spcs.name
-#' @param flux_species_kin created by def.spcs.name
-#' @param species_RMM looked up from IntlNatu, if species are not already defined, supply numeric vector of masses in kg mol-1
 #' @param first_file_begin used to aid def.avg - should be created internally
 #' @param final_file_begin used to aid def.avg - should be created internally
 #' @param DirWrk root of the data directory
@@ -86,7 +83,9 @@
 
 def.para = function(file_duration = 3600,# Input Data information
                     file_mask = "NOx_5Hz_yymmdd_HHMM0_170322_000015_cor_temp.nc",
-                    species = c("NO","NO2"),
+                    species,
+                    speciesRatioName = NULL,
+                    speciesUnit = NULL,
                     freqIN = 5,
                     freqOUT = 5,
                     files = NULL,
@@ -96,8 +95,6 @@ def.para = function(file_duration = 3600,# Input Data information
                     required_para = c("date","t_utc","d_z_m","d_xy_flow","p_air","d_z_ABL"),
                     # these must have greater than the missing_thresh to pass def.valid.input()
                     critical_variable = c("u_met","v_met","w_met","T_air","uv_met"),
-                    H2O_col = "FD_mole_H2O",
-                    H2O_unit = "molH2o mol-1Dry",
                     SND_correct = FALSE,
                     # Eddy Covariance Settings
                     AlgBase = "trnd",
@@ -134,7 +131,6 @@ def.para = function(file_duration = 3600,# Input Data information
                     plnrFitType = c("simple","time","wind")[1],
 
                     ## Flow control
-                    resample = F,
                     wlp_cor = F,
                     plot_acf = F,
                     highfreq_cor = T,
@@ -160,10 +156,6 @@ def.para = function(file_duration = 3600,# Input Data information
                     ElevAglDisp = 0,
                     Lat = 51.521381,
                     # Should be auto-generated in many cases
-                    flux_species_mole = NULL,
-                    flux_species_mass = NULL,
-                    flux_species_kin = NULL,
-                    species_RMM = NULL,
                     first_file_begin = NULL,
                     final_file_begin = NULL,
                     cross_correlation_vars = NULL,
@@ -184,6 +176,8 @@ def.para = function(file_duration = 3600,# Input Data information
   # Get all arguments into a list
   para = c(as.list(environment()), list(...))
 
+  para$DirInp = file.path(DirWrk, DirInp)
+
   # The make adjustments as necessary
   if(is.null(DirOut)){
     para$DirOut = file.path(DirWrk,"out",site_name, run_id, analysis)
@@ -193,41 +187,37 @@ def.para = function(file_duration = 3600,# Input Data information
     para$DirFast = file.path(para$DirOut, "fast_data")
   }
 
-
-  if(is.null(species_RMM)){
-    para$species_RMM = lapply(para$species, function(x) eddy4R.base::IntlNatu[[paste("Molm",x,sep="")]]) %>%
-      setNames(para$species)
-  }else{
-    para$species_RMM = species_RMM
-  }
   # Please create these varaibles using the def.spcs.name() function - these are not yet tested in test_para
   # It is likely you dont actully need to change them as long as species is correct!
-  if(is.null(flux_species_mole)){
-    para$flux_species_mole = def.spcs.name(para$species,"mole")
-  }else{
-    para$flux_species_mole = flux_species_mole
+
+  if(is.null(speciesRatioName)){
+    para$speciesRatioName = paste0("ratioMoleDry", species)
   }
 
-  if(is.null(flux_species_mass)){
-    para$flux_species_mass = def.spcs.name(para$species,"mass")
-  }else{
-    para$flux_species_mass = flux_species_mass
+  if(is.null(speciesUnit)){
+    para$speciesUnit = paste0("mol", species, " mol-1Dry")
   }
 
-  if(is.null(flux_species_kin)){
-    para$flux_species_kin = def.spcs.name(para$species,"kin")
-  }else{
-    para$flux_species_kin = flux_species_kin
-  }
+  para$ListGasSclr = purrr::map2(para$species,para$speciesUnit,
+                                 ~{
+                                   list(Conv = "densMoleAirDry",
+                                        Unit = base::data.frame(InpVect = "m s-1",
+                                                                InpSclr = .y,
+                                                                Conv = "mol m-3",
+                                                                Out = "mol m-2 s-1"),
+                                        NameOut = paste0("flux",.x))
+                                 }) %>%
+    stats::setNames(para$speciesRatioName)
+
 
   if(is.null(cross_correlation_vars)){
-    para$cross_correlation_vars = c("T_air", "FD_mole_H2O",para$flux_species_mole)
+    para$cross_correlation_vars = c("T_air", "ratioMoleDryH2o",para$speciesRatioName)
   }else{
     para$cross_correlation_vars = cross_correlation_vars
   }
 
   if(is.null(despike_vars)){
-    para$despike_vars = c("w_met",para$flux_species_mole)
+    para$despike_vars = c("w_met",para$speciesRatioName)
   }else{
     para$despike_vars = despike_vars
   }

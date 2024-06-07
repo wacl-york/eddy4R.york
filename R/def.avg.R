@@ -57,17 +57,17 @@ def.avg = function(files,
                                        file_list$act_file_start <= est_file_range$file_end[i]]
   }
 
-  avg_period = data.frame(avg_start = seq(act_file_start[1],act_file_start[length(act_file_start)]+(aggr_dur-1/freq),aggr_dur))
-  avg_period$avg_end = avg_period$avg_start + aggr_dur - (1/freq)
-  avg_period$avg_mid = avg_period$avg_start + ((avg_period$avg_end - avg_period$avg_start)/2)
-  avg_period$avg_mid = avg_period$avg_mid %>%
+  agg_period = data.frame(avg_start = seq(act_file_start[1],act_file_start[length(act_file_start)]+(aggr_dur-1/freq),aggr_dur))
+  agg_period$avg_end = agg_period$avg_start + aggr_dur - (1/freq)
+  agg_period$avg_mid = agg_period$avg_start + ((agg_period$avg_end - agg_period$avg_start)/2)
+  agg_period$avg_mid = agg_period$avg_mid %>%
     lubridate::round_date("min")
   agg_files = list()
 
   #select files associated with the aggregation period
   #rephrase as lapply?
-  for (i in 1:nrow(avg_period)){
-    file_ref = est_file_range$index[est_file_range$file_end >= avg_period$avg_start[i] & est_file_range$file_start <= avg_period$avg_end[i]]
+  for (i in 1:nrow(agg_period)){
+    file_ref = est_file_range$index[est_file_range$file_end >= agg_period$avg_start[i] & est_file_range$file_start <= agg_period$avg_end[i]]
     temp = c()
 
     for(j in file_ref)
@@ -84,6 +84,6 @@ def.avg = function(files,
   #return
   list(
     agg_files = agg_files,
-    avg_period = tibble::tibble(avg_period))
+    agg_period = tibble::tibble(agg_period))
 }
 

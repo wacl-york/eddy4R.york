@@ -42,7 +42,7 @@ def.lod <- function(ref,vars,spcs,rmm,rho_dry,rho_H2O,Lv,freq,conf=95){
     if(conf==99){lod <- 3*er}
 
     #CHEMICAL FLUX LODs
-    if(!dd=="FD_mole_H2O")
+    if(!dd=="ratioMoleDryH2o")
       if(!dd=="T_air"){
         export[,paste0("F_",dd %>% gsub("FD_mole_","",.),"_kin")] <- rho_dry * lod
         export[,paste0("F_",dd %>% gsub("FD_mole_","",.),"_mass")] <- export[,paste0("F_",dd %>%
@@ -54,7 +54,7 @@ def.lod <- function(ref,vars,spcs,rmm,rho_dry,rho_H2O,Lv,freq,conf=95){
         attr(export[,paste0("F_",dd %>% gsub("FD_mole_","",.),"_mass")],"unit") <- "mg m-2 h-1"}
 
     #SENSIBLE HEAT FLUX LODs
-    if(dd=="FD_mole_H2O"){
+    if(dd=="ratioMoleDryH2o"){
       export$F_LE_kin <- rho_dry * lod
       export$F_LE_en <- Lv * eddy4R.base::IntlNatu$MolmH2o * export$F_LE_kin
 

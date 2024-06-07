@@ -12,7 +12,7 @@
 #'
 #' @export
 
-begin.towr.ec = function(para,
+uoy.towr.ec = function(para,
                        resume = NULL,
                        thshFile = NULL,
                        diagSens = FALSE){
@@ -54,7 +54,7 @@ begin.towr.ec = function(para,
                                  final_file_begin = para$final_file_begin)
 
   agg_files = det_avg$agg_files
-  avg_period = det_avg$avg_period
+  agg_period = det_avg$avg_period
 
   for(i in start:length(agg_files)){
     # if there are no files for this aggregationg period, skip
@@ -81,7 +81,7 @@ begin.towr.ec = function(para,
     # Read data
     eddy.data = eddy4R.york::read_e4r_input(DirInp = para$DirInp,
                                             agg_f = agg_files[[i]],
-                                            agg_p = avg_period[i,],
+                                            agg_p = agg_period[i,],
                                             Tz = para$Tz,
                                             freq = para$freqIN,
                                             file_type = para$file_type_in,
