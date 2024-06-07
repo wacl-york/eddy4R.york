@@ -2,7 +2,7 @@
 #'
 #' Perform various types of wind vector rotations incl. single, double, planar fit.
 #'
-#' @param data data.frame containing u_met, v_met and w_met \cr
+#' @param data data.frame containing veloXaxs, veloYaxs and veloZaxs \cr
 #'             vectors should be defined correspondingly as u/v/w == E/N/U == x/y/z (data.frame)
 #' @param MethRot method of rotation to be used, one of: \itemize{
 #'                \item "single" - rotate into the mean wind
@@ -21,7 +21,7 @@
 #'                    }
 #' @param plnrFitType type of planar fit, "simple", "date" or "wind". (character vector)
 #'
-#' @return Data object with rotated wind vectors names as u/v/w_rot
+#' @return Data object with rotated wind vectors names as u/v/veloZaxs
 #'
 #' @references Code adapted from REYNFlux_P5 (35ceda9) and flow.turb.tow.neon.dp04.r (914a9e9) \cr
 #'  Stefan Metzger / Dave Durden / Natchaya P-Durden / Cove Sturtevant / Ke Xu
@@ -36,8 +36,8 @@ wrap.rot = function(data,
                     plnrFitType = c("simple","time","wind")[1]){
 
   # rotation angle
-  mnPSI_uv = eddy4R.base::def.pol.cart(matrix(c(mean(data$v_met, na.rm = TRUE),
-                                                mean(data$u_met, na.rm = TRUE)),
+  mnPSI_uv = eddy4R.base::def.pol.cart(matrix(c(mean(data$veloYaxs, na.rm = TRUE),
+                                                mean(data$veloXaxs, na.rm = TRUE)),
                                               ncol=2))
 
   if(MethRot %in% c("single","double")){
@@ -54,7 +54,7 @@ wrap.rot = function(data,
     B[3,2] <- 0.
     B[3,3] <- 1.
     BT <- t(B)
-    U <- rbind(data$v_met, data$u_met, data$w_met)
+    U <- rbind(data$veloYaxs, data$veloXaxs, data$veloZaxs)
     Urot <- B %*% U
 
     if(MethRot == "double"){
@@ -75,9 +75,9 @@ wrap.rot = function(data,
       Urot = B2 %*% Urot
     }
 
-    data$u_rot <- Urot[1,]
-    data$v_rot <- -Urot[2,]
-    data$w_rot <- Urot[3,]
+    data$veloXaxs <- Urot[1,]
+    data$veloYaxs <- -Urot[2,]
+    data$veloZaxs <- Urot[3,]
 
   }
 
@@ -92,12 +92,12 @@ wrap.rot = function(data,
       # Determine code adpted from flow.turb.tow.neon.dp04.r - 914a9e9
       # failsafe: test that greater than 2 non-NA data entries (required by lm.fit function) must exists in all of
       # veloXaxs, veloYaxs, veloZaxs, and that length(idx) > 0
-      if(length(intersect(intersect(which(!is.na(data$u_met)),which(!is.na(data$v_met))),which(!is.na(data$soni$w_met)))) > 2) {
+      if(length(intersect(intersect(which(!is.na(data$veloXaxs)),which(!is.na(data$veloYaxs))),which(!is.na(data$veloZaxs)))) > 2) {
 
         # determine planar fit coefficients in units radians and m s-1
-        coefPf <- eddy4R.turb::def.pf.derv.coef(u = data$u_met,
-                                                v = data$v_met,
-                                                w = data$w_met)
+        coefPf <- eddy4R.turb::def.pf.derv.coef(u = data$veloXaxs,
+                                                v = data$veloYaxs,
+                                                w = data$veloZaxs)
 
         plnrFitCoef = c(coefPf$al,coefPf$be,coefPf$b0)
 
@@ -118,14 +118,14 @@ wrap.rot = function(data,
 
       # Apply planar fit
       plnrFitData = eddy4R.turb::def.pf.rot(
-        u_m = data.frame(
-          xaxs = data$u_met,
-          yaxs = data$v_met,
-          zaxs = data$w_met
+        veloWind = data.frame(
+          veloXaxs = data$veloXaxs,
+          veloYaxs = data$veloYaxs,
+          veloZaxs = data$veloZaxs
         ),
-        al = plnrFitCoef[1],
-        be = plnrFitCoef[2],
-        b0 = plnrFitCoef[3]
+        AngEnuYaxs = plnrFitCoef[1],
+        AngEnuXaxs = plnrFitCoef[2],
+        Ofst = plnrFitCoef[3]
       )
     }
 
@@ -144,22 +144,22 @@ wrap.rot = function(data,
 
       # Apply planar fit
       plnrFitData = eddy4R.turb::def.pf.rot(
-        u_m = data.frame(
-          xaxs = data$u_met,
-          yaxs = data$v_met,
-          zaxs = data$w_met
+        veloWind = data.frame(
+          veloXaxs = data$veloXaxs,
+          veloYaxs = data$veloYaxs,
+          veloZaxs = data$veloZaxs
         ),
-        al = plnrFitCoef$al,
-        be = plnrFitCoef$be,
-        b0 = plnrFitCoef$b0
+        AngEnuYaxs = plnrFitCoef$al,
+        AngEnuXaxs = plnrFitCoef$be,
+        Ofst = plnrFitCoef$b0
       )
 
     }
 
     # reassign vectors
-    data$u_rot = plnrFitData$xaxs
-    data$v_rot = plnrFitData$yaxs
-    data$w_rot = plnrFitData$zaxs
+    data$veloXaxs = plnrFitData$xaxs
+    data$veloYaxs = plnrFitData$yaxs
+    data$veloZaxs = plnrFitData$zaxs
   }
 
   # Return
