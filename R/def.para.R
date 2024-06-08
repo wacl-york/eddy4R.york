@@ -83,7 +83,7 @@
 
 def.para = function(file_duration = 3600,# Input Data information
                     file_mask = "NOx_5Hz_yymmdd_HHMM0_170322_000015_cor_temp.nc",
-                    species,
+                    species = NULL,
                     speciesRatioName = NULL,
                     speciesUnit = NULL,
                     freqIN = 5,
@@ -187,24 +187,28 @@ def.para = function(file_duration = 3600,# Input Data information
     para$DirFast = file.path(para$DirOut, "fast_data")
   }
 
-  if(is.null(speciesRatioName)){
-    para$speciesRatioName = paste0("ratioMoleDry", species)
+
+  if(!is.null(species)){
+    if(is.null(speciesRatioName)){
+      para$speciesRatioName = paste0("ratioMoleDry", species)
+    }
+
+    if(is.null(speciesUnit)){
+      para$speciesUnit = paste0("mol", species, " mol-1Dry")
+    }
+
+    para$ListGasSclr = purrr::map2(para$species,para$speciesUnit,
+                                   ~{
+                                     list(Conv = "densMoleAirDry",
+                                          Unit = base::data.frame(InpVect = "m s-1",
+                                                                  InpSclr = .y,
+                                                                  Conv = "mol m-3",
+                                                                  Out = "mol m-2 s-1"),
+                                          NameOut = paste0("flux",.x))
+                                   }) %>%
+      stats::setNames(para$speciesRatioName)
   }
 
-  if(is.null(speciesUnit)){
-    para$speciesUnit = paste0("mol", species, " mol-1Dry")
-  }
-
-  para$ListGasSclr = purrr::map2(para$species,para$speciesUnit,
-                                 ~{
-                                   list(Conv = "densMoleAirDry",
-                                        Unit = base::data.frame(InpVect = "m s-1",
-                                                                InpSclr = .y,
-                                                                Conv = "mol m-3",
-                                                                Out = "mol m-2 s-1"),
-                                        NameOut = paste0("flux",.x))
-                                 }) %>%
-    stats::setNames(para$speciesRatioName)
 
 
   if(is.null(cross_correlation_vars)){
@@ -252,6 +256,8 @@ def.para = function(file_duration = 3600,# Input Data information
       lag_boundary[[i]] = c(-10,0)
     }
   }
+
+  para$call = match.call()
 
   para
 }

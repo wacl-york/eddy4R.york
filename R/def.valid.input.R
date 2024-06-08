@@ -99,7 +99,10 @@ def.valid.input = function(eddy.data,
   }
   #  Continue but missing scalars must be handled in the workflow
 
-  for(var in para$flux_species_mole){
+  for(i in 1:length(para$speciesRatioName)){
+
+    var = para$speciesRatioName[i]
+
     missing_data = eddy.data[,var][is.na(eddy.data[,var])] %>%
       length()
 
@@ -108,12 +111,15 @@ def.valid.input = function(eddy.data,
     if(missing_data/nrow(eddy.data) >= para$missing_thresh){
       error_list = add_err(paste0(" Optional scalar ",var," is missing greater than ",para$missing_thresh*100,"% of data"),
                            error_list,location = "input",condition = "continue")
-      skip_scalar = c(skip_scalar,var)
+      skip_scalar = c(skip_scalar,para$species[i])
+
+      eddy.data = dplyr::select(eddy.data, -tidyselect::all_of(var))
     }
     if(sd_data == 0 | is.na(sd_data)){
       error_list = add_err(paste0("Optional scalar ",var," has a standard deviation of 0, or has no data"),
                            error_list,location = "input",condition = "continue")
-      skip_scalar = c(skip_scalar,var)
+      skip_scalar = c(skip_scalar,para$species[i])
+      eddy.data = dplyr::select(eddy.data, -tidyselect::all_of(var))
     }
   }
 

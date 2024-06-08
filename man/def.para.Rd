@@ -7,7 +7,7 @@
 def.para(
   file_duration = 3600,
   file_mask = "NOx_5Hz_yymmdd_HHMM0_170322_000015_cor_temp.nc",
-  species,
+  species = NULL,
   speciesRatioName = NULL,
   speciesUnit = NULL,
   freqIN = 5,

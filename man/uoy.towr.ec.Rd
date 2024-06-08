@@ -4,9 +4,13 @@
 \alias{uoy.towr.ec}
 \title{UoY Towr Wrapper, Wrapper}
 \usage{
-uoy.towr.ec(para, resume = NULL, thshFile = NULL, diagSens = FALSE)
+uoy.towr.ec(paraMain, resume = NULL, thshFile = NULL, diagSens = FALSE)
 }
 \arguments{
+\item{paraMain}{parameters list made by \code{def.para()}}
+
+\item{resume}{loop iterator to restart at.}
+
 \item{thshFile}{The file directory where the threshold table are being saved. Default as NULL.}
 
 \item{diagSens}{Logical to state if the sensor diqgnostic flags are calculated. Default as FALSE.}
