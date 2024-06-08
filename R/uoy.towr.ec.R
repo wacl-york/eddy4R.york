@@ -61,22 +61,6 @@ uoy.towr.ec = function(para,
     if(is.na(agg_files[i])){
       next
     }
-    # create progress bar
-    pb = progress::progress_bar$new(
-      format = " :file/:tfile [:bar] :percent | :praise", total = 12)
-    # create this files praise
-    some_praise = praise::praise("${EXCLAMATION}! - This flux you are ${adverb_manner} ${creating} is ${ADJECTIVE}")
-    # store bar and variables in a list for passing to wrap.uoy.ec.towr
-    progress_bar = list(pb = pb,
-                        total_file = length(agg_files),
-                        some_praise = praise::praise(
-                          "${EXCLAMATION}! - This flux you are ${adverb_manner} ${creating} is ${ADJECTIVE}"
-                        )
-    )
-    # start progress bar
-    progress_bar$pb$tick(tokens = list(file = i,
-                                       tfile = progress_bar$total_file,
-                                       praise = progress_bar$some_praise))
 
     # Read data
     eddy.data = eddy4R.york::read_input(DirInp = para$DirInp,
@@ -99,7 +83,6 @@ uoy.towr.ec = function(para,
                                               file_count = i,
                                               skip_scalar = valid$skip_scalar,
                                               verbose = FALSE,
-                                              progress_bar = progress_bar,
                                               agg_period = agg_period,
                                               thshFile = thshFile,
                                               diagSens = diagSens)
