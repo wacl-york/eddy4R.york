@@ -83,7 +83,7 @@ uoy.towr.ec = function(paraMain,
     }
 
     # If the input file has not been flagged to skip
-    if(!eddy4R.york::err_skip(error_input)){
+    if(!eddy4R.york::err_skip(valid$error_list)){
       error_workflow = eddy4R.york::wrap.towr(eddy.data = eddy.data,
                                               para = para,
                                               file_count = i,
