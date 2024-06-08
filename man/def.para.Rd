@@ -14,16 +14,16 @@ def.para(
   freqOUT = 5,
   files = NULL,
   Tz = "GMT",
+  dateFormat = "\%Y-\%m-\%d \%H:\%M:\%OS",
   file_type_in = ".csv",
-  required_para = c("date", "t_utc", "d_z_m", "d_xy_flow", "p_air", "d_z_ABL"),
-  critical_variable = c("veloXaxs", "veloYaxs", "veloZaxs", "T_air", "uv_met"),
+  required_para = c("date", "d_z_m", "d_xy_flow", "presAtm", "d_z_ABL"),
+  critical_variable = c("veloXaxs", "veloYaxs", "veloZaxs", "tempAir", "uv_met"),
   SND_correct = FALSE,
   AlgBase = "trnd",
   agg_period = 3600,
   missing_thresh = 0.1,
   missing_method = c("drop", "mean")[1],
   noc_lag = F,
-  tempHead = c("T_sonic", "T_air", "T_v_0")[2:3],
   anem_type = c("other", "CSAT3"),
   anemometer_offset = NULL,
   veloXaxs = "+veloXaxs",
@@ -95,6 +95,8 @@ def.para(
 
 \item{Tz}{time zone Olsen name}
 
+\item{dateFormat}{default \%Y-\%m-\%d \%H:\%M:\%OS"}
+
 \item{file_type_in}{input file type, currently only supports .csv}
 
 \item{required_para}{character vector of columns that must be nominally present to pass def.valid.input()}
@@ -111,13 +113,11 @@ def.para(
 
 \item{noc_lag}{when processing NOx, is NO2 actually NOc and therfore CE applied after lagging. T/F}
 
-\item{tempHead}{names of headers containg temperature data. default c("T_air","T_v_0"). \link{character vector}}
-
 \item{anem_type}{"other" or "CSAT3". In the case of CSAT 3, use the def.met.body() function. Otherwise use def.vect.orie(). \cr
 For CSAT 3, anemometer offset should be positve from north. For other, anemomet offset should be +ve for clockwise correction, \cr
 negative for anticlockwise}
 
-\item{anemometer_offset}{rotation angle for uv plane of wind vectors \link{degrees}}
+\item{anemometer_offset}{rotation angle for uv plane of wind vectors (degrees)}
 
 \item{veloXaxs}{wind vector definition for wrap.anem.cor}
 

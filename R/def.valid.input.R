@@ -17,7 +17,9 @@
 #'
 #' @export
 
-def.valid.input = function(eddy.data,para,file_count){
+def.valid.input = function(eddy.data,
+                           para,
+                           file_count){
 
   error_list = list()
   skip_scalar = c()
@@ -34,13 +36,13 @@ def.valid.input = function(eddy.data,para,file_count){
   # Are all sets of data nominally present?
   req_names = c(para$required_para,
                 para$critical_variable,
-                para$flux_species_mole)
+                para$speciesRatioName)
 
   name_test = !(req_names %in% names(eddy.data))
 
   if(sum(name_test) != 0){
     err_names = req_names[name_test] %>%
-      stats::na.omit %>%
+      stats::na.omit() %>%
       paste0(collapse = ", ")
 
     if(err_names != ""){

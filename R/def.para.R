@@ -11,6 +11,7 @@
 #' @param freqOUT resample frequency [Hz]
 #' @param files list of file names
 #' @param Tz time zone Olsen name
+#' @param dateFormat default %Y-%m-%d %H:%M:%OS"
 #' @param file_type_in input file type, currently only supports .csv
 #' @param required_para character vector of columns that must be nominally present to pass def.valid.input()
 #' @param critical_variable these must have greater than the missing_thresh to pass def.valid.input()
@@ -19,11 +20,10 @@
 #' @param missing_thresh decimal percentage of missing data threshold per file
 #' @param missing_method how should missing data be handeled if it is less than the threshold. "drop","mean"
 #' @param noc_lag when processing NOx, is NO2 actually NOc and therfore CE applied after lagging. T/F
-#' @param tempHead names of headers containg temperature data. default c("T_air","T_v_0"). [character vector]
 #' @param anem_type "other" or "CSAT3". In the case of CSAT 3, use the def.met.body() function. Otherwise use def.vect.orie(). \cr
 #'                  For CSAT 3, anemometer offset should be positve from north. For other, anemomet offset should be +ve for clockwise correction, \cr
 #'                  negative for anticlockwise
-#' @param anemometer_offset rotation angle for uv plane of wind vectors [degrees]
+#' @param anemometer_offset rotation angle for uv plane of wind vectors (degrees)
 #' @param veloXaxs wind vector definition for wrap.anem.cor
 #' @param veloYaxs wind vector definition for wrap.anem.cor
 #' @param veloZaxs wind vector definition for wrap.anem.cor
@@ -90,11 +90,12 @@ def.para = function(file_duration = 3600,# Input Data information
                     freqOUT = 5,
                     files = NULL,
                     Tz = "GMT",
+                    dateFormat = "%Y-%m-%d %H:%M:%OS",
                     file_type_in = ".csv",
                     # columns must be nominally present to pass def.valid.input()
-                    required_para = c("date","t_utc","d_z_m","d_xy_flow","p_air","d_z_ABL"),
+                    required_para = c("date","d_z_m","d_xy_flow","presAtm","d_z_ABL"),
                     # these must have greater than the missing_thresh to pass def.valid.input()
-                    critical_variable = c("veloXaxs","veloYaxs","veloZaxs","T_air","uv_met"),
+                    critical_variable = c("veloXaxs","veloYaxs","veloZaxs","tempAir","uv_met"),
                     SND_correct = FALSE,
                     # Eddy Covariance Settings
                     AlgBase = "trnd",
@@ -102,7 +103,6 @@ def.para = function(file_duration = 3600,# Input Data information
                     missing_thresh = 0.1,
                     missing_method = c("drop","mean")[1],
                     noc_lag = F,
-                    tempHead = c("T_sonic","T_air","T_v_0")[2:3],
 
                     ## Anemometer
                     anem_type = c("other","CSAT3"),
@@ -178,7 +178,7 @@ def.para = function(file_duration = 3600,# Input Data information
 
   para$DirInp = file.path(DirWrk, DirInp)
 
-  # The make adjustments as necessary
+  # Then make adjustments as necessary
   if(is.null(DirOut)){
     para$DirOut = file.path(DirWrk,"out",site_name, run_id, analysis)
   }
@@ -186,9 +186,6 @@ def.para = function(file_duration = 3600,# Input Data information
   if(is.null(DirFast)){
     para$DirFast = file.path(para$DirOut, "fast_data")
   }
-
-  # Please create these varaibles using the def.spcs.name() function - these are not yet tested in test_para
-  # It is likely you dont actully need to change them as long as species is correct!
 
   if(is.null(speciesRatioName)){
     para$speciesRatioName = paste0("ratioMoleDry", species)

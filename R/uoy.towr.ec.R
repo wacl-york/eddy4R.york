@@ -54,7 +54,7 @@ uoy.towr.ec = function(para,
                                  final_file_begin = para$final_file_begin)
 
   agg_files = det_avg$agg_files
-  agg_period = det_avg$avg_period
+  agg_period = det_avg$agg_period
 
   for(i in start:length(agg_files)){
     # if there are no files for this aggregationg period, skip
@@ -79,13 +79,14 @@ uoy.towr.ec = function(para,
                                        praise = progress_bar$some_praise))
 
     # Read data
-    eddy.data = eddy4R.york::read_e4r_input(DirInp = para$DirInp,
-                                            agg_f = agg_files[[i]],
-                                            agg_p = agg_period[i,],
-                                            Tz = para$Tz,
-                                            freq = para$freqIN,
-                                            file_type = para$file_type_in,
-                                            PltfEc=para$PltfEc)
+    eddy.data = eddy4R.york::read_input(DirInp = para$DirInp,
+                                        dateFormat = para$dateFormat,
+                                        agg_f = agg_files[[i]],
+                                        agg_p = agg_period[i,],
+                                        Tz = para$Tz,
+                                        freq = para$freqIN,
+                                        file_type = para$file_type_in,
+                                        PltfEc=para$PltfEc)
 
     # Check input file
     valid = eddy4R.york::def.valid.input(eddy.data, para, i)
