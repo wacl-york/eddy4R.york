@@ -23,35 +23,35 @@ uoy.towr.ec = function(paraMain,
     start = resume
   }
 
-  setwd(para$DirWrk)
+  setwd(paraMain$DirWrk)
   # input directory
-  if(!dir.exists(para$DirInp)){
-    dir.create(para$DirInp)
+  if(!dir.exists(paraMain$DirInp)){
+    dir.create(paraMain$DirInp)
   }
 
   # output directory
-  if(!dir.exists(para$DirOut)){
-    dir.create(para$DirOut,recursive = T)
+  if(!dir.exists(paraMain$DirOut)){
+    dir.create(paraMain$DirOut,recursive = T)
   }
 
   # Fast data dir if required
-  if(para$write_fast_data){
-    if(!dir.exists(para$DirFast)){
-      dir.create(para$DirFast,recursive = T)
+  if(paraMain$write_fast_data){
+    if(!dir.exists(paraMain$DirFast)){
+      dir.create(paraMain$DirFast,recursive = T)
     }
   }
 
-  saveRDS(para,file = file.path(para$DirOut, paste0(para$analysis,"_para.RDS")))
+  saveRDS(paraMain,file = file.path(paraMain$DirOut, paste0(paraMain$analysis,"_para.RDS")))
 
   #determine flux aggregation
-  det_avg = eddy4R.york::def.avg(files = para$files,
-                                 mask = para$file_mask,
-                                 file_duration = para$file_duration,
-                                 aggr_dur = para$agg_period,
-                                 freq = para$freqIN,
-                                 tz = para$Tz,
-                                 first_file_begin = para$first_file_begin,
-                                 final_file_begin = para$final_file_begin)
+  det_avg = eddy4R.york::def.avg(files = paraMain$files,
+                                 mask = paraMain$file_mask,
+                                 file_duration = paraMain$file_duration,
+                                 aggr_dur = paraMain$agg_period,
+                                 freq = paraMain$freqIN,
+                                 tz = paraMain$Tz,
+                                 first_file_begin = paraMain$first_file_begin,
+                                 final_file_begin = paraMain$final_file_begin)
 
   agg_files = det_avg$agg_files
   agg_period = det_avg$agg_period
@@ -87,7 +87,6 @@ uoy.towr.ec = function(paraMain,
       error_workflow = eddy4R.york::wrap.towr(eddy.data = eddy.data,
                                               para = para,
                                               file_count = i,
-                                              skip_scalar = valid$skip_scalar,
                                               verbose = FALSE,
                                               agg_period = agg_period,
                                               thshFile = thshFile,

@@ -218,7 +218,7 @@ def.para = function(file_duration = 3600,# Input Data information
   }
 
   if(is.null(despike_vars)){
-    para$despike_vars = c("w_met",para$speciesRatioName)
+    para$despike_vars = c("veloZaxs",para$speciesRatioName)
   }else{
     para$despike_vars = despike_vars
   }

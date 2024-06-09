@@ -11,7 +11,6 @@
 #' @param eddy.data input data
 #' @param para params list
 #' @param file_count index of the loop in the above function (e.g uoy.towr.ec) for use in the progress bar
-#' @param skip_scalar character vector of any scalars to be skipped for this file only
 #' @param verbose boolean, suppresses some chatty functions
 #' @param progress_bar progress bar object
 #' @param thshFile The file directory where the threshold table are being saved. Default as NULL.
@@ -28,7 +27,6 @@ wrap.towr <- function(
   eddy.data,
   para,
   file_count,
-  skip_scalar,
   verbose = FALSE,
   progress_bar,
   agg_period,
@@ -44,22 +42,22 @@ wrap.towr <- function(
 
   #--------------------------------------------------------------------------------------------
   # Apply Anemometer Corrections
-  eddy.data = wrap.anem.cor(eddy.data,para)
+  eddy.data = eddy4R.york::wrap.anem.cor(eddy.data,para)
 
   #--------------------------------------------------------------------------------------------
   # Despike data before lag correction
   if(para$despike){
-    eddy.data = wrap.uoy.despike(eddy.data = eddy.data,
-                                 despike_vars = para$despike_vars,
-                                 despike_threshold = para$despike_threshold,
-                                 verbose)
+    eddy.data = eddy4R.york::wrap.uoy.despike(eddy.data = eddy.data,
+                                              despike_vars = para$despike_vars,
+                                              despike_threshold = para$despike_threshold,
+                                              verbose)
 
   }
 
   #--------------------------------------------------------------------------------------------
   # Maximize cross correlation
   if(para$lag_correction){
-    lag_out = wrap.uoy.lag(eddy.data,para,file_count)
+    lag_out = eddy4R.york:::wrap.uoy.lag(eddy.data,para,file_count) # TODO switch to ::
     eddy.data = lag_out$eddy.data
     para = lag_out$para
 
