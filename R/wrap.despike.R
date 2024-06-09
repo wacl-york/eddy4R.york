@@ -11,7 +11,7 @@
 #'
 #' @export
 
-wrap.uoy.despike = function(eddy.data,despike_vars,despike_threshold,verbose){
+wrap.despike = function(eddy.data,despike_vars,despike_threshold,verbose){
 
   quiet <- function(x) {
     sink(tempfile())

@@ -4,11 +4,11 @@
 #'
 #' @param eddy.data eddy.data object
 #' @param para parameter list from \code{def.uoy.para}
-#' @param agg_count # to use when implementing drifting lags - to do
+#' @param agg_count to use when implementing drifting lags - to do
 #'
 #' @export
 
-wrap.uoy.lag = function(eddy.data,para,agg_count){
+wrap.lag = function(eddy.data,para,agg_count){
 
   lagged <- purrr::pmap(list(a = para$cross_correlation_vars,
                              b = para$lag_boundary,

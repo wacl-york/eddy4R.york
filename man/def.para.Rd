@@ -18,7 +18,6 @@ def.para(
   file_type_in = ".csv",
   required_para = c("date", "d_z_m", "d_xy_flow", "presAtm", "d_z_ABL"),
   critical_variable = c("veloXaxs", "veloYaxs", "veloZaxs", "tempAir", "uv_met"),
-  SND_correct = FALSE,
   AlgBase = "trnd",
   agg_period = 3600,
   missing_thresh = 0.1,
@@ -32,7 +31,6 @@ def.para(
   w_boost = F,
   lag_correction = T,
   determine_lag = T,
-  lag_type = c("ccf", "fft")[1],
   lagNgtvPstv = c("n", "p", "np")[1],
   absolute_lag = -10,
   restrict_lag_range = F,
@@ -43,7 +41,6 @@ def.para(
   plnrFitCoef = NULL,
   plnrFitType = c("simple", "time", "wind")[1],
   wlp_cor = F,
-  plot_acf = F,
   highfreq_cor = T,
   file_id = "NOx_5Hz",
   run_id = "BT_Tower",
@@ -77,7 +74,7 @@ def.para(
 )
 }
 \arguments{
-\item{file_duration}{expected duration of a complete input file \link{Hz}}
+\item{file_duration}{expected duration of a complete input file (Hz)}
 
 \item{file_mask}{mask to pass mask_extract_date for detection of start date}
 
@@ -87,9 +84,9 @@ def.para(
 
 \item{speciesUnit}{defaults to "mol\if{html}{\out{<spc>}} mol-1 Dry" for all species.}
 
-\item{freqIN}{input frequency \link{Hz}}
+\item{freqIN}{input frequency (Hz)}
 
-\item{freqOUT}{resample frequency \link{Hz}}
+\item{freqOUT}{resample frequency (Hz)}
 
 \item{files}{list of file names}
 
@@ -105,7 +102,7 @@ def.para(
 
 \item{AlgBase}{detrending method for def.base.ec "mean","trend","ord3"}
 
-\item{agg_period}{flux aggregation period \link{s}}
+\item{agg_period}{flux aggregation period (s)}
 
 \item{missing_thresh}{decimal percentage of missing data threshold per file}
 
@@ -125,11 +122,11 @@ negative for anticlockwise}
 
 \item{veloZaxs}{wind vector definition for wrap.anem.cor}
 
+\item{w_boost}{should w boost correction for certain Gill Anemometers be applied? Default false}
+
 \item{lag_correction}{Should lag correction be undertaken? T/F}
 
 \item{determine_lag}{Should the lag be determined via crosscorrelation? T/F}
-
-\item{lag_type}{Calculate lag via def.lag or def.laf.fft. "ccf"/"fft"}
 
 \item{lagNgtvPstv}{what "direction" can lag occur? "n","p","np"}
 
@@ -155,8 +152,6 @@ either numeric vector for plnrFitType = "simple" or data.frame for plnrFitType =
 
 \item{wlp_cor}{Should fast water vapour be used to correct NO and NO2 concentrations.}
 
-\item{plot_acf}{Plot the lag output for each aggregation period for each species}
-
 \item{highfreq_cor}{Should high frequency corrections be performed}
 
 \item{file_id}{Used in file nameing}
@@ -170,6 +165,8 @@ either numeric vector for plnrFitType = "simple" or data.frame for plnrFitType =
 \item{analysis}{Used in file nameing}
 
 \item{write_fast_data}{should high frequency intermediates be writen (imfl,data,base outputs from REYN)}
+
+\item{DirInp}{must be supplied - relative to DirWrk}
 
 \item{DirWrk}{root of the data directory}
 
@@ -214,10 +211,6 @@ either numeric vector for plnrFitType = "simple" or data.frame for plnrFitType =
 \item{footprint}{Footprint modelling.}
 
 \item{...}{supply arguments that have not been given an explicit definition yet here}
-
-\item{docker_name}{docker username so that file paths can be found/created}
-
-\item{DirIn}{must be supplied - relative to DirWrk}
 }
 \description{
 Create para list, use arguments to overide defaults

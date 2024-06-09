@@ -8,7 +8,6 @@ wrap.towr(
   eddy.data,
   para,
   file_count,
-  skip_scalar,
   verbose = FALSE,
   progress_bar,
   agg_period,
@@ -22,8 +21,6 @@ wrap.towr(
 \item{para}{params list}
 
 \item{file_count}{index of the loop in the above function (e.g uoy.towr.ec) for use in the progress bar}
-
-\item{skip_scalar}{character vector of any scalars to be skipped for this file only}
 
 \item{verbose}{boolean, suppresses some chatty functions}
 

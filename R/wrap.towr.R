@@ -47,17 +47,17 @@ wrap.towr <- function(
   #--------------------------------------------------------------------------------------------
   # Despike data before lag correction
   if(para$despike){
-    eddy.data = eddy4R.york::wrap.uoy.despike(eddy.data = eddy.data,
-                                              despike_vars = para$despike_vars,
-                                              despike_threshold = para$despike_threshold,
-                                              verbose)
+    eddy.data = eddy4R.york::wrap.despike(eddy.data = eddy.data,
+                                          despike_vars = para$despike_vars,
+                                          despike_threshold = para$despike_threshold,
+                                          verbose)
 
   }
 
   #--------------------------------------------------------------------------------------------
   # Maximize cross correlation
   if(para$lag_correction){
-    lag_out = eddy4R.york:::wrap.uoy.lag(eddy.data,para,file_count) # TODO switch to ::
+    lag_out = eddy4R.york::wrap.lag(eddy.data,para,file_count)
     eddy.data = lag_out$eddy.data
 
   }

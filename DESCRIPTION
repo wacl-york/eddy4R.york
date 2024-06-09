@@ -23,4 +23,5 @@ Imports:
     stats,
     stringr,
     tibble,
+    tidyselect,
     utils

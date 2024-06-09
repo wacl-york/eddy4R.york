@@ -2,13 +2,13 @@
 #'
 #' Create para list, use arguments to overide defaults
 #'
-#' @param file_duration expected duration of a complete input file [Hz]
+#' @param file_duration expected duration of a complete input file (Hz)
 #' @param file_mask mask to pass mask_extract_date for detection of start date
 #' @param species vector of species names. Match with IntlNatu naming
 #' @param speciesRatioName created automatically from species. name of gas species following the rtioMoleDry<spc> format
 #' @param speciesUnit defaults to "mol<spc> mol-1 Dry" for all species.
-#' @param freqIN input frequency [Hz]
-#' @param freqOUT resample frequency [Hz]
+#' @param freqIN input frequency (Hz)
+#' @param freqOUT resample frequency (Hz)
 #' @param files list of file names
 #' @param Tz time zone Olsen name
 #' @param dateFormat default %Y-%m-%d %H:%M:%OS"
@@ -16,7 +16,7 @@
 #' @param required_para character vector of columns that must be nominally present to pass def.valid.input()
 #' @param critical_variable these must have greater than the missing_thresh to pass def.valid.input()
 #' @param AlgBase detrending method for def.base.ec "mean","trend","ord3"
-#' @param agg_period flux aggregation period [s]
+#' @param agg_period flux aggregation period (s)
 #' @param missing_thresh decimal percentage of missing data threshold per file
 #' @param missing_method how should missing data be handeled if it is less than the threshold. "drop","mean"
 #' @param noc_lag when processing NOx, is NO2 actually NOc and therfore CE applied after lagging. T/F
@@ -27,6 +27,7 @@
 #' @param veloXaxs wind vector definition for wrap.anem.cor
 #' @param veloYaxs wind vector definition for wrap.anem.cor
 #' @param veloZaxs wind vector definition for wrap.anem.cor
+#' @param w_boost should w boost correction for certain Gill Anemometers be applied? Default false
 #' @param lag_correction Should lag correction be undertaken? T/F
 #' @param determine_lag Should the lag be determined via crosscorrelation? T/F
 #' @param lagNgtvPstv what "direction" can lag occur? "n","p","np"
@@ -46,7 +47,6 @@
 #' @param highfreq_cor Should high frequency corrections be performed
 #' @param file_id Used in file nameing
 #' @param run_id Used in file nameing
-#' @param docker_name docker username so that file paths can be found/created
 #' @param file_type_out output file type, currently only supports .csv
 #' @param site_name Used in file nameing
 #' @param analysis Used in file nameing
@@ -61,7 +61,7 @@
 #' @param first_file_begin used to aid def.avg - should be created internally
 #' @param final_file_begin used to aid def.avg - should be created internally
 #' @param DirWrk root of the data directory
-#' @param DirIn must be supplied - relative to DirWrk
+#' @param DirInp must be supplied - relative to DirWrk
 #' @param DirOut by default is created as \code{file.path(DirWrk,"out",site_name, run_id, analysis)}, can be overridden here.
 #' @param DirFast directory where to save fast data outputs. Usuallt just within DirOut but can be overridden here.
 #' @param cross_correlation_vars created from species plus temperature and water vapour
@@ -94,7 +94,6 @@ def.para = function(file_duration = 3600,# Input Data information
                     required_para = c("date","d_z_m","d_xy_flow","presAtm","d_z_ABL"),
                     # these must have greater than the missing_thresh to pass def.valid.input()
                     critical_variable = c("veloXaxs","veloYaxs","veloZaxs","tempAir","uv_met"),
-                    SND_correct = FALSE,
                     # Eddy Covariance Settings
                     AlgBase = "trnd",
                     agg_period = 3600,

@@ -16,8 +16,6 @@
 
 #' @keywords VOC, qfqm
 
-#' @examples
-
 #' @seealso Currently none
 
 #' @export
