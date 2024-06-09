@@ -43,7 +43,6 @@
 #'                    \item time - data.frame with columns date, al, be, b0. values with date nearest to mn$date are used
 #'                    \item time - data.frame with columns PSI_uv, al, be, b0. values with date nearest to mn$PSI_uv are used}
 #' @param wlp_cor Should fast water vapour be used to correct NO and NO2 concentrations.
-#' @param plot_acf Plot the lag output for each aggregation period for each species
 #' @param highfreq_cor Should high frequency corrections be performed
 #' @param file_id Used in file nameing
 #' @param run_id Used in file nameing
@@ -130,7 +129,6 @@ def.para = function(file_duration = 3600,# Input Data information
 
                     ## Flow control
                     wlp_cor = F,
-                    plot_acf = F,
                     highfreq_cor = T,
 
                     # File Management/Housekeeping

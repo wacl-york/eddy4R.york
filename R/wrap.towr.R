@@ -57,9 +57,8 @@ wrap.towr <- function(
   #--------------------------------------------------------------------------------------------
   # Maximize cross correlation
   if(para$lag_correction){
-    lag_out = eddy4R.york::wrap.uoy.lag(eddy.data,para,file_count) # TODO switch to ::
+    lag_out = eddy4R.york:::wrap.uoy.lag(eddy.data,para,file_count) # TODO switch to ::
     eddy.data = lag_out$eddy.data
-    para = lag_out$para
 
   }
 
@@ -151,7 +150,7 @@ wrap.towr <- function(
 
   # write classical
   write.REYN(REYN = REYN,
-             lag_time = lag_out$lag_time,
+             lag_time = lag_out$lagTimes,
              ACF = lag_out$ACF,
              para = para,
              file_name = fn)

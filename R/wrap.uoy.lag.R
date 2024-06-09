@@ -10,61 +10,54 @@
 
 wrap.uoy.lag = function(eddy.data,para,agg_count){
 
-  dum_run <- 0
-  for(var in  para$cross_correlation_vars) {
-    dum_run <- dum_run + 1
-    if(para$determine_lag) {
-        lagged <- eddy4R.base::def.lag(refe=eddy.data$veloXaxs,
-                                       meas=eddy.data[,var],
-                                       dataRefe=eddy.data,
-                                       lagMax=40*para$freqIN,
-                                       lagCnst=TRUE,
-                                       lagNgtvPstv=para$lagNgtvPstv,
-                                       lagAll=TRUE,
-                                       freq=para$freqIN,
-                                       hpf=TRUE,
-                                       plot = para$plot_acf,
-                                       DirPlot = paste(para$DirOut,"/",para$analysis,sep=""))
+  lagged <- purrr::pmap(list(a = para$cross_correlation_vars,
+                             b = para$lag_boundary,
+                             c = para$absolute_lag),
+                        function(a,b,c){
+                          lagged = eddy4R.base::def.lag(refe=eddy.data$veloXaxs,
+                                                        meas=eddy.data[,a],
+                                                        dataRefe=eddy.data,
+                                                        lagMax=40*para$freqIN,
+                                                        lagCnst=TRUE,
+                                                        lagNgtvPstv=para$lagNgtvPstv,
+                                                        lagAll=TRUE,
+                                                        freq=para$freqIN,
+                                                        hpf=TRUE)
 
-        if(para$restrict_lag_range){
-          if(lagged$lag/para$freqIN < min(para$lag_boundary[[dum_run]]) | lagged$lag/para$freqIN > max(para$lag_boundary[[dum_run]])){
-            lagged$lag <- as.numeric(para$absolute_lag[dum_run])*para$freqIN}
-        }
+                          if(para$restrict_lag_range){
+                            if(lagged$lag/para$freqIN < min(b) | lagged$lag/para$freqIN > max(b)){
+                              lagged$lag <- as.numeric(c)*para$freqIN
+                            }
+                          }
 
-    } else {
-      lagged <- list()
-      lagged$lag <- para$absolute_lag[dum_run] * para$freqIN
-      lagged$corrCros <- NA # set corrCros to NA as def.lag has not been used. prevent error when writing lag times
-    }
+                          list(lag = lagged$lag,
+                               corrCross =lagged$corrCros,
+                               corr = lagged$corr)
 
-    # peform lag operation
-    if(!is.na(lagged$lag)){
-      eddy.data[[var]] <- DataCombine::shift(VarVect = eddy.data[[var]],shiftBy = -lagged$lag, reminder = FALSE)
-    }
+                        })
 
-    #create outputs
-    if(dum_run == 1) {
-      dum_lag <- lagged$lag / para$freqIN
-      dum_corrCros <- lagged$corrCros
-      if (para$determine_lag) {
-        if(para$lag_type == "ccf" & class(lagged$corr) == "acf"){
-          ACF = data.frame(date = eddy.data$date[1],lag = lagged$corr$lag,acf = lagged$corr$acf)
-        }
+  lagTimes = tibble::tibble(name = para$cross_correlation_vars,
+                            lagTime = purrr::map_dbl(lagged, purrr::pluck("lag")),
+                            corr = purrr::map_dbl(lagged, purrr::pluck("corrCross")))
 
-      }
-    } else {
-      dum_lag <- c(dum_lag, lagged$lag / para$freqIN)
-      dum_corrCros <- c(dum_corrCros, lagged$corrCros)
-      if(para$determine_lag) {
-        if(para$lag_type == "ccf" & class(lagged$corr) == "acf"){
-          ACF = cbind(ACF,lagged$corr$acf)
-        }
-      }
+  ACF = purrr::map2_df(lagged,
+                       para$cross_correlation_vars,
+                       ~{
+                         dat = purrr::pluck(.x, "corr")
+
+                         tibble::tibble(date = eddy.data$date[1],
+                                        lag = dat$lag,
+                                        acf = dat$acf,
+                                        name = .y)
+                       }
+  )
+
+  # peform lag operation
+  for(i in 1:nrow(lagTimes)){
+    if(!is.na(lagTimes$lagTime[i])){
+      eddy.data[[lagTimes$name[i]]] <- DataCombine::shift(VarVect = eddy.data[[lagTimes$name[i]]],shiftBy = -lagTimes$lagTime[i], reminder = FALSE)
     }
   }
-
-  lag_time <- data.frame(dum_corrCros,dum_lag) %>%
-    cbind(para$cross_correlation_vars)
 
   #handle lagging no and noc channels of nox data separatly before combining into NO and NO2
   if(para$noc_lag & sum(c("ratioMoleDryNO","ratioMoleDryNO2") %in% para$speciesRatioName) == 2){
@@ -72,16 +65,9 @@ wrap.uoy.lag = function(eddy.data,para,agg_count){
 
   }
 
-  if(para$determine_lag & class(lagged$corr) == "acf"){
-    names(ACF) = c("date","lag",para$cross_correlation_vars)
-  } else {
-    ACF = NULL
-  }
-
   ret = list(eddy.data = eddy.data,
-             lag_time = lag_time,
-             ACF = ACF,
-             para = para)
+             lagTimes = lagTimes,
+             ACF = ACF)
 
   #return
   ret
