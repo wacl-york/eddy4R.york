@@ -27,10 +27,6 @@ wrap.uoy.lag = function(eddy.data,para,agg_count){
                                        plot = para$plot_acf,
                                        DirPlot = paste(para$DirOut,"/",para$analysis,sep=""))
       }
-      if(para$lag_type == "fft"){
-        lag_data = stats::na.omit(eddy.data[,c("w_met",var)])
-        lagged = def.lag.fft(lag_data[,"w_met"],lag_data[,var],trim = 40*para$freqIN,lagNgtvPstv = para$lagNgtvPstv)
-      }
 
       if(para$restrict_lag_range){
         if(class(para$lag_boundary) == "numeric"){# lag_boundary only contains one pair of values
@@ -61,9 +57,7 @@ wrap.uoy.lag = function(eddy.data,para,agg_count){
         if(para$lag_type == "ccf" & class(lagged$corr) == "acf"){
           ACF = data.frame(date = eddy.data$date[1],lag = lagged$corr$lag,acf = lagged$corr$acf)
         }
-        if(para$lag_type == "fft"){
-          ACF = data.frame(date = eddy.data$date[1],lagged$corr)
-        }
+
       }
     } else {
       dum_lag <- c(dum_lag, lagged$lag / para$freqIN)
@@ -71,9 +65,6 @@ wrap.uoy.lag = function(eddy.data,para,agg_count){
       if(para$determine_lag) {
         if(para$lag_type == "ccf" & class(lagged$corr) == "acf"){
           ACF = cbind(ACF,lagged$corr$acf)
-        }
-        if(para$lag_type == "fft"){
-          ACF = dplyr::left_join(ACF,lagged$corr,"index")
         }
       }
     }

@@ -29,7 +29,6 @@
 #' @param veloZaxs wind vector definition for wrap.anem.cor
 #' @param lag_correction Should lag correction be undertaken? T/F
 #' @param determine_lag Should the lag be determined via crosscorrelation? T/F
-#' @param lag_type Calculate lag via def.lag or def.laf.fft. "ccf"/"fft"
 #' @param lagNgtvPstv what "direction" can lag occur? "n","p","np"
 #' @param absolute_lag numeric value or vector to apply to lag if ccf falls outside of range or is not used
 #' @param restrict_lag_range Should a window be applied to the ccf lag?
@@ -115,7 +114,6 @@ def.para = function(file_duration = 3600,# Input Data information
                     ## Lag
                     lag_correction = T,
                     determine_lag = T,
-                    lag_type = c("ccf","fft")[1],
                     lagNgtvPstv = c("n","p","np")[1],
                     absolute_lag = -10,
                     restrict_lag_range = F,
