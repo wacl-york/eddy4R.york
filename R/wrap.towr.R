@@ -57,7 +57,7 @@ wrap.towr <- function(
   #--------------------------------------------------------------------------------------------
   # Maximize cross correlation
   if(para$lag_correction){
-    lag_out = eddy4R.york:::wrap.uoy.lag(eddy.data,para,file_count) # TODO switch to ::
+    lag_out = eddy4R.york::wrap.uoy.lag(eddy.data,para,file_count) # TODO switch to ::
     eddy.data = lag_out$eddy.data
     para = lag_out$para
 

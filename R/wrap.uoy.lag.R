@@ -14,8 +14,7 @@ wrap.uoy.lag = function(eddy.data,para,agg_count){
   for(var in  para$cross_correlation_vars) {
     dum_run <- dum_run + 1
     if(para$determine_lag) {
-      if(para$lag_type == "ccf"){
-        lagged <- eddy4R.base::def.lag(refe=eddy.data$w_met,
+        lagged <- eddy4R.base::def.lag(refe=eddy.data$veloXaxs,
                                        meas=eddy.data[,var],
                                        dataRefe=eddy.data,
                                        lagMax=40*para$freqIN,
@@ -26,17 +25,11 @@ wrap.uoy.lag = function(eddy.data,para,agg_count){
                                        hpf=TRUE,
                                        plot = para$plot_acf,
                                        DirPlot = paste(para$DirOut,"/",para$analysis,sep=""))
-      }
 
-      if(para$restrict_lag_range){
-        if(class(para$lag_boundary) == "numeric"){# lag_boundary only contains one pair of values
-          if(lagged$lag/para$freqIN < min(para$lag_boundary) | lagged$lag/para$freqIN > max(para$lag_boundary))
-            lagged$lag <- as.numeric(para$absolute_lag[dum_run])*para$freqIN
-        }else{# if longer, use the flux aggregation period counter - dum_run - to select the value
-          if(lagged$lag/para$freqIN < min(para$lag_boundary[[dum_run]]) | lagged$lag/para$freqIN > max(para$lag_boundary[[dum_run]]))
-            lagged$lag <- as.numeric(para$absolute_lag[dum_run])*para$freqIN
+        if(para$restrict_lag_range){
+          if(lagged$lag/para$freqIN < min(para$lag_boundary[[dum_run]]) | lagged$lag/para$freqIN > max(para$lag_boundary[[dum_run]])){
+            lagged$lag <- as.numeric(para$absolute_lag[dum_run])*para$freqIN}
         }
-      }
 
     } else {
       lagged <- list()
@@ -44,10 +37,10 @@ wrap.uoy.lag = function(eddy.data,para,agg_count){
       lagged$corrCros <- NA # set corrCros to NA as def.lag has not been used. prevent error when writing lag times
     }
 
-
     # peform lag operation
-    if(!is.na(lagged$lag))
+    if(!is.na(lagged$lag)){
       eddy.data[[var]] <- DataCombine::shift(VarVect = eddy.data[[var]],shiftBy = -lagged$lag, reminder = FALSE)
+    }
 
     #create outputs
     if(dum_run == 1) {
@@ -74,31 +67,9 @@ wrap.uoy.lag = function(eddy.data,para,agg_count){
     cbind(para$cross_correlation_vars)
 
   #handle lagging no and noc channels of nox data separatly before combining into NO and NO2
-  if(para$noc_lag & sum(c("FD_mole_NO","FD_mole_NO2") %in% para$flux_species_mole) == 2){
-    eddy.data$FD_mole_NO2 = (eddy.data$FD_mole_NO2 - eddy.data$FD_mole_NO)/eddy.data$ce
-    eddy.data$ce = NULL
+  if(para$noc_lag & sum(c("ratioMoleDryNO","ratioMoleDryNO2") %in% para$speciesRatioName) == 2){
+    eddy.data$ratioMoleDryNO2 = (eddy.data$ratioMoleDryNO2 - eddy.data$ratioMoleDryNO)/eddy.data$ce
 
-    # Change behaviour of rowSums from
-    # n + NA = NA
-    # to
-    # n + NA = n
-    myrowSums = function(df,missing = -99999,...){
-      df$new = Mod(missing)*-1 # guarentee no data flag is negative
-      df$new = rowSums(df,...)
-      df$new[df$new == missing] = NA
-      # Return
-      df$new+Mod(missing)
-    }
-
-    # Create NOXASNO2 - this is not valid for flux, but used for stationarity statistics that apply to the NOx concentrations
-    eddy.data$FD_mole_NOXASNO2 = myrowSums(eddy.data[,c("FD_mole_NO","FD_mole_NO2")],na.rm = T)
-
-    para$species = c(para$species,"NOXASNO2")
-    para$flux_species_mole = def.spcs.name(para$species,"mole")
-    para$flux_species_mass = def.spcs.name(para$species,"mass")
-    para$flux_species_kin = def.spcs.name(para$species,"kin")
-    para$species_RMM[[(length(para$species_RMM)+1)]] = eddy4R.base::IntlNatu$MolmNO2
-    names(para$species_RMM)[length(para$species_RMM)] = "NOXASNO2"
   }
 
   if(para$determine_lag & class(lagged$corr) == "acf"){

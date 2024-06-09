@@ -210,7 +210,7 @@ def.para = function(file_duration = 3600,# Input Data information
 
 
   if(is.null(cross_correlation_vars)){
-    para$cross_correlation_vars = c("T_air", "ratioMoleDryH2o",para$speciesRatioName)
+    para$cross_correlation_vars = c("tempAir", "ratioMoleDryH2o",para$speciesRatioName)
   }else{
     para$cross_correlation_vars = cross_correlation_vars
   }
@@ -248,10 +248,17 @@ def.para = function(file_duration = 3600,# Input Data information
       stop("Absolute lag must be of length one or equal to length of cross correlation vars")
   }
 
-  if(restrict_lag_range & is.null(lag_boundary)){
-    lag_boundary = list()
-    for(i in 1:length(para$cross_correlation_vars)){
-      lag_boundary[[i]] = c(-10,0)
+  if(restrict_lag_range){
+    if(is.null(lag_boundary)){
+      para$lag_boundary = rep(list(-10,0),length(para$cross_correlation_vars))
+    }
+
+    if(!"list" %in% class(lag_boundary)){
+      stop("lag_boundary is not of class list")
+    }else{
+      if(length(lag_boundary) != length(para$cross_correlation_vars)){
+        stop("lag boundary must be a list with a length the same as cross_correlation_vars")
+      }
     }
   }
 
