@@ -64,7 +64,7 @@ wrap.towr <- function(
 
   #--------------------------------------------------------------------------------------------
   # Handle missing values
-  eddy.data = def.miss.hndl(eddy.data,para)
+  eddy.data = eddy4R.york::def.miss.hndl(eddy.data,para)
 
   #--------------------------------------------------------------------------------------------
   # Rotation of wind vectors
@@ -128,7 +128,7 @@ wrap.towr <- function(
                         rho_dry=REYN$mn$rho_dry,
                         rho_H2O=REYN$mn$rho_H2O,
                         Lv=REYN$mn$Lv,
-                        freq=para$freqOUT,
+                        freq=para$freq,
                         conf=95)
 
   REYN$lod$date <- REYN$mn$date

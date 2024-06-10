@@ -7,8 +7,7 @@
 #' @param species vector of species names. Match with IntlNatu naming
 #' @param speciesRatioName created automatically from species. name of gas species following the rtioMoleDry<spc> format
 #' @param speciesUnit defaults to "mol<spc> mol-1 Dry" for all species.
-#' @param freqIN input frequency (Hz)
-#' @param freqOUT resample frequency (Hz)
+#' @param freq data aquisition frequency of input data
 #' @param files list of file names
 #' @param Tz time zone Olsen name
 #' @param dateFormat default %Y-%m-%d %H:%M:%OS"
@@ -84,8 +83,7 @@ def.para = function(file_duration = 3600,# Input Data information
                     species = NULL,
                     speciesRatioName = NULL,
                     speciesUnit = NULL,
-                    freqIN = 5,
-                    freqOUT = 5,
+                    freq = 5,
                     files = NULL,
                     Tz = "GMT",
                     dateFormat = "%Y-%m-%d %H:%M:%OS",

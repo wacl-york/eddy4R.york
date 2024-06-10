@@ -48,7 +48,7 @@ uoy.towr.ec = function(paraMain,
                                  mask = paraMain$file_mask,
                                  file_duration = paraMain$file_duration,
                                  aggr_dur = paraMain$agg_period,
-                                 freq = paraMain$freqIN,
+                                 freq = paraMain$freq,
                                  tz = paraMain$Tz,
                                  first_file_begin = paraMain$first_file_begin,
                                  final_file_begin = paraMain$final_file_begin)
@@ -69,7 +69,7 @@ uoy.towr.ec = function(paraMain,
                                         agg_f = agg_files[[i]],
                                         agg_p = agg_period[i,],
                                         Tz = paraMain$Tz,
-                                        freq = paraMain$freqIN,
+                                        freq = paraMain$freq,
                                         file_type = paraMain$file_type_in,
                                         PltfEc=paraMain$PltfEc)
 

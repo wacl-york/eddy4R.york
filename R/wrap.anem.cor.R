@@ -34,7 +34,7 @@ wrap.anem.cor = function(eddy.data,para){
 
 
   # re calculate uv_met and d_xy_flow
-  eddy.data = def.wind.dir.flow(eddy.data,para$freqIN)
+  eddy.data = def.wind.dir.flow(eddy.data,para$freq)
   # Return
   eddy.data
 }

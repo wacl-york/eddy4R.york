@@ -10,8 +10,7 @@ def.para(
   species = NULL,
   speciesRatioName = NULL,
   speciesUnit = NULL,
-  freqIN = 5,
-  freqOUT = 5,
+  freq = 5,
   files = NULL,
   Tz = "GMT",
   dateFormat = "\%Y-\%m-\%d \%H:\%M:\%OS",
@@ -84,9 +83,7 @@ def.para(
 
 \item{speciesUnit}{defaults to "mol\if{html}{\out{<spc>}} mol-1 Dry" for all species.}
 
-\item{freqIN}{input frequency (Hz)}
-
-\item{freqOUT}{resample frequency (Hz)}
+\item{freq}{data aquisition frequency of input data}
 
 \item{files}{list of file names}
 

@@ -131,7 +131,7 @@ def.valid.input = function(eddy.data,
       eddy.data$ratioMoleDryH2o = 1e-12
   }
 
-  if(!nrow(eddy.data)>((1-para$missing_thresh) * para$agg_period * para$freqIN)){
+  if(!nrow(eddy.data)>((1-para$missing_thresh) * para$agg_period * para$freq)){
     error_list = add_err(paste0("Not enough data in file, < 90%"),
                          error_list,location = "input")}
 

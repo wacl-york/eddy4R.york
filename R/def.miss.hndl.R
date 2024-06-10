@@ -20,7 +20,7 @@ def.miss.hndl = function(eddy.data,para){
     row.has.na <- apply(eddy.data, 1, function(x){any(is.na(x))})
     eddy.data <- eddy.data[!row.has.na,]
 
-    if(1-(nrow(eddy.data)/(para$agg_period*para$freqOUT)) > para$missing_thresh)
+    if(1-(nrow(eddy.data)/(para$agg_period*para$freq)) > para$missing_thresh)
       stop("using missing_method drop has caused avaliable data to fall belowing missing_thresh")
     return(eddy.data)
   }

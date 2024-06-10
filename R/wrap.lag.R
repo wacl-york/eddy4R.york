@@ -17,16 +17,16 @@ wrap.lag = function(eddy.data,para,agg_count){
                           lagged = eddy4R.base::def.lag(refe=eddy.data$veloXaxs,
                                                         meas=eddy.data[,a],
                                                         dataRefe=eddy.data,
-                                                        lagMax=40*para$freqIN,
+                                                        lagMax=40*para$freq,
                                                         lagCnst=TRUE,
                                                         lagNgtvPstv=para$lagNgtvPstv,
                                                         lagAll=TRUE,
-                                                        freq=para$freqIN,
+                                                        freq=para$freq,
                                                         hpf=TRUE)
 
                           if(para$restrict_lag_range){
-                            if(lagged$lag/para$freqIN < min(b) | lagged$lag/para$freqIN > max(b)){
-                              lagged$lag <- as.numeric(c)*para$freqIN
+                            if(lagged$lag/para$freq < min(b) | lagged$lag/para$freq > max(b)){
+                              lagged$lag <- as.numeric(c)*para$freq
                             }
                           }
 
