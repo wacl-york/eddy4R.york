@@ -31,15 +31,17 @@ def.avg = function(files,
   files = files[nchar(files) == nchar(mask)] %>% as.array
 
   #get file start times from names
-  act_file_start = base::apply(files,1,function(x) mask_extract_date(x,mask,tz = tz)) %>% as.POSIXct(tz = tz,origin = "1970-01-01")
+  act_file_start = base::apply(files,1,function(x) eddy4R.york::mask_extract_date(x,mask,tz = tz)) %>% as.POSIXct(tz = tz,origin = "1970-01-01")
 
   #user can input a first_file_begin time if the first file starts at an unusual interval e.g. most files start on an hour but this
   #particular file starts at 20 past the hour
-  if(is.null(first_file_begin))
+  if(is.null(first_file_begin)){
     first_file_begin = act_file_start[1]
+  }
 
-  if(is.null(final_file_begin))
+  if(is.null(final_file_begin)){
     final_file_begin = act_file_start[length(act_file_start)]
+  }
 
   #create a list of 'theoretical' file ranges i.e. if all files were complete
   #Files can be assigned to this list which in turn can be associated with an agg period (avoids problems where files aren't complete/have
