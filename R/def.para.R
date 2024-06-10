@@ -270,7 +270,7 @@ def.para = function(file_duration = 3600,# Input Data information
 
 
   # What should have stationarity tests applied?
-  para$stnaVar = c("u_star2_x", "u_star2_y", "u_star", "fluxTemp","fluxH2oEngy",para$speciesRatioName)
+  para$stnaVar = c("veloFricXaxsSq", "veloFricYaxsSq", "veloFric", "fluxTemp", "fluxH2oEngy", para$speciesRatioName)
 
   para$call = match.call()
 

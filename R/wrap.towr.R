@@ -86,7 +86,7 @@ wrap.towr <- function(
 
   #--------------------------------------------------------------------------------------------
   # stationarity testing
-  REYN$stat = eddy4R.turb::def.stna(data=eddy.data,
+  REYN$stat = eddy4R.turb::def.stna(data=REYN$data,
                                     MethStna=c(1, 2, 3)[3],
                                     NumSubSamp=para$agg_period/300,
                                     corTempPot=FALSE,
@@ -94,10 +94,7 @@ wrap.towr <- function(
                                     presTempPot=eddy4R.base::IntlNatu$Pres00,
                                     PltfEc=para$PltfEc,
                                     vrbs = F,
-                                    flagCh4 = F, # Pass these to ... for REYNflux_FD_mole_dry
-                                    spcs = para$species,
-                                    rmm = para$species_RMM,
-                                    tempHead = para$tempHead)
+                                    ListGasSclr = para$ListGasSclr)
 
 
   #--------------------------------------------------------------------------------------------
