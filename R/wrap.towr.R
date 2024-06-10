@@ -10,7 +10,6 @@
 #'
 #' @param eddy.data input data
 #' @param para params list
-#' @param file_count index of the loop in the above function (e.g uoy.towr.ec) for use in the progress bar
 #' @param verbose boolean, suppresses some chatty functions
 #' @param progress_bar progress bar object
 #' @param thshFile The file directory where the threshold table are being saved. Default as NULL.
@@ -26,7 +25,6 @@
 wrap.towr <- function(
   eddy.data,
   para,
-  file_count,
   verbose = FALSE,
   progress_bar,
   agg_period,
@@ -57,7 +55,7 @@ wrap.towr <- function(
   #--------------------------------------------------------------------------------------------
   # Maximize cross correlation
   if(para$lag_correction){
-    lag_out = eddy4R.york::wrap.lag(eddy.data,para,file_count)
+    lag_out = eddy4R.york::wrap.lag(eddy.data,para)
     eddy.data = lag_out$eddy.data
 
   }
@@ -68,12 +66,16 @@ wrap.towr <- function(
 
   #--------------------------------------------------------------------------------------------
   # Rotation of wind vectors
-  eddy.data = wrap.rot(eddy.data,
-                       MethRot = para$MethRot,
-                       plnrFitCoef = para$plnrFitCoef,
-                       plnrFitType = para$plnrFitType)
+  eddy.data = eddy4R.york::wrap.rot(data = eddy.data,
+                                    MethRot = para$MethRot,
+                                    plnrFitCoef = para$plnrFitCoef,
+                                    plnrFitType = para$plnrFitType)
 
 
+
+
+  # sort units
+  eddy.data = eddy4R.york::assign_input_units(eddy.data, para)
 
   #--------------------------------------------------------------------------------------------
   # calculate time-domain fluxes (classical EC)

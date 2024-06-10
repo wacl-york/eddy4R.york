@@ -18,9 +18,9 @@ def.wind.dir.flow = function(eddy.data,freq){
   veloXaxs[is.na(veloXaxs)] = 0
   veloYaxs[is.na(veloYaxs)] = 0
 
-  eddy.data$uv_met = sqrt(veloXaxs^2 + veloYaxs^2)
-
-  eddy.data$d_xy_flow = cumsum(eddy.data$uv_met)/freq
+  # eddy.data$uv_met = sqrt(veloXaxs^2 + veloYaxs^2)
+  #
+  # eddy.data$d_xy_flow = cumsum(eddy.data$uv_met)/freq
 
   eddy.data
 

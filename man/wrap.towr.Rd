@@ -7,7 +7,6 @@
 wrap.towr(
   eddy.data,
   para,
-  file_count,
   verbose = FALSE,
   progress_bar,
   agg_period,
@@ -19,8 +18,6 @@ wrap.towr(
 \item{eddy.data}{input data}
 
 \item{para}{params list}
-
-\item{file_count}{index of the loop in the above function (e.g uoy.towr.ec) for use in the progress bar}
 
 \item{verbose}{boolean, suppresses some chatty functions}
 

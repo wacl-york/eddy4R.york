@@ -6,12 +6,13 @@
 #' @param file_mask mask to pass mask_extract_date for detection of start date
 #' @param species vector of species names. Match with IntlNatu naming
 #' @param speciesRatioName created automatically from species. name of gas species following the rtioMoleDry<spc> format
-#' @param speciesUnit defaults to "mol<spc> mol-1 Dry" for all species.
+#' @param unitList defaults to \code{default_unit_list()} plus species field based off of species argument
+#' speices is a list with names that match speciesRatioName describing the units per species. Defaults to mol<spc> mol-1Dry
 #' @param freq data aquisition frequency of input data
 #' @param files list of file names
 #' @param Tz time zone Olsen name
 #' @param dateFormat default %Y-%m-%d %H:%M:%OS"
-#' @param file_type_in input file type, currently only supports .csv
+#' @param file_pattern pattern to help filter input directory - default .csv
 #' @param required_para character vector of columns that must be nominally present to pass def.valid.input()
 #' @param critical_variable these must have greater than the missing_thresh to pass def.valid.input()
 #' @param AlgBase detrending method for def.base.ec "mean","trend","ord3"
@@ -82,18 +83,19 @@ def.para = function(file_duration = 3600,# Input Data information
                     file_mask = "NOx_5Hz_yymmdd_HHMM0_170322_000015_cor_temp.nc",
                     species = NULL,
                     speciesRatioName = NULL,
-                    speciesUnit = NULL,
+                    unitList = NULL,
                     freq = 5,
                     files = NULL,
+                    file_pattern = ".csv",
                     Tz = "GMT",
                     dateFormat = "%Y-%m-%d %H:%M:%OS",
-                    file_type_in = ".csv",
                     # columns must be nominally present to pass def.valid.input()
-                    required_para = c("date","d_z_m","d_xy_flow","presAtm","d_z_ABL"),
+                    required_para = c("unixTime","distZaxsMeas","presAtm","distZaxsAbl"),
                     # these must have greater than the missing_thresh to pass def.valid.input()
-                    critical_variable = c("veloXaxs","veloYaxs","veloZaxs","tempAir","uv_met"),
+                    critical_variable = c("veloXaxs","veloYaxs","veloZaxs","tempAir"),
                     # Eddy Covariance Settings
                     AlgBase = "trnd",
+                    idep = NULL,
                     agg_period = 3600,
                     missing_thresh = 0.1,
                     missing_method = c("drop","mean")[1],
@@ -180,17 +182,22 @@ def.para = function(file_duration = 3600,# Input Data information
     para$DirFast = file.path(para$DirOut, "fast_data")
   }
 
+  if(is.null(unitList)){
+    para$unitList = eddy4R.york::default_unit_list()
+  }
+
 
   if(!is.null(species)){
     if(is.null(speciesRatioName)){
       para$speciesRatioName = paste0("rtioMoleDry", species)
     }
 
-    if(is.null(speciesUnit)){
-      para$speciesUnit = paste0("mol", species, " mol-1Dry")
+    if(is.null(para$unitList$species)){
+      para$unitList$species = stats::setNames(as.list(paste0("mol", species, " mol-1Dry")), para$speciesRatioName)
     }
 
-    para$ListGasSclr = purrr::map2(para$species,para$speciesUnit,
+    para$ListGasSclr = purrr::map2(para$species,
+                                   para$unitList$species,
                                    ~{
                                      list(Conv = "densMoleAirDry",
                                           Unit = base::data.frame(InpVect = "m s-1",
@@ -217,7 +224,7 @@ def.para = function(file_duration = 3600,# Input Data information
   }
 
   if(is.null(files)){
-    para$files = list.files(paste0(para$DirInp),pattern = para$file_type)
+    para$files = list.files(paste0(para$DirInp),pattern = para$file_pattern)
   }else{
     para$files = files
   }
@@ -256,6 +263,11 @@ def.para = function(file_duration = 3600,# Input Data information
       }
     }
   }
+
+  if(para$AlgBase != "mean" & is.null(para$idepVar)){
+    stop("When AlgBase is trend or ord03 idepVar needs to be assigned to a column e.g. unixTime")
+  }
+
 
   # What should have stationarity tests applied?
   para$stnaVar = c("u_star2_x", "u_star2_y", "u_star", "fluxTemp","fluxH2oEngy",para$speciesRatioName)

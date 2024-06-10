@@ -59,29 +59,15 @@ def.valid.input = function(eddy.data,
   }
 
   # All columns are the right class generally?
-  classes = vector("character",ncol(eddy.data))
-  for(i in 1:ncol(eddy.data)){
-    classes[i] = paste0(class(eddy.data[,i]),collapse = "")
+  classes = apply(eddy.data,2, class)
+
+
+  classes = classes[classes != "numeric"]
+
+  if(length(classes) != 0){
+    error_list = add_err("Input files can only contain, numeric columns",error_list,location = "input")
   }
 
-  if(length(classes[classes == "POSIXctPOSIXt"]) != 1)
-    error_list = add_err("Input files should contain exactly one POSIXct POSIXt column",error_list,location = "input")
-
-  classes = classes[!(classes %in% c("integer","numeric","POSIXctPOSIXt","logical"))]
-
-  if(length(classes) != 0)
-    error_list = add_err("Input files can only contain POSIXct POSIXt, numeric and integer classes",error_list,location = "input")
-
-  # Is the date in the date column?
-  if(paste0(class(eddy.data$date),collapse = "") != "POSIXctPOSIXt"){
-    error_list = add_err("Date column is not of class POSIXct POSIXt",error_list,location = "input")
-  }
-  #else{
-  #   # Only test date if it is a POSIXct POSIXt
-  #   # Is the date what we expect to find from the file name?
-  #   if(lubridate::floor_date(eddy.data$date[1],"1 hour") != mask_extract_date(para$files[file_count],para$file_mask,tz = para$Tz))
-  #     error_list = add_err("Date does not match file name",error_list,location = "input")
-  # }
   ## Test missing data
   #  Skip file
   for(var in para$critical_variable){

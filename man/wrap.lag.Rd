@@ -4,14 +4,12 @@
 \alias{wrap.lag}
 \title{UoY Lag definition wrapper}
 \usage{
-wrap.lag(eddy.data, para, agg_count)
+wrap.lag(eddy.data, para)
 }
 \arguments{
 \item{eddy.data}{eddy.data object}
 
 \item{para}{parameter list from \code{def.uoy.para}}
-
-\item{agg_count}{to use when implementing drifting lags - to do}
 }
 \description{
 Wrapper for def.lag to use in UoY workflows. Returns data lag times and acf information

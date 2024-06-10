@@ -9,15 +9,16 @@ def.para(
   file_mask = "NOx_5Hz_yymmdd_HHMM0_170322_000015_cor_temp.nc",
   species = NULL,
   speciesRatioName = NULL,
-  speciesUnit = NULL,
+  unitList = NULL,
   freq = 5,
   files = NULL,
+  file_pattern = ".csv",
   Tz = "GMT",
   dateFormat = "\%Y-\%m-\%d \%H:\%M:\%OS",
-  file_type_in = ".csv",
-  required_para = c("date", "d_z_m", "d_xy_flow", "presAtm", "d_z_ABL"),
-  critical_variable = c("veloXaxs", "veloYaxs", "veloZaxs", "tempAir", "uv_met"),
+  required_para = c("unixTime", "distZaxsMeas", "presAtm", "distZaxsAbl"),
+  critical_variable = c("veloXaxs", "veloYaxs", "veloZaxs", "tempAir"),
   AlgBase = "trnd",
+  idep = NULL,
   agg_period = 3600,
   missing_thresh = 0.1,
   missing_method = c("drop", "mean")[1],
@@ -81,17 +82,18 @@ def.para(
 
 \item{speciesRatioName}{created automatically from species. name of gas species following the rtioMoleDry\if{html}{\out{<spc>}} format}
 
-\item{speciesUnit}{defaults to "mol\if{html}{\out{<spc>}} mol-1 Dry" for all species.}
+\item{unitList}{defaults to \code{default_unit_list()} plus species field based off of species argument
+speices is a list with names that match speciesRatioName describing the units per species. Defaults to mol\if{html}{\out{<spc>}} mol-1Dry}
 
 \item{freq}{data aquisition frequency of input data}
 
 \item{files}{list of file names}
 
+\item{file_pattern}{pattern to help filter input directory - default .csv}
+
 \item{Tz}{time zone Olsen name}
 
 \item{dateFormat}{default \%Y-\%m-\%d \%H:\%M:\%OS"}
-
-\item{file_type_in}{input file type, currently only supports .csv}
 
 \item{required_para}{character vector of columns that must be nominally present to pass def.valid.input()}
 

@@ -4,7 +4,7 @@
 \alias{read_input}
 \title{Read eddy4R input}
 \usage{
-read_input(DirInp, dateFormat, agg_f, agg_p, Tz, freq, file_type, PltfEc)
+read_input(DirInp, dateFormat, agg_f, agg_p, Tz, freq, idepVar, PltfEc)
 }
 \arguments{
 \item{DirInp}{input directory}
@@ -18,8 +18,6 @@ read_input(DirInp, dateFormat, agg_f, agg_p, Tz, freq, file_type, PltfEc)
 \item{Tz}{timestamp timezone}
 
 \item{freq}{data aquisiton frequency}
-
-\item{file_type}{either ".csv" or ".rds"}
 
 \item{PltfEc}{platform either "towr" or "airc"}
 }

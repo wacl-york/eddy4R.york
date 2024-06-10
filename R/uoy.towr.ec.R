@@ -70,7 +70,7 @@ uoy.towr.ec = function(paraMain,
                                         agg_p = agg_period[i,],
                                         Tz = paraMain$Tz,
                                         freq = paraMain$freq,
-                                        file_type = paraMain$file_type_in,
+                                        idepVar = paraMain$idepVar,
                                         PltfEc=paraMain$PltfEc)
 
     # Check input file
@@ -86,7 +86,6 @@ uoy.towr.ec = function(paraMain,
     if(!eddy4R.york::err_skip(valid$error_list)){
       error_workflow = eddy4R.york::wrap.towr(eddy.data = eddy.data,
                                               para = para,
-                                              file_count = i,
                                               verbose = FALSE,
                                               agg_period = agg_period,
                                               thshFile = thshFile,
