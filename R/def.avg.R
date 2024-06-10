@@ -3,7 +3,7 @@
 #' Determing the files that correspond to the selected flux averaging period using a mask for the file name
 #'
 #' @param files vector of files
-#' @param mask string mask that can be passed to \code{mask_extract_date()}
+#' @param mask string mask that can be passed to \code{as.POSIXct(format = mask)}
 #' @param file_duration numeric length of files in seconds
 #' @param aggr_dur numeric required flux duration
 #' @param tz string timezone of date in file name
@@ -31,7 +31,8 @@ def.avg = function(files,
   files = files[nchar(files) == nchar(mask)] %>% as.array
 
   #get file start times from names
-  act_file_start = base::apply(files,1,function(x) eddy4R.york::mask_extract_date(x,mask,tz = tz)) %>% as.POSIXct(tz = tz,origin = "1970-01-01")
+  act_file_start = as.POSIXct(para$files, format = mask)
+
 
   #user can input a first_file_begin time if the first file starts at an unusual interval e.g. most files start on an hour but this
   #particular file starts at 20 past the hour

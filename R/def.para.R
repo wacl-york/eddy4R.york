@@ -3,7 +3,7 @@
 #' Create para list, use arguments to overide defaults
 #'
 #' @param file_duration expected duration of a complete input file (Hz)
-#' @param file_mask mask to pass mask_extract_date for detection of start date
+#' @param file_mask string mask that can be passed to \code{as.POSIXct(format = mask)} to decode the date in the file name
 #' @param species vector of species names. Match with IntlNatu naming
 #' @param speciesRatioName created automatically from species. name of gas species following the rtioMoleDry<spc> format
 #' @param unitList defaults to \code{default_unit_list()} plus species field based off of species argument
@@ -84,7 +84,7 @@
 #' @export
 
 def.para = function(file_duration = 3600,# Input Data information
-                    file_mask = "NOx_5Hz_yymmdd_HHMM0_170322_000015_cor_temp.nc",
+                    file_mask,
                     species = NULL,
                     speciesRatioName = NULL,
                     unitList = NULL,
