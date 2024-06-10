@@ -44,7 +44,7 @@ Where `<extDir>` is the path to the volume you wish to mount on your machine
 
 `eddy4R.york` uses a parameters list created using `def.para()`. This is the main input to `wrap.towr()` and defines all of the settings of the calculation. Creating this configuration looks like:
 
-```
+```R
 para = eddy4R.york::def.para(
   DirWrk = "/home/rstudio/data/",
   DirInp = "in/",
