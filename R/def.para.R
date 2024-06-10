@@ -15,7 +15,11 @@
 #' @param file_pattern pattern to help filter input directory - default .csv
 #' @param required_para character vector of columns that must be nominally present to pass def.valid.input()
 #' @param critical_variable these must have greater than the missing_thresh to pass def.valid.input()
-#' @param AlgBase detrending method for def.base.ec "mean","trend","ord3"
+#' @param AlgBase detrending method for def.base.ec "mean","trend","ord03"
+#' @param idepVar required if Algbase is trend or ord03. Name of column
+#' containing independant variable for determining the base function. Column
+#' gets duplicated to a column called "idep" use use in
+#' \code{eddy4R.turb::def.stat.sta.diff}. Default unixTime.
 #' @param agg_period flux aggregation period (s)
 #' @param missing_thresh decimal percentage of missing data threshold per file
 #' @param missing_method how should missing data be handeled if it is less than the threshold. "drop","mean"
@@ -95,7 +99,7 @@ def.para = function(file_duration = 3600,# Input Data information
                     critical_variable = c("veloXaxs","veloYaxs","veloZaxs","tempAir"),
                     # Eddy Covariance Settings
                     AlgBase = "trnd",
-                    idep = NULL,
+                    idepVar = "unixTime",
                     agg_period = 3600,
                     missing_thresh = 0.1,
                     missing_method = c("drop","mean")[1],
@@ -270,7 +274,7 @@ def.para = function(file_duration = 3600,# Input Data information
 
 
   # What should have stationarity tests applied?
-  para$stnaVar = c("veloFricXaxsSq", "veloFricYaxsSq", "veloFric", "fluxTemp", "fluxH2oEngy", para$speciesRatioName)
+  para$stnaVar = c("veloFricXaxsSq", "veloFricYaxsSq", "veloFric", "fluxTempEngy", "fluxH2oEngy", para$speciesRatioName)
 
   para$call = match.call()
 

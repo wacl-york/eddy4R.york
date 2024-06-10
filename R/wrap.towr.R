@@ -97,38 +97,44 @@ wrap.towr <- function(
                                     ListGasSclr = para$ListGasSclr)
 
 
-  #--------------------------------------------------------------------------------------------
-  # integral turbulence scales, lengths and characteristics
-  # called from global enviroment until pacakged
-  REYN$isca = def.scales(REYN = REYN,
-                         lat = para$Lat,
-                         VarInp=c("veloXaxs", "veloZaxs", "temp", "all")[4],
-                         sd = data.frame(u_hor=REYN$sd$u_hor,w_hor=REYN$sd$w_hor,T_air=REYN$sd$T_air),
-                         varScal = data.frame(u_star=REYN$mn$u_star,T_star_SL=REYN$mn$T_star_SL),
-                         species = para$species)
+  # ITC ---------------------------------------------------------------------
+  REYN$itc <- eddy4R.turb::def.itc(stblObkv = REYN$mean$paraStbl,
+                                   lat = para$Lat,
+                                   VarInp = "all",
+                                   sd = data.frame(
+                                     u_hor = REYN$sd$veloXaxsHor,
+                                     w_hor = REYN$sd$veloZaxsHor,
+                                     T_air = REYN$sd$tempAir),
+                                   varScal = data.frame(
+                                     u_star = REYN$mean$veloFric,
+                                     T_star_SL = REYN$mean$tempScalAtmSurf),
+                                   CorTemp = FALSE)
+
+
+  # Length Scales -----------------------------------------------------------
+  REYN$isca = eddy4R.york::wrap.isca(REYN,
+                                     species = para$species,
+                                     speciesRatioName = para$speciesRatioName,
+                                     PltfEc = para$PltfEc)
 
   #--------------------------------------------------------------------------------------------
   # flux error calculations
   REYN$error = eddy4R.turb::def.ucrt.samp(data = NULL,
                                           distIsca=REYN$isca,
-                                          valuMean=REYN$mn,
-                                          coefCorr=REYN$cor,
-                                          distMean=REYN$max$d_xy_flow,
+                                          valuMean=REYN$mean,
+                                          coefCorr=REYN$corr,
+                                          distMean=mean(REYN$data$unixTime-min(REYN$data$unixTime)),
                                           timeFold = 0,
-                                          spcs = para$species)
+                                          spcsNameRatio = para$speciesRatioName,
+                                          spcsNameFlux = paste0("flux", para$species)
+  )
 
   #--------------------------------------------------------------------------------------------
   # flux limit of detection calculations
 
-  REYN$lod  <-  def.lod(ref=REYN$imfl$w_hor,
-                        vars=REYN$imfl %>% dplyr::select(.,c(tidyselect::contains("FD_mole_"),"T_air")),
-                        spcs=para$species,
-                        rmm=para$species_RMM,
-                        rho_dry=REYN$mn$rho_dry,
-                        rho_H2O=REYN$mn$rho_H2O,
-                        Lv=REYN$mn$Lv,
-                        freq=para$freq,
-                        conf=95)
+  REYN$lod  <-  def.lod(REYN,
+                        measCol = para$cross_correlation_vars,
+                        freq = para$freq)
 
   REYN$lod$date <- REYN$mn$date
 

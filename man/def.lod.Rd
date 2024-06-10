@@ -2,32 +2,20 @@
 % Please edit documentation in R/def.lod.R
 \name{def.lod}
 \alias{def.lod}
-\title{Function definition. Flux limit of detection.}
+\title{Flux Limit of Detection}
 \usage{
-def.lod(ref, vars, spcs, rmm, rho_dry, rho_H2O, Lv, freq, conf = 95)
+def.lod(REYN, measCol, freq, refCol = "veloXaxs")
 }
 \arguments{
-\item{ref}{Reference instantaneous data, e.g. w_hor.}
+\item{REYN}{eddy4R REYN list - requires mean and diff}
 
-\item{vars}{Data.frame of instantaneous data for LOD calculation.}
+\item{measCol}{columns to calculate LOD for}
 
-\item{spcs}{Chemical species.}
+\item{freq}{measurement frequency}
 
-\item{rmm}{Relative molecular masses of chemical species in kg mol-1.}
-
-\item{rho_dry}{Dry air density in mol m-3.}
-
-\item{rho_H2O}{Partial density of H2O.}
-
-\item{Lv}{latent heat of vaporization.}
-
-\item{freq}{Data frequency in Hz.}
-
-\item{conf}{Confidence interval, either 95 or 99\%.}
+\item{refCol}{column to lag against, default veloZaxs}
 }
 \description{
-Function definition. Warpper for Wavelet Eddy-covariance averaging.
-}
-\author{
-Adam R Vaughan \email{adam.vaughan@york.ac.uk}
+Langford et al., 2015 Eddy-covariance data with low signal-to-noise ratio method
+of flux Limit of detection. Based on original implementation by Adam Vaughan
 }

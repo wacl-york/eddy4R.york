@@ -32,9 +32,6 @@ wrap.anem.cor = function(eddy.data,para){
     eddy.data$veloZaxs[eddy.data$veloZaxs < 0 ] = eddy.data$veloZaxs[eddy.data$veloZaxs < 0 ]*1.289
   }
 
-
-  # re calculate uv_met and d_xy_flow
-  eddy.data = def.wind.dir.flow(eddy.data,para$freq)
   # Return
   eddy.data
 }

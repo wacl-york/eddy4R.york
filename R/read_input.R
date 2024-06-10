@@ -9,6 +9,8 @@
 #' @param agg_p period which files are relvant too
 #' @param Tz timestamp timezone
 #' @param freq data aquisiton frequency
+#' @param idepVar variable that could be used if Algbase in "trend" or "ord03"
+#' column gets duplicated to a column called "idep" use use in \code{eddy4R.turb::def.stat.sta.diff}
 #' @param PltfEc platform either "towr" or "airc"
 #'
 #' @author W. S. Drysdale
@@ -39,7 +41,6 @@ read_input = function(DirInp,
     eddy.data = flux_agg[flux_agg$date >= agg_p$avg_start &
                            flux_agg$date <= agg_p$avg_end,]
 
-    eddy.data = def.wind.dir.flow(eddy.data,freq)
   }
 
   #Return eddy data

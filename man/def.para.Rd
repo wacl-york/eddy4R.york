@@ -18,7 +18,7 @@ def.para(
   required_para = c("unixTime", "distZaxsMeas", "presAtm", "distZaxsAbl"),
   critical_variable = c("veloXaxs", "veloYaxs", "veloZaxs", "tempAir"),
   AlgBase = "trnd",
-  idep = NULL,
+  idepVar = "unixTime",
   agg_period = 3600,
   missing_thresh = 0.1,
   missing_method = c("drop", "mean")[1],
@@ -99,7 +99,12 @@ speices is a list with names that match speciesRatioName describing the units pe
 
 \item{critical_variable}{these must have greater than the missing_thresh to pass def.valid.input()}
 
-\item{AlgBase}{detrending method for def.base.ec "mean","trend","ord3"}
+\item{AlgBase}{detrending method for def.base.ec "mean","trend","ord03"}
+
+\item{idepVar}{required if Algbase is trend or ord03. Name of column
+containing independant variable for determining the base function. Column
+gets duplicated to a column called "idep" use use in
+\code{eddy4R.turb::def.stat.sta.diff}. Default unixTime.}
 
 \item{agg_period}{flux aggregation period (s)}
 
