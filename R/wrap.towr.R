@@ -122,7 +122,7 @@ wrap.towr <- function(
   # flux limit of detection calculations
 
   REYN$lod  <-  def.lod(ref=REYN$imfl$w_hor,
-                        vars=REYN$imfl %>% dplyr::select(.,c(dplyr::contains("FD_mole_"),"T_air")),
+                        vars=REYN$imfl %>% dplyr::select(.,c(tidyselect::contains("FD_mole_"),"T_air")),
                         spcs=para$species,
                         rmm=para$species_RMM,
                         rho_dry=REYN$mn$rho_dry,

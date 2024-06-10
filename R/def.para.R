@@ -183,7 +183,7 @@ def.para = function(file_duration = 3600,# Input Data information
 
   if(!is.null(species)){
     if(is.null(speciesRatioName)){
-      para$speciesRatioName = paste0("ratioMoleDry", species)
+      para$speciesRatioName = paste0("rtioMoleDry", species)
     }
 
     if(is.null(speciesUnit)){
@@ -205,7 +205,7 @@ def.para = function(file_duration = 3600,# Input Data information
 
 
   if(is.null(cross_correlation_vars)){
-    para$cross_correlation_vars = c("tempAir", "ratioMoleDryH2o",para$speciesRatioName)
+    para$cross_correlation_vars = c("tempAir", "rtioMoleDryH2o",para$speciesRatioName)
   }else{
     para$cross_correlation_vars = cross_correlation_vars
   }

@@ -60,8 +60,8 @@ wrap.lag = function(eddy.data,para,agg_count){
   }
 
   #handle lagging no and noc channels of nox data separatly before combining into NO and NO2
-  if(para$noc_lag & sum(c("ratioMoleDryNO","ratioMoleDryNO2") %in% para$speciesRatioName) == 2){
-    eddy.data$ratioMoleDryNO2 = (eddy.data$ratioMoleDryNO2 - eddy.data$ratioMoleDryNO)/eddy.data$ce
+  if(para$noc_lag & sum(c("rtioMoleDryNO","rtioMoleDryNO2") %in% para$speciesRatioName) == 2){
+    eddy.data$rtioMoleDryNO2 = (eddy.data$rtioMoleDryNO2 - eddy.data$rtioMoleDryNO)/eddy.data$ce
 
   }
 
