@@ -2,41 +2,21 @@
 % Please edit documentation in R/wrap.towr.R
 \name{wrap.towr}
 \alias{wrap.towr}
-\title{Wrap Tower}
+\title{Tower Wrapper}
 \usage{
-wrap.towr(
-  eddy.data,
-  para,
-  verbose = FALSE,
-  progress_bar,
-  agg_period,
-  thshFile = NULL,
-  diagSens = FALSE
-)
+wrap.towr(paraMain, resume = NULL, thshFile = NULL, diagSens = FALSE)
 }
 \arguments{
-\item{eddy.data}{input data}
+\item{paraMain}{parameters list made by \code{def.para()}}
 
-\item{para}{params list}
-
-\item{verbose}{boolean, suppresses some chatty functions}
-
-\item{progress_bar}{progress bar object}
-
-\item{agg_period}{from \code{def.avg} containing all the aggregation period defintions.
-TODO is this actually needed or can we just get this from para?}
+\item{resume}{loop iterator to restart at.}
 
 \item{thshFile}{The file directory where the threshold table are being saved. Default as NULL.}
 
 \item{diagSens}{Logical to state if the sensor diqgnostic flags are calculated. Default as FALSE.}
 }
 \description{
-University of York Tower Eddy-Covariance turbulence processing.
-Based on earlier workflows with contributions from: \cr
-Adam R Vaughan \cr
-Stefan Metzger \cr
-Ke Xu \cr
-Andrei Serafimovich \cr
+Handles file reading, progress and error logging.
 }
 \author{
 W. S. Drysdale
