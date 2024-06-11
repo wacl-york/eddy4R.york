@@ -31,7 +31,7 @@ def.avg = function(files,
   files = files[nchar(files) == nchar(mask)] %>% as.array
 
   #get file start times from names
-  act_file_start = as.POSIXct(para$files, format = mask)
+  act_file_start = as.POSIXct(files, format = mask)
 
 
   #user can input a first_file_begin time if the first file starts at an unusual interval e.g. most files start on an hour but this

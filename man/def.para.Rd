@@ -6,7 +6,7 @@
 \usage{
 def.para(
   file_duration = 3600,
-  file_mask = "NOx_5Hz_yymmdd_HHMM0_170322_000015_cor_temp.nc",
+  file_mask,
   species = NULL,
   speciesRatioName = NULL,
   unitList = NULL,
@@ -30,7 +30,6 @@ def.para(
   veloZaxs = "+veloZaxs",
   w_boost = F,
   lag_correction = T,
-  determine_lag = T,
   lagNgtvPstv = c("n", "p", "np")[1],
   absolute_lag = -10,
   restrict_lag_range = F,
@@ -76,7 +75,7 @@ def.para(
 \arguments{
 \item{file_duration}{expected duration of a complete input file (Hz)}
 
-\item{file_mask}{mask to pass mask_extract_date for detection of start date}
+\item{file_mask}{string mask that can be passed to \code{as.POSIXct(format = mask)} to decode the date in the file name}
 
 \item{species}{vector of species names. Match with IntlNatu naming}
 
@@ -129,8 +128,6 @@ negative for anticlockwise}
 \item{w_boost}{should w boost correction for certain Gill Anemometers be applied? Default false}
 
 \item{lag_correction}{Should lag correction be undertaken? T/F}
-
-\item{determine_lag}{Should the lag be determined via crosscorrelation? T/F}
 
 \item{lagNgtvPstv}{what "direction" can lag occur? "n","p","np"}
 

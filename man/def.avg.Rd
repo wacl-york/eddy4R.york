@@ -18,7 +18,7 @@ def.avg(
 \arguments{
 \item{files}{vector of files}
 
-\item{mask}{string mask that can be passed to \code{mask_extract_date()}}
+\item{mask}{string mask that can be passed to \code{as.POSIXct(format = mask)}}
 
 \item{file_duration}{numeric length of files in seconds}
 
