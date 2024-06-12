@@ -14,8 +14,8 @@
 #' @param \code{coefCorr} Flux correlation coefficient
 #' @param \code{distMean} Average flight length
 #' @param \code{timeFold} e-folding time
-#' @param \code{spcsNameRatio} vector of columns containing chemical species to calculate uncertainties for. default NULL. character
-#' @param \code{spcsNameFlux} vector of corresponding chemical flux columns. defualt NULL character
+#' @param \code{spcsNameRtio} vector of columns containing chemical species to calculate uncertainties for. default NULL. character
+#' @param \code{spcsNameFlux} vector of corresponding chemical flux columns. length should equal spcsNameRtio default NULL. character
 
 #' @return Statistical Errors for scalars, variances, and fluxes
 
@@ -48,6 +48,9 @@
 #     Removed SiteInfo dependance, added switches as explicit variables
 #   David Durden (2019-11-07)
 #     Fixing missing water vapor variable
+#   Will Drysdale (2024-06-11)
+#     Change spcs to spcsNameRtio and spcsNameFlux. Update to new eddy4R terms.
+#     This aligns with changes to wrap.flux to allow for multiple gas scalars to be defined
 ##############################################################################################
 def.ucrt.samp <- function(
   data = NULL,           #instantaneous data
@@ -56,7 +59,7 @@ def.ucrt.samp <- function(
   coefCorr,		      #flux correlation coefficient
   distMean,		      #averaging distance ()
   timeFold = 0 ,    #e-folding time for the autocorrelation of wavelet power at
-  spcsNameRatio = NULL,
+  spcsNameRtio = NULL,
   spcsNameFlux = NULL
   #each scale (Torrence and Compo, 1998, Table 1). This e-folding time is chosen
   #so that the wavelet power for a discontinuity at the
@@ -77,9 +80,19 @@ def.ucrt.samp <- function(
     c("fluxH2oEngy", "rtioMoleDryH2o")
   )
 
+  if(sum(c(is.null(spcsNameFlux),is.null(spcsNameRtio))) == 1){
+    stop("spcsNameFlux and spcsRtioFlux must both be null or both be equal length vectors")
+  }
+
+  # we are fine to just check spcsNameFlux here as the above will catch the case where only one is supplied
   if(!is.null(spcsNameFlux)){
+
+    if(length(spcsNameRtio) != length(spcsNameFlux)){
+      stop("spcsNameFlux and spcsRtioFlux must be equal length vectors")
+    }
+
     whrDistIsca = base::rbind(whrDistIsca,
-                              c(spcsNameFlux,spcsNameRatio))
+                              cbind(spcsNameFlux,spcsNameRtio))
   }
 
   #scalar length scales

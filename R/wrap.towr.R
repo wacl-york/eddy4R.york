@@ -12,9 +12,9 @@
 #' @export
 
 wrap.towr = function(paraMain,
-                       resume = NULL,
-                       thshFile = NULL,
-                       diagSens = FALSE){
+                     resume = NULL,
+                     thshFile = NULL,
+                     diagSens = FALSE){
 
   if(is.null(resume)){
     start = 1
@@ -168,7 +168,7 @@ wrap.towr = function(paraMain,
                                               coefCorr=REYN$corr,
                                               distMean=mean(REYN$data$unixTime-min(REYN$data$unixTime)),
                                               timeFold = 0,
-                                              spcsNameRatio = para$speciesRatioName,
+                                              spcsNameRtio = para$speciesRatioName,
                                               spcsNameFlux = paste0("flux", para$species)
       )
 
