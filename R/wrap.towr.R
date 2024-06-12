@@ -22,24 +22,6 @@ wrap.towr = function(paraMain,
     start = resume
   }
 
-  setwd(paraMain$DirWrk)
-  # input directory
-  if(!dir.exists(paraMain$DirInp)){
-    dir.create(paraMain$DirInp)
-  }
-
-  # output directory
-  if(!dir.exists(paraMain$DirOut)){
-    dir.create(paraMain$DirOut,recursive = T)
-  }
-
-  # Fast data dir if required
-  if(paraMain$write_fast_data){
-    if(!dir.exists(paraMain$DirFast)){
-      dir.create(paraMain$DirFast,recursive = T)
-    }
-  }
-
   saveRDS(paraMain,file = file.path(paraMain$DirOut, paste0(paraMain$analysis,"_para.RDS")))
 
   #determine flux aggregation
@@ -129,7 +111,7 @@ wrap.towr = function(paraMain,
 
 
       # stationarity testing ----------------------------------------------------
-      REYN$stat = eddy4R.turb::def.stna(data=REYN$data,
+      REYN$stna = eddy4R.turb::def.stna(data=REYN$data,
                                         MethStna=c(1, 2, 3)[3],
                                         NumSubSamp=para$agg_period/300,
                                         corTempPot=FALSE,

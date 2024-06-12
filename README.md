@@ -93,7 +93,6 @@ Input files contain the following columns. They should all be read by `read.csv(
 
 `wrap.towr()` is the function that contains all possible steps of the workflow which are configured .by `def.para()`. This consists of some initial steps, then a loop around all of the flux aggregation periods that have been defined:
 
-- House keeping
 - Determine aggregation periods - `det.avg()`
 - For each aggregation period:
     1. Read input data - `read_input()`

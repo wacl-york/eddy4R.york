@@ -10,7 +10,7 @@
 #' speices is a list with names that match speciesRatioName describing the units per species. Defaults to mol<spc> mol-1Dry
 #' @param freq data aquisition frequency of input data
 #' @param files list of file names
-#' @param Tz time zone Olsen name
+#' @param tz default "UTC".
 #' @param dateFormat default %Y-%m-%d %H:%M:%OS"
 #' @param file_pattern pattern to help filter input directory - default .csv
 #' @param required_para character vector of columns that must be nominally present to pass def.valid.input()
@@ -53,7 +53,7 @@
 #' @param file_type_out output file type, currently only supports .csv
 #' @param site_name Used in file nameing
 #' @param analysis Used in file nameing
-#' @param write_fast_data should high frequency intermediates be writen (imfl,data,base outputs from REYN)
+#' @param write_fast_data should high frequency intermediates be writen (diff,data, base, conv outputs from REYN)
 #' @param PltfEc switch for eddy4r functions between tower and aircraft. towr,airc
 #' @param TimeDiffUtcLt offset of timezone from UTC
 #' @param ZoneUtm data.frame containing UTM info e.g data.frame(Zone=30, Estg=698478, Nthg=5711690)
@@ -66,7 +66,7 @@
 #' @param DirWrk root of the data directory
 #' @param DirInp must be supplied - relative to DirWrk
 #' @param DirOut by default is created as \code{file.path(DirWrk,"out",site_name, run_id, analysis)}, can be overridden here.
-#' @param DirFast directory where to save fast data outputs. Usuallt just within DirOut but can be overridden here.
+#' @param subDirMonthly should the outputs be split into monthly subdirectories. Default FALSE
 #' @param cross_correlation_vars created from species plus temperature and water vapour
 #' @param despike_vars created from species plus temperature and water vapour
 #' @param wavelet_ec supply argument true or false for conducting wavelet eddy-covariance
@@ -90,7 +90,7 @@ def.para = function(file_duration = 3600,# Input Data information
                     freq = 5,
                     files = NULL,
                     file_pattern = ".csv",
-                    Tz = "GMT",
+                    tz = "UTC",
                     dateFormat = "%Y-%m-%d %H:%M:%OS",
                     # columns must be nominally present to pass def.valid.input()
                     required_para = c("unixTime","distZaxsMeas","presAtm","distZaxsAbl"),
@@ -138,11 +138,11 @@ def.para = function(file_duration = 3600,# Input Data information
                     file_type_out = c("csv"),
                     site_name = NULL,
                     analysis,
-                    write_fast_data = F,
+                    write_fast_data = TRUE,
                     DirInp,
                     DirWrk,
                     DirOut = NULL,
-                    DirFast = NULL,
+                    subDirMonthly = FALSE,
 
                     # Site Info
                     PltfEc = "towr",
@@ -173,21 +173,24 @@ def.para = function(file_duration = 3600,# Input Data information
   # Get all arguments into a list
   para = c(as.list(environment()), list(...))
 
-  para$DirInp = file.path(DirWrk, DirInp)
-
-  # Then make adjustments as necessary
-  if(is.null(DirOut)){
-    para$DirOut = file.path(DirWrk,"out",site_name, run_id, analysis)
+  if(!dir.exists(para$DirWrk)){
+    stop(paste0("Could not find DirWrk: ", para$DirWrk))
   }
 
-  if(is.null(DirFast)){
-    para$DirFast = file.path(para$DirOut, "fast_data")
+  para$DirInp = file.path(DirWrk, DirInp)
+  if(!dir.exists(para$DirInp)){
+    stop(paste0("Could not find DirInp: ", para$DirInp))
+  }
+
+  # Then make adjustments as necessary
+  # directory is created in write.REYN so subDirMonthly can be respected
+  if(is.null(DirOut)){
+    para$DirOut = file.path(DirWrk,"out",site_name, run_id, analysis)
   }
 
   if(is.null(unitList)){
     para$unitList = eddy4R.york::default_unit_list()
   }
-
 
   if(!is.null(species)){
     if(is.null(speciesRatioName)){

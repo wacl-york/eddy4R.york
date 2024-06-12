@@ -7,7 +7,7 @@
 #' @param dateFormat format of date when reading csv for \code{as.POSIXct()}
 #' @param agg_f files to aggregate
 #' @param agg_p period which files are relvant too
-#' @param Tz timestamp timezone
+#' @param tz time zone
 #' @param freq data aquisiton frequency
 #' @param idepVar variable that could be used if Algbase in "trend" or "ord03"
 #' column gets duplicated to a column called "idep" use use in \code{eddy4R.turb::def.stat.sta.diff}
@@ -21,7 +21,7 @@ read_input = function(DirInp,
                       dateFormat,
                       agg_f,
                       agg_p,
-                      Tz,
+                      tz,
                       freq,
                       idepVar,
                       PltfEc){
@@ -33,7 +33,7 @@ read_input = function(DirInp,
   if(PltfEc=="towr"){
 
     flux_agg = purrr::map_df(file.path(DirInp,agg_f), utils::read.csv) %>%
-      dplyr::mutate(date = as.POSIXct(unixTime, format = dateFormat, origin = "1970-01-01 00:00:00"))
+      dplyr::mutate(date = as.POSIXct(unixTime, format = dateFormat, origin = "1970-01-01 00:00:00", tz = tz))
 
     flux_agg$idep = flux_agg[[idepVar]]
 
