@@ -4,7 +4,7 @@
 \alias{read_input}
 \title{Read eddy4R input}
 \usage{
-read_input(DirInp, dateFormat, agg_f, agg_p, Tz, freq, idepVar, PltfEc)
+read_input(DirInp, dateFormat, agg_f, agg_p, tz, freq, idepVar, PltfEc)
 }
 \arguments{
 \item{DirInp}{input directory}
@@ -15,9 +15,9 @@ read_input(DirInp, dateFormat, agg_f, agg_p, Tz, freq, idepVar, PltfEc)
 
 \item{agg_p}{period which files are relvant too}
 
-\item{Tz}{timestamp timezone}
+\item{tz}{time zone}
 
-\item{freq}{data aquisiton frequency}
+\item{freq}{data acquisition frequency}
 
 \item{idepVar}{variable that could be used if Algbase in "trend" or "ord03"
 column gets duplicated to a column called "idep" use use in \code{eddy4R.turb::def.stat.sta.diff}}

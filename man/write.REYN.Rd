@@ -4,21 +4,23 @@
 \alias{write.REYN}
 \title{Write REYN}
 \usage{
-write.REYN(REYN, lag_time, ACF = NULL, para, file_name, qfOut = NULL)
+write.REYN(REYN, lag_out, DirOut, analysis, tz, write_fast_data, subDirMonthly)
 }
 \arguments{
 \item{REYN}{REYN List of objects at the end of calcualtions}
 
-\item{lag_time}{lag time data frame}
+\item{lag_out}{output list from \code{wrap.lag()}}
 
-\item{ACF}{ACF data.frame}
+\item{DirOut}{output directory (if subDirMonthly == TRUE, annual and monthly subfolders will be created here)}
 
-\item{para}{parameters list}
+\item{analysis}{name of analysis - used to construct file name}
 
-\item{file_name}{file name based on aggreation period}
+\item{tz}{timezone}
 
-\item{qfOut}{A list of data frame containing the calculated sensors quality flags and statistical flags. Defaults as NULL.}
+\item{write_fast_data}{TRUE/FALSE should the fast (base, diff, conv, data) outputs be written to disk. They will be compressed using gzip}
+
+\item{subDirMonthly}{TRUE/FALSE should outputs be split into subdirectorys following \%Y / \%m of the aggregation start date.}
 }
 \description{
-Write REYN
+Writes the data associated with the REYN (classical ec) processing.
 }

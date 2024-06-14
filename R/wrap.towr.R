@@ -22,6 +22,10 @@ wrap.towr = function(paraMain,
     start = resume
   }
 
+  if(!dir.exists(paraMain$DirOut)){
+    dir.create(paraMain$DirOut, recursive = T)
+  }
+
   saveRDS(paraMain,file = file.path(paraMain$DirOut, paste0(paraMain$analysis,"_para.RDS")))
 
   #determine flux aggregation
@@ -30,7 +34,7 @@ wrap.towr = function(paraMain,
                                  file_duration = paraMain$file_duration,
                                  aggr_dur = paraMain$agg_period,
                                  freq = paraMain$freq,
-                                 tz = paraMain$Tz,
+                                 tz = paraMain$tz,
                                  first_file_begin = paraMain$first_file_begin,
                                  final_file_begin = paraMain$final_file_begin)
 
@@ -49,7 +53,7 @@ wrap.towr = function(paraMain,
                                         dateFormat = paraMain$dateFormat,
                                         agg_f = agg_files[[i]],
                                         agg_p = agg_period[i,],
-                                        Tz = paraMain$Tz,
+                                        tz = paraMain$tz,
                                         freq = paraMain$freq,
                                         idepVar = paraMain$idepVar,
                                         PltfEc=paraMain$PltfEc)
@@ -158,6 +162,18 @@ wrap.towr = function(paraMain,
       REYN$lod  <-  eddy4R.york::def.lod(REYN,
                                          measCol = para$cross_correlation_vars,
                                          freq = para$freq)
+
+
+      # Write -------------------------------------------------------------------
+      eddy4R.york::write.REYN(REYN,
+                              lag_out,
+                              DirOut = para$DirOut,
+                              analysis = para$analysis,
+                              tz = para$tz,
+                              write_fast_data = para$write_fast_data,
+                              subDirMonthly = para$subDirMonthly
+                              )
+
     }
 
   }

@@ -13,7 +13,7 @@ def.para(
   freq = 5,
   files = NULL,
   file_pattern = ".csv",
-  Tz = "GMT",
+  tz = "UTC",
   dateFormat = "\%Y-\%m-\%d \%H:\%M:\%OS",
   required_para = c("unixTime", "distZaxsMeas", "presAtm", "distZaxsAbl"),
   critical_variable = c("veloXaxs", "veloYaxs", "veloZaxs", "tempAir"),
@@ -46,11 +46,11 @@ def.para(
   file_type_out = c("csv"),
   site_name = NULL,
   analysis,
-  write_fast_data = F,
+  write_fast_data = TRUE,
   DirInp,
   DirWrk,
   DirOut = NULL,
-  DirFast = NULL,
+  subDirMonthly = FALSE,
   PltfEc = "towr",
   TimeDiffUtcLt = 0,
   ZoneUtm = data.frame(Zone = 30, Estg = 698478, Nthg = 5711690),
@@ -90,7 +90,7 @@ speices is a list with names that match speciesRatioName describing the units pe
 
 \item{file_pattern}{pattern to help filter input directory - default .csv}
 
-\item{Tz}{time zone Olsen name}
+\item{tz}{default "UTC".}
 
 \item{dateFormat}{default \%Y-\%m-\%d \%H:\%M:\%OS"}
 
@@ -165,7 +165,7 @@ either numeric vector for plnrFitType = "simple" or data.frame for plnrFitType =
 
 \item{analysis}{Used in file nameing}
 
-\item{write_fast_data}{should high frequency intermediates be writen (imfl,data,base outputs from REYN)}
+\item{write_fast_data}{should high frequency intermediates be writen (diff,data, base, conv outputs from REYN)}
 
 \item{DirInp}{must be supplied - relative to DirWrk}
 
@@ -173,7 +173,7 @@ either numeric vector for plnrFitType = "simple" or data.frame for plnrFitType =
 
 \item{DirOut}{by default is created as \code{file.path(DirWrk,"out",site_name, run_id, analysis)}, can be overridden here.}
 
-\item{DirFast}{directory where to save fast data outputs. Usuallt just within DirOut but can be overridden here.}
+\item{subDirMonthly}{should the outputs be split into monthly subdirectories. Default FALSE}
 
 \item{PltfEc}{switch for eddy4r functions between tower and aircraft. towr,airc}
 

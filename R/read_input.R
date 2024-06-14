@@ -8,7 +8,7 @@
 #' @param agg_f files to aggregate
 #' @param agg_p period which files are relvant too
 #' @param tz time zone
-#' @param freq data aquisiton frequency
+#' @param freq data acquisition frequency
 #' @param idepVar variable that could be used if Algbase in "trend" or "ord03"
 #' column gets duplicated to a column called "idep" use use in \code{eddy4R.turb::def.stat.sta.diff}
 #' @param PltfEc platform either "towr" or "airc"
