@@ -16,7 +16,7 @@ wrap.towr = function(paraMain,
                      thshFile = NULL,
                      diagSens = FALSE){
 
-  Logger = getExportedValue("eddy4R.base", "Logger.Singleton")
+  Logger = get("Logger.Singleton", getNamespace("eddy4R.base"))
 
   wrap_tower_log = Logger$new()
   wrap_tower_log$set_log_file(file.path(paraMain$DirOut, "wrap_tower_logfile.txt"))
