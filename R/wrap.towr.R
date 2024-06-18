@@ -16,6 +16,16 @@ wrap.towr = function(paraMain,
                      thshFile = NULL,
                      diagSens = FALSE){
 
+  Logger = getExportedValue("eddy4R.base", "Logger.Singleton")
+
+  wrap_tower_log = Logger$new()
+  wrap_tower_log$set_log_file(file.path(paraMain$DirOut, "wrap_tower_logfile.txt"))
+  wrap_tower_log$log_message(level = "info", paste("Begining run: ",
+                                                   paraMain$site_name,
+                                                   paraMain$analysis,
+                                                   paraMain$run_id,
+                                                   sep = " - "))
+
   if(is.null(resume)){
     start = 1
   }else{
@@ -45,136 +55,220 @@ wrap.towr = function(paraMain,
 
     # if there are no files for this aggregationg period, skip
     if(is.na(agg_files[i])){
+
+      eddy4R.york::log_message(wrap_tower_log, "warn", "File Aggregation - no files", agg_period[i,])
+
       next
     }
 
     # Read data
-    eddy.data = eddy4R.york::read_input(DirInp = paraMain$DirInp,
-                                        dateFormat = paraMain$dateFormat,
-                                        agg_f = agg_files[[i]],
-                                        agg_p = agg_period[i,],
-                                        tz = paraMain$tz,
-                                        freq = paraMain$freq,
-                                        idepVar = paraMain$idepVar,
-                                        PltfEc=paraMain$PltfEc)
+    eddy.data = tryCatch({
+      eddy4R.york::read_input(DirInp = paraMain$DirInp,
+                              dateFormat = paraMain$dateFormat,
+                              agg_f = agg_files[[i]],
+                              agg_p = agg_period[i,],
+                              tz = paraMain$tz,
+                              freq = paraMain$freq,
+                              idepVar = paraMain$idepVar,
+                              PltfEc=paraMain$PltfEc)
+    },
+    error = function(e){
+      eddy4R.york::log_message(wrap_tower_log, "error", "Read Files", agg_period[i,], e)
+      return(NULL)
+    })
+
+    if(is.null(eddy.data)){next}
 
     # Check input file
-    valid = eddy4R.york::def.valid.input(eddy.data, paraMain, i)
+    skip_scalar = tryCatch({
+      eddy4R.york::def.valid.input(eddy.data, paraMain, agg_period[i,], wrap_tower_log)},
+      error = function(e){
+        eddy4R.york::log_message(wrap_tower_log, "error", "Valid Input", agg_period[i,], e)
+        return("valid_error")
+      })
 
-    if(length(valid$skip_scalar) > 0){
-      para = eddy4R.york::def.para.tmp(paraMain, valid$skip_scalar)
+    if(skip_scalar == "valid_error"){
+      next
+    }
+
+    if(length(skip_scalar) > 0){
+      para = eddy4R.york::def.para.tmp(paraMain, skip_scalar)
     }else{
       para = paraMain
     }
 
-    # If the input file has not been flagged to skip
-    if(!eddy4R.york::err_skip(valid$error_list)){
+    # Apply Anemometer Corrections --------------------------------------------
+    eddy.data = tryCatch({
+      eddy4R.york::wrap.anem.cor(eddy.data,para)},
+      error = function(e){
+        eddy4R.york::log_message(wrap_tower_log, "error", "Anemometer Correction", agg_period[i,], e)
+        return(NULL)
+      })
 
-      # Apply Anemometer Corrections --------------------------------------------
-      eddy.data = eddy4R.york::wrap.anem.cor(eddy.data,para)
+    if(is.null(eddy.data)){next}
 
-      # Despike data before lag correction --------------------------------------
-      if(para$despike){
-        eddy.data = eddy4R.york::wrap.despike(eddy.data = eddy.data,
-                                              despike_vars = para$despike_vars,
-                                              despike_threshold = para$despike_threshold,
-                                              verbose = FALSE)
+    # Despike data before lag correction --------------------------------------
+    if(para$despike){
+      eddy.data = tryCatch({
+        eddy4R.york::wrap.despike(eddy.data = eddy.data,
+                                  despike_vars = para$despike_vars,
+                                  despike_threshold = para$despike_threshold,
+                                  verbose = FALSE)},
+        error = function(e){
+          eddy4R.york::log_message(wrap_tower_log, "error", "Despiking", agg_period[i,], e)
+          return(NULL)
+        })
 
-      }
+      if(is.null(eddy.data)){next}
+    }
 
+    # Maximize cross correlation ----------------------------------------------
+    if(para$lag_correction){
+      lag_out = tryCatch({
+        eddy4R.york::wrap.lag(eddy.data,para)},
+        error = function(e){
+          eddy4R.york::log_message(wrap_tower_log, "error", "Lag Correction", agg_period[i,], e)
+          return(NULL)
+        })
 
-      # Maximize cross correlation ----------------------------------------------
-      if(para$lag_correction){
-        lag_out = eddy4R.york::wrap.lag(eddy.data,para)
-        eddy.data = lag_out$eddy.data
+      if(is.null(lag_out)){next}
 
-      }
+      eddy.data = lag_out$eddy.data
+    }
 
+    # Handle missing values ---------------------------------------------------
+    eddy.data = tryCatch({
+      eddy4R.york::def.miss.hndl(eddy.data,para)},
+      error = function(e){
+        eddy4R.york::log_message(wrap_tower_log, "error", "Handel Missing Values", agg_period[i,], e)
+        return(NULL)
+      })
 
-      # Handle missing values ---------------------------------------------------
-      eddy.data = eddy4R.york::def.miss.hndl(eddy.data,para)
+    if(is.null(eddy.data)){next}
 
-      # Rotation of wind vectors ------------------------------------------------
-      eddy.data = eddy4R.york::wrap.rot(data = eddy.data,
-                                        MethRot = para$MethRot,
-                                        plnrFitCoef = para$plnrFitCoef,
-                                        plnrFitType = para$plnrFitType)
+    # Rotation of wind vectors ------------------------------------------------
+    eddy.data = tryCatch({
+      eddy4R.york::wrap.rot(data = eddy.data,
+                            MethRot = para$MethRot,
+                            plnrFitCoef = para$plnrFitCoef,
+                            plnrFitType = para$plnrFitType)},
+      error = function(e){
+        eddy4R.york::log_message(wrap_tower_log, "error", "Wind Vector Rotation", agg_period[i,], e)
+        return(NULL)
+      })
 
+    if(is.null(eddy.data)){next}
 
+    # Units -------------------------------------------------------------------
+    eddy.data = tryCatch({
+      eddy4R.york::assign_input_units(eddy.data, para)},
+      error = function(e){
+        eddy4R.york::log_message(wrap_tower_log, "error", "Units", agg_period[i,], e)
+        return(NULL)
+      })
 
+    if(is.null(eddy.data)){next}
 
-      # sort units
-      eddy.data = eddy4R.york::assign_input_units(eddy.data, para)
+    # calculate time-domain fluxes (classical EC) -----------------------------
+    REYN = tryCatch({
+      eddy4R.turb::wrap.flux(data = eddy.data,
+                             AlgBase = para$AlgBase,
+                             ListGasSclr = para$ListGasSclr)},
+      error = function(e){
+        eddy4R.york::log_message(wrap_tower_log, "error", "Flux Wrapper", agg_period[i,], e)
+        return(NULL)
+      })
 
+    if(is.null(REYN)){next}
 
-      # calculate time-domain fluxes (classical EC) -----------------------------
-      REYN = eddy4R.turb::wrap.flux(data = eddy.data,
-                                    AlgBase = para$AlgBase,
-                                    ListGasSclr = para$ListGasSclr)
-
-
-
-      # stationarity testing ----------------------------------------------------
-      REYN$stna = eddy4R.turb::def.stna(data=REYN$data,
-                                        MethStna=c(1, 2, 3)[3],
-                                        NumSubSamp=para$agg_period/300,
-                                        corTempPot=FALSE,
-                                        whrVar = para$stnaVar,
-                                        presTempPot=eddy4R.base::IntlNatu$Pres00,
-                                        vrbs = F,
-                                        ListGasSclr = para$ListGasSclr)
-
-
-      # ITC ---------------------------------------------------------------------
-      REYN$itc <- eddy4R.turb::def.itc(stblObkv = REYN$mean$paraStbl,
-                                       lat = para$Lat,
-                                       VarInp = "all",
-                                       sd = data.frame(
-                                         u_hor = REYN$sd$veloXaxsHor,
-                                         w_hor = REYN$sd$veloZaxsHor,
-                                         T_air = REYN$sd$tempAir),
-                                       varScal = data.frame(
-                                         u_star = REYN$mean$veloFric,
-                                         T_star_SL = REYN$mean$tempScalAtmSurf),
-                                       CorTemp = FALSE)
-
-
-      # Length Scales -----------------------------------------------------------
-      REYN$isca = eddy4R.york::wrap.isca(REYN,
-                                         species = para$species,
-                                         speciesRatioName = para$speciesRatioName,
-                                         PltfEc = para$PltfEc)
-
-
-
-      # flux error calculations -------------------------------------------------
-      REYN$error = eddy4R.turb::def.ucrt.samp(data = NULL,
-                                              distIsca=REYN$isca,
-                                              valuMean=REYN$mean,
-                                              coefCorr=REYN$corr,
-                                              distMean=mean(REYN$data$unixTime-min(REYN$data$unixTime)),
-                                              timeFold = 0,
-                                              spcsNameRtio = para$speciesRatioName,
-                                              spcsNameFlux = paste0("flux", para$species)
-      )
-
-      # flux limit of detection calculations ------------------------------------
-      REYN$lod  <-  eddy4R.york::def.lod(REYN,
-                                         measCol = para$cross_correlation_vars,
-                                         freq = para$freq)
+    # stationarity testing ----------------------------------------------------
+    REYN$stna = tryCatch({
+      eddy4R.turb::def.stna(data=REYN$data,
+                            MethStna=c(1, 2, 3)[3],
+                            NumSubSamp=para$agg_period/300,
+                            corTempPot=FALSE,
+                            whrVar = para$stnaVar,
+                            presTempPot=eddy4R.base::IntlNatu$Pres00,
+                            vrbs = F,
+                            ListGasSclr = para$ListGasSclr)},
+      error = function(e){
+        eddy4R.york::log_message(wrap_tower_log, "error", "Stationarity", agg_period[i,], e)
+        return(NULL)
+      })
 
 
-      # Write -------------------------------------------------------------------
+    # ITC ---------------------------------------------------------------------
+    REYN$itc <- tryCatch({
+      eddy4R.turb::def.itc(stblObkv = REYN$mean$paraStbl,
+                           lat = para$Lat,
+                           VarInp = "all",
+                           sd = data.frame(
+                             u_hor = REYN$sd$veloXaxsHor,
+                             w_hor = REYN$sd$veloZaxsHor,
+                             T_air = REYN$sd$tempAir),
+                           varScal = data.frame(
+                             u_star = REYN$mean$veloFric,
+                             T_star_SL = REYN$mean$tempScalAtmSurf),
+                           CorTemp = FALSE)},
+      error = function(e){
+        eddy4R.york::log_message(wrap_tower_log, "error", "ITC", agg_period[i,], e)
+        return(NULL)
+      })
+
+
+    # Length Scales -----------------------------------------------------------
+    REYN$isca = tryCatch({
+      eddy4R.york::wrap.isca(REYN,
+                             species = para$species,
+                             speciesRatioName = para$speciesRatioName,
+                             PltfEc = para$PltfEc)},
+      error = function(e){
+        eddy4R.york::log_message(wrap_tower_log, "error", "Length Scales", agg_period[i,], e)
+        return(NULL)
+      })
+
+
+
+    # flux error calculations -------------------------------------------------
+    REYN$error = tryCatch({
+      eddy4R.turb::def.ucrt.samp(data = NULL,
+                                 distIsca=REYN$isca,
+                                 valuMean=REYN$mean,
+                                 coefCorr=REYN$corr,
+                                 distMean=mean(REYN$data$unixTime-min(REYN$data$unixTime)),
+                                 timeFold = 0,
+                                 spcsNameRtio = para$speciesRatioName,
+                                 spcsNameFlux = paste0("flux", para$species))},
+      error = function(e){
+        eddy4R.york::log_message(wrap_tower_log, "error", "def.ucrt.samp", agg_period[i,], e)
+        return(NULL)
+      })
+
+    # flux limit of detection calculations ------------------------------------
+    REYN$lod  <-  tryCatch({
+      eddy4R.york::def.lod(REYN,
+                           measCol = para$cross_correlation_vars,
+                           freq = para$freq)},
+      error = function(e) {
+        eddy4R.york::log_message(wrap_tower_log, "error", "def.ucrt.samp", agg_period[i,], e)
+        return(NULL)
+      })
+
+
+
+    # Write -------------------------------------------------------------------
+    tryCatch({
       eddy4R.york::write.REYN(REYN,
                               lag_out,
                               DirOut = para$DirOut,
                               analysis = para$analysis,
                               tz = para$tz,
                               write_fast_data = para$write_fast_data,
-                              subDirMonthly = para$subDirMonthly
-                              )
-
-    }
+                              subDirMonthly = para$subDirMonthly)},
+      error = function(e){
+        eddy4R.york::log_message(wrap_tower_log, "error", "File Writing", agg_period[i,], e)
+        return(NULL)
+      })
 
   }
   print("Run Complete!")

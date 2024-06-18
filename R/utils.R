@@ -92,3 +92,57 @@ def.rot.mat = function(degrees){
     ncol = 2)
 }
 
+#' Log eddy4.york
+#'
+#' Uses a logger object created by eddy4R.base::Logger.Singleton and writes a log message of the format:
+#' timestamp log_level: errorType | period: aggPeriodText | errorSimple
+#'
+#' @param logger the logger object
+#' @param logLevel one of warn, error, info or debug
+#' @param header character string describing the succinctly describing where in the workflow this is being logged from.
+#' @param aggPeriod \code{agg_period[i, ]}
+#' @param error the simpleError caught by tryCatch
+#'
+#' @export
+
+log_message = function(logger, logLevel, header, aggPeriod, error = NULL){
+
+  quiet <- function(x) {
+    sink(tempfile())
+    on.exit(sink())
+    invisible(force(x))
+  }
+
+  aggPeriodText = paste(aggPeriod$avg_start,aggPeriod$avg_end, sep = " - ")
+
+  if(is.null(error)){
+    quiet(
+      logger$log_message(level = logLevel,
+                         message = paste0(header," | period: ",aggPeriodText))
+    )
+  }else{
+
+    if("simpleError" %in% class(error)){
+      if(!is.null(error$parent)){
+        errorString = paste(error$message,
+                            as.character(error$parent))
+      }else{
+        errorString = error$message
+      }
+    }else{
+      errorString = error
+    }
+
+    quiet(
+    logger$log_message(level = logLevel,
+                       message = paste0(header," | period: ",aggPeriodText,
+                                        " | Error: ",errorString))
+    )
+  }
+
+}
+
+
+
+
+

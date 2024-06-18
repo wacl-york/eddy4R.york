@@ -13,24 +13,22 @@
 #'
 #' @param eddy.data input data
 #' @param para params list
-#' @param file_count current iteration of aggregation period loop
+#' @param aggPeriod \code{agg_period[i,]}
+#' @param logger logger object
 #'
 #' @export
 
 def.valid.input = function(eddy.data,
                            para,
-                           file_count){
+                           aggPeriod,
+                           logger){
 
-  error_list = list()
   skip_scalar = c()
 
   # Is there anything in the file at all?
 
   if(nrow(eddy.data) == 0){
-    error_list = add_err("No data in file",error_list,location = "input")
-    valid = list(error_list = error_list,
-                 skip_scalar = skip_scalar)
-    return(valid) # if the file is empty, do not continue other tests, just skip file
+    stop("No data in file")
   }
 
   # Are all sets of data nominally present?
@@ -46,15 +44,13 @@ def.valid.input = function(eddy.data,
       paste0(collapse = ", ")
 
     if(err_names != ""){
-      if(length(req_names[name_test]) > 1)
+      if(length(req_names[name_test]) > 1){
         verb = " are"
-      else
-        verb = " is"
+      }else{
+        verb = " is"}
 
-      error_list = add_err((paste0(err_names,verb, " missing from ",para$files[file_count])),error_list,location = "input")
-      valid = list(error_list = error_list,
-                   skip_scalar = skip_scalar)
-      return(valid) # if the correct columns are not present, do not continue other tests, just skip file
+      stop(paste0(err_names,verb, " missing"))
+      # if the correct columns are not present, do not continue other tests, just skip file
     }
   }
 
@@ -65,7 +61,7 @@ def.valid.input = function(eddy.data,
   classes = classes[classes != "numeric"]
 
   if(length(classes) != 0){
-    error_list = add_err("Input files can only contain, numeric columns",error_list,location = "input")
+    stop("Input files can only contain, numeric columns")
   }
 
   ## Test missing data
@@ -75,12 +71,12 @@ def.valid.input = function(eddy.data,
     sd_data = stats::sd(eddy.data[,var],na.rm = T)
 
     if(missing_data/nrow(eddy.data) >= para$missing_thresh){
-      error_list = add_err(paste0("Critical variable ",var," is missing greater than ",para$missing_thresh*100,"% of data"),
-                           error_list,location = "input")
+      stop(paste0("Critical variable ",var," is missing greater than ",para$missing_thresh*100,"% of data"))
     }
-    if(sd_data == 0 | is.na(sd_data))
-      error_list = add_err(paste0("Critical variable ",var," has a standard deviation of 0, or has no data"),
-                           error_list,location = "input")
+
+    if(sd_data == 0 | is.na(sd_data)){
+      stop(paste0("Critical variable ",var," has a standard deviation of 0, or has no data"))
+    }
 
   }
   #  Continue but missing scalars must be handled in the workflow
@@ -94,18 +90,31 @@ def.valid.input = function(eddy.data,
 
     sd_data = stats::sd(eddy.data[,var],na.rm = T)
 
-    if(missing_data/nrow(eddy.data) >= para$missing_thresh){
-      error_list = add_err(paste0(" Optional scalar ",var," is missing greater than ",para$missing_thresh*100,"% of data"),
-                           error_list,location = "input",condition = "continue")
-      skip_scalar = c(skip_scalar,para$species[i])
 
-      eddy.data = dplyr::select(eddy.data, -tidyselect::all_of(var))
+    skipFlag = 0
+    if(missing_data/nrow(eddy.data) >= para$missing_thresh){
+
+      eddy4R.york::log_message(logger = logger,
+                               logLevel = "warn",
+                               header = paste0("Optional scalar ",var," is missing greater than ",para$missing_thresh*100,"% of data"),
+                               aggPeriod)
+      skipFlag = skipFlag+1
     }
+
     if(sd_data == 0 | is.na(sd_data)){
-      error_list = add_err(paste0("Optional scalar ",var," has a standard deviation of 0, or has no data"),
-                           error_list,location = "input",condition = "continue")
-      skip_scalar = c(skip_scalar,para$species[i])
+      eddy4R.york::log_message(logger = logger,
+                               logLevel = "warn",
+                               header = paste0("Optional scalar ",var," has a standard deviation of 0, or has no data"),
+                               aggPeriod)
+
+
+      skipFlag = skipFlag+1
+
+    }
+
+    if(skipFlag > 0){
       eddy.data = dplyr::select(eddy.data, -tidyselect::all_of(var))
+      skip_scalar = c(skip_scalar,para$species[i])
     }
   }
 
@@ -118,13 +127,8 @@ def.valid.input = function(eddy.data,
   }
 
   if(!nrow(eddy.data)>((1-para$missing_thresh) * para$agg_period * para$freq)){
-    error_list = add_err(paste0("Not enough data in file, < 90%"),
-                         error_list,location = "input")}
+    stop("Not enough data in file, < 90%")
+  }
 
-
-  skip_scalar = stringr::str_replace_all(skip_scalar,"FD_mole_","") %>%
-    unique()
-
-  list(error_list = error_list,
-       skip_scalar = skip_scalar)
+  unique(skip_scalar)
 }

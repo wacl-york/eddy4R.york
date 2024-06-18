@@ -4,14 +4,16 @@
 \alias{def.valid.input}
 \title{Valid Input}
 \usage{
-def.valid.input(eddy.data, para, file_count)
+def.valid.input(eddy.data, para, aggPeriod, logger)
 }
 \arguments{
 \item{eddy.data}{input data}
 
 \item{para}{params list}
 
-\item{file_count}{current iteration of aggregation period loop}
+\item{aggPeriod}{\code{agg_period[i,]}}
+
+\item{logger}{logger object}
 }
 \description{
 Checks input file for several key requirements \cr
