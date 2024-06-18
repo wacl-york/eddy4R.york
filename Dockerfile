@@ -2,9 +2,6 @@
 # probably change to annual stable release when flux sclr changes are done
 FROM quay.io/battelleecology/eddy4r:deve 
 
-# Need to auth while {eddy4R.york} is private
-ARG GITHUB_AUTH
-
 # code for installing {eddy4R.york}, reinstalls the local copy of {eddy4R.turb} and installs {progress}
 # can remove the local install of eddy4R.turb once flux sclr changes are done
 COPY docker/install.r .
@@ -14,7 +11,7 @@ COPY --chown=rstudio:rstudio docker/rstudio-prefs.json /home/rstudio/.config/rst
 # once the flux sclr changes are done this can be removed
 COPY docker/eddy4R.turb /home/eddy/eddy4R/pack/eddy4R.turb/
 
-RUN Rscript install.r $GITHUB_AUTH
+RUN --mount=type=secret,id=GITHUB_AUTH Rscript install.r
 
 LABEL org.opencontainers.image.source=https://github.com/wacl-york/eddy4R.york
 
