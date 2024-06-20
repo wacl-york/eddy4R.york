@@ -18,6 +18,10 @@ wrap.towr = function(paraMain,
 
   Logger = get("Logger.Singleton", getNamespace("eddy4R.base"))
 
+  if(!dir.exists(paraMain$DirOut)){
+    dir.create(paraMain$DirOut, recursive = T)
+  }
+
   wrap_tower_log = Logger$new()
   wrap_tower_log$set_log_file(file.path(paraMain$DirOut, "wrap_tower_logfile.txt"))
   wrap_tower_log$log_message(level = "info", paste("Begining run: ",
@@ -30,10 +34,6 @@ wrap.towr = function(paraMain,
     start = 1
   }else{
     start = resume
-  }
-
-  if(!dir.exists(paraMain$DirOut)){
-    dir.create(paraMain$DirOut, recursive = T)
   }
 
   saveRDS(paraMain,file = file.path(paraMain$DirOut, paste0(paraMain$analysis,"_para.RDS")))
@@ -264,7 +264,7 @@ wrap.towr = function(paraMain,
                               analysis = para$analysis,
                               tz = para$tz,
                               write_fast_data = para$write_fast_data,
-                              subDirMonthly = para$subDirMonthly)},
+                              subDir = para$subDir)},
       error = function(e){
         eddy4R.york::log_message(wrap_tower_log, "error", "File Writing", agg_period[i,], e)
         return(NULL)

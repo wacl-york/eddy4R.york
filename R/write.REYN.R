@@ -8,7 +8,7 @@
 #' @param analysis name of analysis - used to construct file name
 #' @param tz timezone
 #' @param write_fast_data TRUE/FALSE should the fast (base, diff, conv, data) outputs be written to disk. They will be compressed using gzip
-#' @param subDirMonthly TRUE/FALSE should outputs be split into subdirectorys following %Y / %m of the aggregation start date.
+#' @param subDir one of c("none", "monthly", "daily") - default none. Should the outputs be split into monthly or daily subdirectories
 #'
 #' @export
 
@@ -18,7 +18,7 @@ write.REYN = function(REYN,
                       analysis,
                       tz,
                       write_fast_data,
-                      subDirMonthly){
+                      subDir){
 
   REYN = c(REYN, lag_out)
   REYN$eddy.data = NULL
@@ -26,11 +26,17 @@ write.REYN = function(REYN,
   unixTimeMin = min(REYN$data$unixTime,na.rm = T)
   fileStart = as.POSIXct(unixTimeMin, tz = tz, origin = "1970-01-01")
 
-  if(subDirMonthly){
+  if(subDir != "none")){
     fileYear = format(fileStart, "%Y")
     fileMonth = format(fileStart, "%m")
+    fileDay = format(fileStart, "%d")
 
-    DirOut = file.path(DirOut, fileYear, fileMonth)
+    if(subDir == "monthly"){
+      DirOut = file.path(DirOut, fileYear, fileMonth)
+    }else{
+      DirOut = file.path(DirOut, fileYear, fileMonth, fileDay)
+    }
+
 
   }
 

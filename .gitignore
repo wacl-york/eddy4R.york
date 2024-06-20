@@ -51,4 +51,4 @@ rsconnect/
 
 # 
 testdata/*
-.env
+*.env

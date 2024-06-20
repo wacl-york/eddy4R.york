@@ -66,7 +66,7 @@
 #' @param DirWrk root of the data directory
 #' @param DirInp must be supplied - relative to DirWrk
 #' @param DirOut by default is created as \code{file.path(DirWrk,"out",site_name, run_id, analysis)}, can be overridden here.
-#' @param subDirMonthly should the outputs be split into monthly subdirectories. Default FALSE
+#' @param subDir one of c("none", "monthly", "daily") - default none. Should the outputs be split into monthly or daily subdirectories
 #' @param cross_correlation_vars created from species plus temperature and water vapour
 #' @param despike_vars created from species plus temperature and water vapour
 #' @param wavelet_ec supply argument true or false for conducting wavelet eddy-covariance
@@ -142,7 +142,7 @@ def.para = function(file_duration = 3600,# Input Data information
                     DirInp,
                     DirWrk,
                     DirOut = NULL,
-                    subDirMonthly = FALSE,
+                    subDir = c("none", "monthly", "daily")[1],
 
                     # Site Info
                     PltfEc = "towr",
