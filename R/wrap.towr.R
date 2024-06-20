@@ -87,8 +87,10 @@ wrap.towr = function(paraMain,
         return("valid_error")
       })
 
-    if(skip_scalar == "valid_error"){
-      next
+    if(!is.null(skip_scalar)){
+      if(skip_scalar == "valid_error"){
+        next
+      }
     }
 
     if(length(skip_scalar) > 0){
