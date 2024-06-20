@@ -26,7 +26,7 @@ write.REYN = function(REYN,
   unixTimeMin = min(REYN$data$unixTime,na.rm = T)
   fileStart = as.POSIXct(unixTimeMin, tz = tz, origin = "1970-01-01")
 
-  if(subDir != "none")){
+  if(subDir != "none"){
     fileYear = format(fileStart, "%Y")
     fileMonth = format(fileStart, "%m")
     fileDay = format(fileStart, "%d")

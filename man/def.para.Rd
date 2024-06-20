@@ -50,7 +50,7 @@ def.para(
   DirInp,
   DirWrk,
   DirOut = NULL,
-  subDirMonthly = FALSE,
+  subDir = c("none", "monthly", "daily")[1],
   PltfEc = "towr",
   TimeDiffUtcLt = 0,
   ZoneUtm = data.frame(Zone = 30, Estg = 698478, Nthg = 5711690),
@@ -173,7 +173,7 @@ either numeric vector for plnrFitType = "simple" or data.frame for plnrFitType =
 
 \item{DirOut}{by default is created as \code{file.path(DirWrk,"out",site_name, run_id, analysis)}, can be overridden here.}
 
-\item{subDirMonthly}{should the outputs be split into monthly subdirectories. Default FALSE}
+\item{subDir}{one of c("none", "monthly", "daily") - default none. Should the outputs be split into monthly or daily subdirectories}
 
 \item{PltfEc}{switch for eddy4r functions between tower and aircraft. towr,airc}
 

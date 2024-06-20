@@ -4,7 +4,7 @@
 \alias{write.REYN}
 \title{Write REYN}
 \usage{
-write.REYN(REYN, lag_out, DirOut, analysis, tz, write_fast_data, subDirMonthly)
+write.REYN(REYN, lag_out, DirOut, analysis, tz, write_fast_data, subDir)
 }
 \arguments{
 \item{REYN}{REYN List of objects at the end of calcualtions}
@@ -19,7 +19,7 @@ write.REYN(REYN, lag_out, DirOut, analysis, tz, write_fast_data, subDirMonthly)
 
 \item{write_fast_data}{TRUE/FALSE should the fast (base, diff, conv, data) outputs be written to disk. They will be compressed using gzip}
 
-\item{subDirMonthly}{TRUE/FALSE should outputs be split into subdirectorys following \%Y / \%m of the aggregation start date.}
+\item{subDir}{one of c("none", "monthly", "daily") - default none. Should the outputs be split into monthly or daily subdirectories}
 }
 \description{
 Writes the data associated with the REYN (classical ec) processing.
