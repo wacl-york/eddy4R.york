@@ -5,7 +5,7 @@ eddy4R.york is an R package that extends [eddy4R](https://github.com/NEONScience
 
 The major feature allows for flux workflows to be defined by relatively short configuration scripts, making it simple to iterate on the parameters used, while maintaining reproducibility. 
 
-#### Some other features include: 
+### Some other features include: 
 - Flexible aggregation periods - `def.avg()` determines what files are relevant to the user defined aggregation period so inputs can be stored in any time bins e.g. if files are organised into 30 min files, but the user wishes to to calculate fluxes hourly, the correct files will be loaded for this to occur.
 
 - Support for double rotation - `wrap.rot()` implements double rotation and wraps it with the existing planar fit capability. Additionally allows for sector or time based changes to planar fit coefficients.
@@ -14,7 +14,7 @@ The major feature allows for flux workflows to be defined by relatively short co
 
 - Error catching and logging 
 
-#### Getting Started
+### Getting Started
 
 > :page_facing_up: **Note**  \
 > As eddy4R is provided as a docker image and as such eddy4R.york provides updated image - currently based on the [eddy4R:deve](https://quay.io/repository/battelleecology/eddy4r) image, but this will change to the stable annual releases when available.
@@ -109,15 +109,139 @@ Input files contain the following columns. They should all be read by `read.csv(
     12. Limits of Detection - `def.lod()`
     13. Write files - `write.REYN()`
 
+## Running on Viking
 
+The following outlines the steps to get the eddy4r.york container running on the University of York Viking HPC. It assumes you are already registered to use Viking. If not you can follow the guidelines on the [Viking docs](https://vikingdocs.york.ac.uk/) pages.
 
+### Installing the Container
 
+Docker is not available on Viking - Apptainer is used instead. It is simple to convert the docker container to an apptainer .sif. Currently you will need to store the .sif on Viking. This guide stores the image on `/mnt/longship` so that it is not accidentally deleted from `scratch` after 90 days - as running the container does not update the modified flag of the file. Run the following commands, replacing `<usr>` with your username. Note that this step has to be performed on the login node as interactive jobs only have read only access to Longship.
 
+```bash
+module load Apptainer/latest
 
+apptainer pull --docker-login /mnt/longship/users/<usr>/eddy4r.york docker://ghcr.io/wacl-york/eddy4r.york:0.1
+```
 
+Once this is complete the file `eddy4r.york` should exist in `/mnt/longship/users/<usr>/`
 
+### Running the Container
 
+#### Interactively  
 
+Begin an interactive job with
+
+```bash
+srun  srun --time=08:00:00 --partition=interactive --pty /bin/bash
+```
+
+Then load apptainer and launch the container. In this example we bind your Viking `scratch` directory to the `/scratch` directory inside the container. You can adjust the `def.para` example above to use: `DirWrk = "/scratch/path/to/data"`. 
+
+```
+module load Apptainer/latest
+
+apptainer exec /users/<usr>/scratch:/scratch /mnt/longship/users/<usr>/eddy4r.york R
+```
+> :page_facing_up: **Note**  \
+> The container must be launched using `exec` rather than `run` so that the RStudio server can be overridden with a simple R session. RStudio server requires some root permissions to run that are not available here. 
+
+You should now be inside the container, have access to scratch and be able to source a config script.
+
+#### Running as a Job
+
+You can directly source a config file from the `exec` command. The path to your script needs to be visible to the container, which is simplest when it is located within the directory you have assigned via `--bind`.
+
+```
+apptainer exec --bind /users/<usr>/scratch:/scratch /mnt/longship/users/<usr>/eddy4r.york Rscript '/scratch/config.R'
+```
+
+You can use this to run `eddy4R` as a job using a .job file similar to:
+
+```
+#!/usr/bin/env bash
+#SBATCH --job-name=my_job               # Job name
+#SBATCH --partition=nodes               # What partition the job should run on
+#SBATCH --time=0-00:15:00               # Time limit (DD-HH:MM:SS)
+#SBATCH --ntasks=1                      # Number of MPI tasks to request
+#SBATCH --cpus-per-task=1               # Number of CPU cores per MPI task
+#SBATCH --mem=1G                        # Total memory to request
+#SBATCH --account=dept-proj-year        # Project account to use
+#SBATCH --mail-type=END,FAIL            # Mail events (NONE, BEGIN, END, FAIL, ALL)
+#SBATCH --mail-user=abc123@york.ac.uk   # Where to send mail
+#SBATCH --output=%x_log/%x-%j.log       # Standard output log
+#SBATCH --error=%x_err/%x-%j.err        # Standard error log
+
+# Abort if any command fails
+set -e
+
+# Purge any previously loaded modules
+module purge
+
+# Load modules
+ml Apptainer/latest
+
+# run container
+apptainer exec --bind /users/<usr>/scratch:/scratch /mnt/longship/users/<usr>/eddy4r.york Rscript '/scratch/config.R'
+```
+
+#### Running as an Array Job
+A benefit of running eddy4R as a container is parallelisation is reasonably straight forward. You should run one container per aggregation period, which can be done by modifying `para$files` to only contain the relevant aggregation period. Depending on your files this may require pre calculation of the aggregation periods. For this example we will assume a 1:1 match between input file and aggregation period - i.e. calculating 1 hourly fluxes from 1 hourly input files, with no exceptions - so we do not need to pre calculate aggregation periods. 
+
+Modify your config script to name the analysis after the input file, passed by the `FILE_SELECT` environment variable. This will make each container write to its own folder to avoid conflicts. After `def.para()` has been run, edit `para$files` to only contain the desired input file.
+
+```
+para = eddy4R.york::def.para(
+  ...
+  analysis = stringr::str_remove(Sys.getenv("FILE_SELECT"), ".csv"),
+  ...
+  )
+
+para$files = para$files[para$files %in% Sys.getenv("fileSelect")]
+
+eddy4R.york::wrap.towr(para)
+```
+
+Then, configure an array job similar to:
+```
+#!/usr/bin/env bash
+#SBATCH --job-name=my_job               # Job name
+#SBATCH --partition=nodes               # What partition the job should run on
+#SBATCH --time=0-00:01:00               # Time limit (DD-HH:MM:SS)
+#SBATCH --ntasks=1                      # Number of MPI tasks to request
+#SBATCH --cpus-per-task=1               # Number of CPU cores per MPI task
+#SBATCH --mem=1G                        # Total memory to request
+#SBATCH --account=dept-proj-year        # Project account to use
+#SBATCH --mail-type=END,FAIL            # Mail events (NONE, BEGIN, END, FAIL, ALL)
+#SBATCH --mail-user=abc123@york.ac.uk   # Where to send mail
+#SBATCH --output=%x_log/%x-%j.log       # Standard output log
+#SBATCH --error=%x_err/%x-%j.err        # Standard error log
+#SBATCH --array=0-23%10
+
+# Abort if any command fails
+set -e
+
+# Purge any previously loaded modules
+module purge
+
+# Load modules
+ml Apptainer/latest
+
+# Filter the input files based on the array ID
+FILES=(/users/<usr>/scratch/in/*)
+FULLFILE=${FILES[$SLURM_ARRAY_TASK_ID]}
+FILE=$(basename -- "$FULLFILE")
+
+# run container
+srun apptainer exec --env FILE_SELECT=${FILE} --bind /users/<usr>/scratch:/scratch /mnt/longship/users/<usr>/eddy4r.york Rscript '/scratch/eddy4R/testdata/test_config2.R'
+```
+
+>:exclamation: **Important** \
+> You must ammend the `--array=0-23%10` to match the number of containers you expect to spawn. Here we are processing 24 hours of data 10 jobs at a time. We filter the input files using the `$SLURM_ARRAY_TASK_ID` and pass this to the container using `--env`, which is then avalible to R via `Sys.getenv()`.
+
+> :page_facing_up: **Note** \
+> You can should adjust the `--time` argument to be greater than but close to the time you expect each container to take to run. For hourly input files this is around 1 min, but you may wish to test this in advance.
+
+You can then trigger the job via `sbatch` as usual. 
 
 
 
