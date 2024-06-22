@@ -1,2 +1,0 @@
-docker run --name eddy4r.york --rm -e DISABLE_AUTH=true -d -p 8787:8787 -v /c/Users/will/r_packages/eddy4r.york:/home/rstudio/eddy4r.york/ eddy4r.york
-docker run --name deve_old    --rm -e DISABLE_AUTH=true -d -p 8788:8787 -v /c/Users/will/docker-data:/home/rstudio/willdrysdale/eddy deve_old
