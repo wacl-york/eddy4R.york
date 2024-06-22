@@ -6,21 +6,21 @@
 \usage{
 def.avg(
   files,
-  mask = "NOx_5Hz_yymmdd_HHMM0_170322_000015_cor_temp",
-  file_duration = 3600,
+  fileMask = "NOx_5Hz_yymmdd_HHMM0_170322_000015_cor_temp",
+  fileDuration = 3600,
   aggr_dur = 7200,
   freq = 5,
   tz,
-  first_file_begin = NULL,
-  final_file_begin = NULL
+  fileFirstStart = NULL,
+  fileLastStart = NULL
 )
 }
 \arguments{
 \item{files}{vector of files}
 
-\item{mask}{string mask that can be passed to \code{as.POSIXct(format = mask)}}
+\item{fileMask}{string mask that can be passed to \code{as.POSIXct(format = fileMask)}}
 
-\item{file_duration}{numeric length of files in seconds}
+\item{fileDuration}{numeric length of files in seconds}
 
 \item{aggr_dur}{numeric required flux duration}
 
@@ -28,10 +28,10 @@ def.avg(
 
 \item{tz}{string timezone of date in file name}
 
-\item{first_file_begin}{optional. This is usually equal to the timestamp in the first file name
+\item{fileFirstStart}{optional. This is usually equal to the timestamp in the first file name
 can be overridden here if the first file does not at the begining of a theoretical aggregation period}
 
-\item{final_file_begin}{optional. as first file begin but for the last file.}
+\item{fileLastStart}{optional. as first file begin but for the last file.}
 }
 \description{
 Determing the files that correspond to the selected flux averaging period using a mask for the file name

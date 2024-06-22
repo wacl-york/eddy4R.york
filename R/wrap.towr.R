@@ -25,9 +25,9 @@ wrap.towr = function(paraMain,
   wrap_tower_log = Logger$new()
   wrap_tower_log$set_log_file(file.path(paraMain$DirOut, "wrap_tower_logfile.txt"))
   wrap_tower_log$log_message(level = "info", paste("Begining run: ",
-                                                   paraMain$site_name,
+                                                   paraMain$siteName,
                                                    paraMain$analysis,
-                                                   paraMain$run_id,
+                                                   paraMain$runID,
                                                    sep = " - "))
 
   if(is.null(resume)){
@@ -40,23 +40,23 @@ wrap.towr = function(paraMain,
 
   #determine flux aggregation
   det_avg = eddy4R.york::def.avg(files = paraMain$files,
-                                 mask = paraMain$file_mask,
-                                 file_duration = paraMain$file_duration,
-                                 aggr_dur = paraMain$agg_period,
+                                 fileMask = paraMain$fileMask,
+                                 fileDuration = paraMain$fileDuration,
+                                 aggr_dur = paraMain$aggPeriod,
                                  freq = paraMain$freq,
                                  tz = paraMain$tz,
-                                 first_file_begin = paraMain$first_file_begin,
-                                 final_file_begin = paraMain$final_file_begin)
+                                 fileFirstStart = paraMain$fileFirstStart,
+                                 fileLastStart = paraMain$fileLastStart)
 
   agg_files = det_avg$agg_files
-  agg_period = det_avg$agg_period
+  aggPeriod = det_avg$aggPeriod
 
   for(i in start:length(agg_files)){
 
     # if there are no files for this aggregationg period, skip
     if(is.na(agg_files[i])){
 
-      eddy4R.york::log_message(wrap_tower_log, "warn", "File Aggregation - no files", agg_period[i,])
+      eddy4R.york::log_message(wrap_tower_log, "warn", "File Aggregation - no files", aggPeriod[i,])
 
       next
     }
@@ -66,14 +66,14 @@ wrap.towr = function(paraMain,
       eddy4R.york::read_input(DirInp = paraMain$DirInp,
                               dateFormat = paraMain$dateFormat,
                               agg_f = agg_files[[i]],
-                              agg_p = agg_period[i,],
+                              agg_p = aggregationPeriod[i,],
                               tz = paraMain$tz,
                               freq = paraMain$freq,
                               idepVar = paraMain$idepVar,
                               PltfEc=paraMain$PltfEc)
     },
     error = function(e){
-      eddy4R.york::log_message(wrap_tower_log, "error", "Read Files", agg_period[i,], e)
+      eddy4R.york::log_message(wrap_tower_log, "error", "Read Files", aggregationPeriod[i,], e)
       return(NULL)
     })
 
@@ -81,9 +81,9 @@ wrap.towr = function(paraMain,
 
     # Check input file
     skip_scalar = tryCatch({
-      eddy4R.york::def.valid.input(eddy.data, paraMain, agg_period[i,], wrap_tower_log)},
+      eddy4R.york::def.valid.input(eddy.data, paraMain, aggregationPeriod[i,], wrap_tower_log)},
       error = function(e){
-        eddy4R.york::log_message(wrap_tower_log, "error", "Valid Input", agg_period[i,], e)
+        eddy4R.york::log_message(wrap_tower_log, "error", "Valid Input", aggregationPeriod[i,], e)
         return("valid_error")
       })
 
@@ -103,7 +103,7 @@ wrap.towr = function(paraMain,
     eddy.data = tryCatch({
       eddy4R.york::wrap.anem.cor(eddy.data,para)},
       error = function(e){
-        eddy4R.york::log_message(wrap_tower_log, "error", "Anemometer Correction", agg_period[i,], e)
+        eddy4R.york::log_message(wrap_tower_log, "error", "Anemometer Correction", aggregationPeriod[i,], e)
         return(NULL)
       })
 
@@ -113,11 +113,11 @@ wrap.towr = function(paraMain,
     if(para$despike){
       eddy.data = tryCatch({
         eddy4R.york::wrap.despike(eddy.data = eddy.data,
-                                  despike_vars = para$despike_vars,
-                                  despike_threshold = para$despike_threshold,
+                                  despikeVars = para$despikeVars,
+                                  despikeThreshold = para$despikeThreshold,
                                   verbose = FALSE)},
         error = function(e){
-          eddy4R.york::log_message(wrap_tower_log, "error", "Despiking", agg_period[i,], e)
+          eddy4R.york::log_message(wrap_tower_log, "error", "Despiking", aggregationPeriod[i,], e)
           return(NULL)
         })
 
@@ -125,11 +125,11 @@ wrap.towr = function(paraMain,
     }
 
     # Maximize cross correlation ----------------------------------------------
-    if(para$lag_correction){
+    if(para$lagApplyCorrection){
       lag_out = tryCatch({
         eddy4R.york::wrap.lag(eddy.data,para)},
         error = function(e){
-          eddy4R.york::log_message(wrap_tower_log, "error", "Lag Correction", agg_period[i,], e)
+          eddy4R.york::log_message(wrap_tower_log, "error", "Lag Correction", aggregationPeriod[i,], e)
           return(NULL)
         })
 
@@ -142,7 +142,7 @@ wrap.towr = function(paraMain,
     eddy.data = tryCatch({
       eddy4R.york::def.miss.hndl(eddy.data,para)},
       error = function(e){
-        eddy4R.york::log_message(wrap_tower_log, "error", "Handel Missing Values", agg_period[i,], e)
+        eddy4R.york::log_message(wrap_tower_log, "error", "Handel Missing Values", aggregationPeriod[i,], e)
         return(NULL)
       })
 
@@ -155,7 +155,7 @@ wrap.towr = function(paraMain,
                             plnrFitCoef = para$plnrFitCoef,
                             plnrFitType = para$plnrFitType)},
       error = function(e){
-        eddy4R.york::log_message(wrap_tower_log, "error", "Wind Vector Rotation", agg_period[i,], e)
+        eddy4R.york::log_message(wrap_tower_log, "error", "Wind Vector Rotation", aggregationPeriod[i,], e)
         return(NULL)
       })
 
@@ -165,7 +165,7 @@ wrap.towr = function(paraMain,
     eddy.data = tryCatch({
       eddy4R.york::assign_input_units(eddy.data, para)},
       error = function(e){
-        eddy4R.york::log_message(wrap_tower_log, "error", "Units", agg_period[i,], e)
+        eddy4R.york::log_message(wrap_tower_log, "error", "Units", aggregationPeriod[i,], e)
         return(NULL)
       })
 
@@ -177,7 +177,7 @@ wrap.towr = function(paraMain,
                              AlgBase = para$AlgBase,
                              ListGasSclr = para$ListGasSclr)},
       error = function(e){
-        eddy4R.york::log_message(wrap_tower_log, "error", "Flux Wrapper", agg_period[i,], e)
+        eddy4R.york::log_message(wrap_tower_log, "error", "Flux Wrapper", aggregationPeriod[i,], e)
         return(NULL)
       })
 
@@ -187,14 +187,14 @@ wrap.towr = function(paraMain,
     REYN$stna = tryCatch({
       eddy4R.turb::def.stna(data=REYN$data,
                             MethStna=c(1, 2, 3)[3],
-                            NumSubSamp=para$agg_period/300,
+                            NumSubSamp=para$aggregationPeriod/300,
                             corTempPot=FALSE,
                             whrVar = para$stnaVar,
                             presTempPot=eddy4R.base::IntlNatu$Pres00,
                             vrbs = F,
                             ListGasSclr = para$ListGasSclr)},
       error = function(e){
-        eddy4R.york::log_message(wrap_tower_log, "error", "Stationarity", agg_period[i,], e)
+        eddy4R.york::log_message(wrap_tower_log, "error", "Stationarity", aggregationPeriod[i,], e)
         return(NULL)
       })
 
@@ -202,7 +202,7 @@ wrap.towr = function(paraMain,
     # ITC ---------------------------------------------------------------------
     REYN$itc <- tryCatch({
       eddy4R.turb::def.itc(stblObkv = REYN$mean$paraStbl,
-                           lat = para$Lat,
+                           lat = para$lat,
                            VarInp = "all",
                            sd = data.frame(
                              u_hor = REYN$sd$veloXaxsHor,
@@ -213,7 +213,7 @@ wrap.towr = function(paraMain,
                              T_star_SL = REYN$mean$tempScalAtmSurf),
                            CorTemp = FALSE)},
       error = function(e){
-        eddy4R.york::log_message(wrap_tower_log, "error", "ITC", agg_period[i,], e)
+        eddy4R.york::log_message(wrap_tower_log, "error", "ITC", aggregationPeriod[i,], e)
         return(NULL)
       })
 
@@ -225,7 +225,7 @@ wrap.towr = function(paraMain,
                              speciesRatioName = para$speciesRatioName,
                              PltfEc = para$PltfEc)},
       error = function(e){
-        eddy4R.york::log_message(wrap_tower_log, "error", "Length Scales", agg_period[i,], e)
+        eddy4R.york::log_message(wrap_tower_log, "error", "Length Scales", aggregationPeriod[i,], e)
         return(NULL)
       })
 
@@ -242,17 +242,17 @@ wrap.towr = function(paraMain,
                                  spcsNameRtio = para$speciesRatioName,
                                  spcsNameFlux = paste0("flux", para$species))},
       error = function(e){
-        eddy4R.york::log_message(wrap_tower_log, "error", "def.ucrt.samp", agg_period[i,], e)
+        eddy4R.york::log_message(wrap_tower_log, "error", "def.ucrt.samp", aggregationPeriod[i,], e)
         return(NULL)
       })
 
     # flux limit of detection calculations ------------------------------------
     REYN$lod  <-  tryCatch({
       eddy4R.york::def.lod(REYN,
-                           measCol = para$cross_correlation_vars,
+                           measCol = para$lagVars,
                            freq = para$freq)},
       error = function(e) {
-        eddy4R.york::log_message(wrap_tower_log, "error", "def.ucrt.samp", agg_period[i,], e)
+        eddy4R.york::log_message(wrap_tower_log, "error", "def.ucrt.samp", aggregationPeriod[i,], e)
         return(NULL)
       })
 
@@ -265,10 +265,10 @@ wrap.towr = function(paraMain,
                               DirOut = para$DirOut,
                               analysis = para$analysis,
                               tz = para$tz,
-                              write_fast_data = para$write_fast_data,
+                              writeFastData = para$writeFastData,
                               subDir = para$subDir)},
       error = function(e){
-        eddy4R.york::log_message(wrap_tower_log, "error", "File Writing", agg_period[i,], e)
+        eddy4R.york::log_message(wrap_tower_log, "error", "File Writing", aggregationPeriod[i,], e)
         return(NULL)
       })
 

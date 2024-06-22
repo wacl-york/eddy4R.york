@@ -4,7 +4,7 @@
 \alias{log_message}
 \title{Log eddy4.york}
 \usage{
-log_message(logger, logLevel, header, aggPeriod, error = NULL)
+log_message(logger, logLevel, header, aggregationPeriod, error = NULL)
 }
 \arguments{
 \item{logger}{the logger object}
@@ -13,11 +13,11 @@ log_message(logger, logLevel, header, aggPeriod, error = NULL)
 
 \item{header}{character string describing the succinctly describing where in the workflow this is being logged from.}
 
-\item{aggPeriod}{\code{agg_period[i, ]}}
+\item{aggregationPeriod}{\code{aggregationPeriod[i, ]}}
 
 \item{error}{the simpleError caught by tryCatch}
 }
 \description{
 Uses a logger object created by eddy4R.base::Logger.Singleton and writes a log message of the format:
-timestamp log_level: errorType | period: aggPeriodText | errorSimple
+timestamp log_level: errorType | period: aggregationPeriodText | errorSimple
 }

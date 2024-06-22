@@ -5,77 +5,84 @@
 \title{Define eddy4R.york Parameters}
 \usage{
 def.para(
-  file_duration = 3600,
-  file_mask,
+  DirInp,
+  DirWrk,
+  runID,
+  analysis,
+  fileMask,
+  fileDuration,
+  DirOut = NULL,
+  siteName = NULL,
+  writeFastData = TRUE,
+  subDir = c("none", "monthly", "daily")[1],
   species = NULL,
   speciesRatioName = NULL,
   unitList = NULL,
   freq = 5,
   files = NULL,
-  file_pattern = ".csv",
+  filePattern = ".csv",
   tz = "UTC",
   dateFormat = "\%Y-\%m-\%d \%H:\%M:\%OS",
-  required_para = c("unixTime", "distZaxsMeas", "presAtm", "distZaxsAbl"),
-  critical_variable = c("veloXaxs", "veloYaxs", "veloZaxs", "tempAir"),
+  varsRequired = c("unixTime", "distZaxsMeas", "presAtm", "distZaxsAbl"),
+  varsCritical = c("veloXaxs", "veloYaxs", "veloZaxs", "tempAir"),
   AlgBase = "trnd",
   idepVar = "unixTime",
-  agg_period = 3600,
-  missing_thresh = 0.1,
-  missing_method = c("drop", "mean")[1],
-  noc_lag = F,
-  anem_type = c("other", "CSAT3"),
-  anemometer_offset = NULL,
+  aggregationPeriod = 3600,
+  missingThreshold = 0.1,
+  missingMethod = c("drop", "mean")[1],
+  lagNOc = F,
+  anemometerType = c("other", "CSAT3"),
+  anemometerOffset = NULL,
   veloXaxs = "+veloXaxs",
   veloYaxs = "+veloYaxs",
   veloZaxs = "+veloZaxs",
-  w_boost = F,
-  lag_correction = T,
+  wBoost = F,
+  lagApplyCorrection = T,
   lagNgtvPstv = c("n", "p", "np")[1],
-  absolute_lag = -10,
-  restrict_lag_range = F,
-  lag_boundary = NULL,
+  lagDefaults = -10,
+  lagApplyRangeLimit = F,
+  lagRangeLimit = NULL,
+  lagVars = NULL,
   despike = T,
-  despike_threshold = c(5, 8, 8),
+  despikeThreshold = c(5, 8, 8),
+  despikeVars = NULL,
   MethRot = c("single", "double", "planarFit")[2],
   plnrFitCoef = NULL,
   plnrFitType = c("simple", "time", "wind")[1],
-  wlp_cor = F,
-  highfreq_cor = T,
-  file_id = "NOx_5Hz",
-  run_id = "BT_Tower",
-  file_type_out = c("csv"),
-  site_name = NULL,
-  analysis,
-  write_fast_data = TRUE,
-  DirInp,
-  DirWrk,
-  DirOut = NULL,
-  subDir = c("none", "monthly", "daily")[1],
+  lat,
   PltfEc = "towr",
-  TimeDiffUtcLt = 0,
   ZoneUtm = data.frame(Zone = 30, Estg = 698478, Nthg = 5711690),
-  ElevAslTow = 35,
-  ElevAglSens = 177,
-  ElevAglDisp = 0,
-  Lat = 51.521381,
-  first_file_begin = NULL,
-  final_file_begin = NULL,
-  cross_correlation_vars = NULL,
-  despike_vars = NULL,
+  fileFirstStart = NULL,
+  fileLastStart = NULL,
   wavelet_ec = FALSE,
   wavelet_av = "mean",
   wavelet_win = 5,
   wavelet_agg = 1,
   wavelet_cores = 2,
   wavelet_maxscale = 60,
-  footprint = F,
   ...
 )
 }
 \arguments{
-\item{file_duration}{expected duration of a complete input file (Hz)}
+\item{DirInp}{must be supplied - relative to DirWrk}
 
-\item{file_mask}{string mask that can be passed to \code{as.POSIXct(format = mask)} to decode the date in the file name}
+\item{DirWrk}{root of the data directory}
+
+\item{runID}{Used in file nameing}
+
+\item{analysis}{Used in file nameing}
+
+\item{fileMask}{string mask that can be passed to \code{as.POSIXct(format = mask)} to decode the date in the file name}
+
+\item{fileDuration}{expected duration of a complete input file (Hz)}
+
+\item{DirOut}{by default is created as \code{file.path(DirWrk,"out",siteName, runID, analysis)}, can be overridden here.}
+
+\item{siteName}{Used in file nameing}
+
+\item{writeFastData}{should high frequency intermediates be writen (diff,data, base, conv outputs from REYN)}
+
+\item{subDir}{one of c("none", "monthly", "daily") - default none. Should the outputs be split into monthly or daily subdirectories}
 
 \item{species}{vector of species names. Match with IntlNatu naming}
 
@@ -88,15 +95,15 @@ speices is a list with names that match speciesRatioName describing the units pe
 
 \item{files}{list of file names}
 
-\item{file_pattern}{pattern to help filter input directory - default .csv}
+\item{filePattern}{pattern to help filter input directory - default .csv}
 
 \item{tz}{default "UTC".}
 
 \item{dateFormat}{default \%Y-\%m-\%d \%H:\%M:\%OS"}
 
-\item{required_para}{character vector of columns that must be nominally present to pass def.valid.input()}
+\item{varsRequired}{character vector of columns that must be nominally present to pass def.valid.input()}
 
-\item{critical_variable}{these must have greater than the missing_thresh to pass def.valid.input()}
+\item{varsCritical}{these must have greater than the missingThreshold to pass def.valid.input()}
 
 \item{AlgBase}{detrending method for def.base.ec "mean","trend","ord03"}
 
@@ -105,19 +112,19 @@ containing independant variable for determining the base function. Column
 gets duplicated to a column called "idep" use use in
 \code{eddy4R.turb::def.stat.sta.diff}. Default unixTime.}
 
-\item{agg_period}{flux aggregation period (s)}
+\item{aggregationPeriod}{flux aggregation period (s)}
 
-\item{missing_thresh}{decimal percentage of missing data threshold per file}
+\item{missingThreshold}{decimal percentage of missing data threshold per file}
 
-\item{missing_method}{how should missing data be handeled if it is less than the threshold. "drop","mean"}
+\item{missingMethod}{how should missing data be handeled if it is less than the threshold. "drop","mean"}
 
-\item{noc_lag}{when processing NOx, is NO2 actually NOc and therfore CE applied after lagging. T/F}
+\item{lagNOc}{when processing NOx, is NO2 actually NOc and therfore CE applied after lagging. T/F}
 
-\item{anem_type}{"other" or "CSAT3". In the case of CSAT 3, use the def.met.body() function. Otherwise use def.vect.orie(). \cr
+\item{anemometerType}{"other" or "CSAT3". In the case of CSAT 3, use the def.met.body() function. Otherwise use def.vect.orie(). \cr
 For CSAT 3, anemometer offset should be positve from north. For other, anemomet offset should be +ve for clockwise correction, \cr
 negative for anticlockwise}
 
-\item{anemometer_offset}{rotation angle for uv plane of wind vectors (degrees)}
+\item{anemometerOffset}{rotation angle for uv plane of wind vectors (degrees)}
 
 \item{veloXaxs}{wind vector definition for wrap.anem.cor}
 
@@ -125,21 +132,25 @@ negative for anticlockwise}
 
 \item{veloZaxs}{wind vector definition for wrap.anem.cor}
 
-\item{w_boost}{should w boost correction for certain Gill Anemometers be applied? Default false}
+\item{wBoost}{should w boost correction for certain Gill Anemometers be applied? Default false}
 
-\item{lag_correction}{Should lag correction be undertaken? T/F}
+\item{lagApplyCorrection}{Should lag correction be undertaken? T/F}
 
 \item{lagNgtvPstv}{what "direction" can lag occur? "n","p","np"}
 
-\item{absolute_lag}{numeric value or vector to apply to lag if ccf falls outside of range or is not used}
+\item{lagDefaults}{numeric value or vector to apply to lag if ccf falls outside of range or is not used}
 
-\item{restrict_lag_range}{Should a window be applied to the ccf lag?}
+\item{lagApplyRangeLimit}{Should a window be applied to the ccf lag?}
 
-\item{lag_boundary}{vector or list of vectors containing boundary for acceptable lags}
+\item{lagRangeLimit}{vector or list of vectors containing boundary for acceptable lags}
+
+\item{lagVars}{created from species plus temperature and water vapour}
 
 \item{despike}{Should despiking be undertaken? T/F}
 
-\item{despike_threshold}{numeric vector of standard deviations for temperature and water vapour, plus all species}
+\item{despikeThreshold}{numeric vector of standard deviations for temperature and water vapour, plus all species}
+
+\item{despikeVars}{created from species plus temperature and water vapour}
 
 \item{MethRot}{type of coordinate rotation of wind vectors to be performed. "single","double","planarFit"}
 
@@ -151,51 +162,15 @@ either numeric vector for plnrFitType = "simple" or data.frame for plnrFitType =
 \item time - data.frame with columns date, al, be, b0. values with date nearest to mn$date are used
 \item time - data.frame with columns PSI_uv, al, be, b0. values with date nearest to mn$PSI_uv are used}}
 
-\item{wlp_cor}{Should fast water vapour be used to correct NO and NO2 concentrations.}
-
-\item{highfreq_cor}{Should high frequency corrections be performed}
-
-\item{file_id}{Used in file nameing}
-
-\item{run_id}{Used in file nameing}
-
-\item{file_type_out}{output file type, currently only supports .csv}
-
-\item{site_name}{Used in file nameing}
-
-\item{analysis}{Used in file nameing}
-
-\item{write_fast_data}{should high frequency intermediates be writen (diff,data, base, conv outputs from REYN)}
-
-\item{DirInp}{must be supplied - relative to DirWrk}
-
-\item{DirWrk}{root of the data directory}
-
-\item{DirOut}{by default is created as \code{file.path(DirWrk,"out",site_name, run_id, analysis)}, can be overridden here.}
-
-\item{subDir}{one of c("none", "monthly", "daily") - default none. Should the outputs be split into monthly or daily subdirectories}
+\item{lat}{latitude of tower location}
 
 \item{PltfEc}{switch for eddy4r functions between tower and aircraft. towr,airc}
 
-\item{TimeDiffUtcLt}{offset of timezone from UTC}
-
 \item{ZoneUtm}{data.frame containing UTM info e.g data.frame(Zone=30, Estg=698478, Nthg=5711690)}
 
-\item{ElevAslTow}{Tower elevation above sealevel}
+\item{fileFirstStart}{used to aid def.avg - should be created internally}
 
-\item{ElevAglSens}{Tower elevation above ground}
-
-\item{ElevAglDisp}{Displacement Height}
-
-\item{Lat}{latitude of tower location}
-
-\item{first_file_begin}{used to aid def.avg - should be created internally}
-
-\item{final_file_begin}{used to aid def.avg - should be created internally}
-
-\item{cross_correlation_vars}{created from species plus temperature and water vapour}
-
-\item{despike_vars}{created from species plus temperature and water vapour}
+\item{fileLastStart}{used to aid def.avg - should be created internally}
 
 \item{wavelet_ec}{supply argument true or false for conducting wavelet eddy-covariance}
 
@@ -208,8 +183,6 @@ either numeric vector for plnrFitType = "simple" or data.frame for plnrFitType =
 \item{wavelet_cores}{specify number of CPU cores to use for parallel wavelet averaging.}
 
 \item{wavelet_maxscale}{maximum wavlet scale to use for averaging. Default is 60 minutes. Give value in in minutes, e.g. 60.}
-
-\item{footprint}{Footprint modelling.}
 
 \item{...}{supply arguments that have not been given an explicit definition yet here}
 }

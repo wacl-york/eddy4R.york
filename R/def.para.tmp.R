@@ -15,12 +15,12 @@ def.para.tmp = function(paraMain, skip_scalar){
   paraCall = paraMain$call
 
   skipRtio = paraMain$speciesRatioName[which(paraMain$species %in% c(skip_scalar))]
-  skipCcvPos = which(paraMain$cross_correlation_vars %in% skipRtio)
+  skipCcvPos = which(paraMain$lagVars %in% skipRtio)
 
   # edit the original call to only the species we have
   paraCall$species = paraCall$species[paraCall$species != skip_scalar]
-  paraCall$absolute_lag = eval(paraCall$absolute_lag)[-skipCcvPos]
-  paraCall$lag_boundary = eval(paraCall$lag_boundary)[-skipCcvPos]
+  paraCall$lagDefaults = eval(paraCall$lagDefaults)[-skipCcvPos]
+  paraCall$lagRangeLimit = eval(paraCall$lagRangeLimit)[-skipCcvPos]
 
   # If there are no species left, make it NULL
   if(length(paraCall$species) == 0){

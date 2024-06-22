@@ -4,7 +4,7 @@
 \alias{write.REYN}
 \title{Write REYN}
 \usage{
-write.REYN(REYN, lag_out, DirOut, analysis, tz, write_fast_data, subDir)
+write.REYN(REYN, lag_out, DirOut, analysis, tz, writeFastData, subDir)
 }
 \arguments{
 \item{REYN}{REYN List of objects at the end of calcualtions}
@@ -17,7 +17,7 @@ write.REYN(REYN, lag_out, DirOut, analysis, tz, write_fast_data, subDir)
 
 \item{tz}{timezone}
 
-\item{write_fast_data}{TRUE/FALSE should the fast (base, diff, conv, data) outputs be written to disk. They will be compressed using gzip}
+\item{writeFastData}{TRUE/FALSE should the fast (base, diff, conv, data) outputs be written to disk. They will be compressed using gzip}
 
 \item{subDir}{one of c("none", "monthly", "daily") - default none. Should the outputs be split into monthly or daily subdirectories}
 }

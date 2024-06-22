@@ -48,24 +48,24 @@ Where `<extDir>` is the path to the volume you wish to mount on your machine
 para = eddy4R.york::def.para(
   DirWrk = "/home/rstudio/data/",
   DirInp = "in/",
-  site_name = "MySite",
+  siteName = "MySite",
   analysis = "nitrate_fluxes",
-  run_id = "standard_run",
-  file_mask = "input_%y%m%d_%H%M.csv",
+  runID = "standard_run",
+  fileMask = "input_%y%m%d_%H%M.csv",
   species = c("NO","NO2"),
-  agg_period = 3600,
-  write_fast_data = TRUE,
+  aggregationPeriod = 3600,
+  writeFastData = TRUE,
   AlgBase = "trnd",
   idepVar = "unixTime",
   MethRot = "double",
-  missing_method = "mean",
-  lag_correction = TRUE,
-  restrict_lag_range = TRUE,
-  lag_boundary = list(c(0,0),
+  missingMethod = "mean",
+  lagApplyCorrection = TRUE,
+  lagApplyRangeLimit = TRUE,
+  lagRangeLimit = list(c(0,0),
                       c(0,0),
                       c(-2,-8),
                       c(-4,-10)),
-  absolute_lag = c(0,0,-6, -8))
+  lagDefaults = c(0,0,-6, -8))
 
 ```
 

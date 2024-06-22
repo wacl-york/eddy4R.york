@@ -7,7 +7,7 @@
 #' @param DirOut output directory (if subDirMonthly == TRUE, annual and monthly subfolders will be created here)
 #' @param analysis name of analysis - used to construct file name
 #' @param tz timezone
-#' @param write_fast_data TRUE/FALSE should the fast (base, diff, conv, data) outputs be written to disk. They will be compressed using gzip
+#' @param writeFastData TRUE/FALSE should the fast (base, diff, conv, data) outputs be written to disk. They will be compressed using gzip
 #' @param subDir one of c("none", "monthly", "daily") - default none. Should the outputs be split into monthly or daily subdirectories
 #'
 #' @export
@@ -17,7 +17,7 @@ write.REYN = function(REYN,
                       DirOut,
                       analysis,
                       tz,
-                      write_fast_data,
+                      writeFastData,
                       subDir){
 
   REYN = c(REYN, lag_out)
@@ -60,7 +60,7 @@ write.REYN = function(REYN,
 
     # write fast data if set to.
     if(.y %in% fastFolders){
-      if(write_fast_data){
+      if(writeFastData){
 
         outputFile = paste0(format(fileStart, "%Y%m%d_%H"),"_",analysis,"_",.y, ".csv.gz")
 

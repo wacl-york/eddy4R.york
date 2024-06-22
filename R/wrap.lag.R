@@ -9,9 +9,9 @@
 
 wrap.lag = function(eddy.data,para){
 
-  lagged <- purrr::pmap(list(a = para$cross_correlation_vars,
-                             b = para$lag_boundary,
-                             c = para$absolute_lag),
+  lagged <- purrr::pmap(list(a = para$lagVars,
+                             b = para$lagRangeLimit,
+                             c = para$lagDefaults),
                         function(a,b,c){
                           lagged = eddy4R.base::def.lag(refe=eddy.data$veloXaxs,
                                                         meas=eddy.data[,a],
@@ -23,7 +23,7 @@ wrap.lag = function(eddy.data,para){
                                                         freq=para$freq,
                                                         hpf=TRUE)
 
-                          if(para$restrict_lag_range){
+                          if(para$lagApplyRangeLimit){
                             if(lagged$lag/para$freq < min(b) | lagged$lag/para$freq > max(b)){
                               lagged$lag <- as.numeric(c)*para$freq
                             }
@@ -35,12 +35,12 @@ wrap.lag = function(eddy.data,para){
 
                         })
 
-  lagTimes = tibble::tibble(name = para$cross_correlation_vars,
+  lagTimes = tibble::tibble(name = para$lagVars,
                             lagTime = purrr::map_dbl(lagged, purrr::pluck("lag")),
                             corr = purrr::map_dbl(lagged, purrr::pluck("corrCross")))
 
   ACF = purrr::map2_df(lagged,
-                       para$cross_correlation_vars,
+                       para$lagVars,
                        ~{
                          dat = purrr::pluck(.x, "corr")
 
@@ -59,7 +59,7 @@ wrap.lag = function(eddy.data,para){
   }
 
   #handle lagging no and noc channels of nox data separatly before combining into NO and NO2
-  if(para$noc_lag & sum(c("rtioMoleDryNO","rtioMoleDryNO2") %in% para$speciesRatioName) == 2){
+  if(para$lagNOc & sum(c("rtioMoleDryNO","rtioMoleDryNO2") %in% para$speciesRatioName) == 2){
     eddy.data$rtioMoleDryNO2 = (eddy.data$rtioMoleDryNO2 - eddy.data$rtioMoleDryNO)/eddy.data$ce
 
   }

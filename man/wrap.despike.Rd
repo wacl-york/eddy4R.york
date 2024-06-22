@@ -4,14 +4,14 @@
 \alias{wrap.despike}
 \title{Wrap UoY Despiking}
 \usage{
-wrap.despike(eddy.data, despike_vars, despike_threshold, verbose)
+wrap.despike(eddy.data, despikeVars, despikeThreshold, verbose)
 }
 \arguments{
 \item{eddy.data}{eddy.data object}
 
-\item{despike_vars}{character vector of variables to be despiked}
+\item{despikeVars}{character vector of variables to be despiked}
 
-\item{despike_threshold}{number of standard deviations to qualify as a spike}
+\item{despikeThreshold}{number of standard deviations to qualify as a spike}
 
 \item{verbose}{boolean - when false the messages from \code{def.dspk.br86} are suppressed}
 }

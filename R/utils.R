@@ -95,17 +95,17 @@ def.rot.mat = function(degrees){
 #' Log eddy4.york
 #'
 #' Uses a logger object created by eddy4R.base::Logger.Singleton and writes a log message of the format:
-#' timestamp log_level: errorType | period: aggPeriodText | errorSimple
+#' timestamp log_level: errorType | period: aggregationPeriodText | errorSimple
 #'
 #' @param logger the logger object
 #' @param logLevel one of warn, error, info or debug
 #' @param header character string describing the succinctly describing where in the workflow this is being logged from.
-#' @param aggPeriod \code{agg_period[i, ]}
+#' @param aggregationPeriod \code{aggregationPeriod[i, ]}
 #' @param error the simpleError caught by tryCatch
 #'
 #' @export
 
-log_message = function(logger, logLevel, header, aggPeriod, error = NULL){
+log_message = function(logger, logLevel, header, aggregationPeriod, error = NULL){
 
   quiet <- function(x) {
     sink(tempfile())
@@ -113,12 +113,12 @@ log_message = function(logger, logLevel, header, aggPeriod, error = NULL){
     invisible(force(x))
   }
 
-  aggPeriodText = paste(aggPeriod$avg_start,aggPeriod$avg_end, sep = " - ")
+  aggregationPeriodText = paste(aggregationPeriod$avg_start,aggregationPeriod$avg_end, sep = " - ")
 
   if(is.null(error)){
     quiet(
       logger$log_message(level = logLevel,
-                         message = paste0(header," | period: ",aggPeriodText))
+                         message = paste0(header," | period: ",aggregationPeriodText))
     )
   }else{
 
@@ -135,7 +135,7 @@ log_message = function(logger, logLevel, header, aggPeriod, error = NULL){
 
     quiet(
     logger$log_message(level = logLevel,
-                       message = paste0(header," | period: ",aggPeriodText,
+                       message = paste0(header," | period: ",aggregationPeriodText,
                                         " | Error: ",errorString))
     )
   }

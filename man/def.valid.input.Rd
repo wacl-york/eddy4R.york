@@ -4,14 +4,14 @@
 \alias{def.valid.input}
 \title{Valid Input}
 \usage{
-def.valid.input(eddy.data, para, aggPeriod, logger)
+def.valid.input(eddy.data, para, aggregationPeriod, logger)
 }
 \arguments{
 \item{eddy.data}{input data}
 
 \item{para}{params list}
 
-\item{aggPeriod}{\code{agg_period[i,]}}
+\item{aggregationPeriod}{\code{aggregationPeriod[i,]}}
 
 \item{logger}{logger object}
 }
