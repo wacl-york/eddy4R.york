@@ -81,7 +81,15 @@ wrap.towr = function(paraMain,
 
     # Check input file
     skip_scalar = tryCatch({
-      eddy4R.york::def.valid.input(eddy.data, paraMain, aggregationPeriod[i,], wrap_tower_log)},
+      eddy4R.york::def.valid.input(eddy.data,
+                                   varsRequired = paraMain$varsRequired,
+                                   varsCritical = paraMain$varsCritical,
+                                   species = paraMain$species,
+                                   speciesRatioName = paraMain$speciesRatioName,
+                                   aggregationPeriod = aggregationPeriod[i,],
+                                   missingThreshold  = paraMain$missingThreshold,
+                                   logger = wrap_tower_log
+      )},
       error = function(e){
         eddy4R.york::log_message(wrap_tower_log, "error", "Valid Input", aggregationPeriod[i,], e)
         return("valid_error")
@@ -101,7 +109,9 @@ wrap.towr = function(paraMain,
 
     # Apply Anemometer Corrections --------------------------------------------
     eddy.data = tryCatch({
-      eddy4R.york::wrap.anem.cor(eddy.data,para)},
+      eddy4R.york::wrap.anem.cor(eddy.data,
+                                 anemometerOffset = para$anemometerOffset,
+                                 wBoost = para$wBoost)},
       error = function(e){
         eddy4R.york::log_message(wrap_tower_log, "error", "Anemometer Correction", aggregationPeriod[i,], e)
         return(NULL)
@@ -127,7 +137,15 @@ wrap.towr = function(paraMain,
     # Maximize cross correlation ----------------------------------------------
     if(para$lagApplyCorrection){
       lag_out = tryCatch({
-        eddy4R.york::wrap.lag(eddy.data,para)},
+        eddy4R.york::wrap.lag(eddy.data,
+                              lagVars = para$lagVars,
+                              lagApplyRangeLimit = para$lagApplyRangeLimit,
+                              lagRangeLimit = para$lagRangeLimit,
+                              lagDefaults = para$lagDefaults,
+                              lagNOc = para$lagNOc,
+                              freq = para$freq,
+                              speciesRatioName = para$speciesRatioName,
+                              lagNgtvPstv = para$lagNgtvPstv)},
         error = function(e){
           eddy4R.york::log_message(wrap_tower_log, "error", "Lag Correction", aggregationPeriod[i,], e)
           return(NULL)
@@ -140,7 +158,11 @@ wrap.towr = function(paraMain,
 
     # Handle missing values ---------------------------------------------------
     eddy.data = tryCatch({
-      eddy4R.york::def.miss.hndl(eddy.data,para)},
+      eddy4R.york::def.miss.hndl(eddy.data,
+                                 missingMethod = para$missingMethod,
+                                 missingThreshold = para$missingThreshold,
+                                 aggregationPeriod = para$aggregationPeriod,
+                                 freq = para$freq)},
       error = function(e){
         eddy4R.york::log_message(wrap_tower_log, "error", "Handel Missing Values", aggregationPeriod[i,], e)
         return(NULL)
@@ -163,7 +185,10 @@ wrap.towr = function(paraMain,
 
     # Units -------------------------------------------------------------------
     eddy.data = tryCatch({
-      eddy4R.york::assign_input_units(eddy.data, para)},
+      eddy4R.york::assign_input_units(eddy.data,
+                                      unitList = para$unitList,
+                                      idepVar = para$idepVar,
+                                      speciesRatioName = para$speciesRatioName)},
       error = function(e){
         eddy4R.york::log_message(wrap_tower_log, "error", "Units", aggregationPeriod[i,], e)
         return(NULL)

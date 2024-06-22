@@ -4,12 +4,24 @@
 \alias{def.miss.hndl}
 \title{Define how missing values are handled}
 \usage{
-def.miss.hndl(eddy.data, para)
+def.miss.hndl(
+  eddy.data,
+  missingMethod,
+  missingThreshold,
+  aggregationPeriod,
+  freq
+)
 }
 \arguments{
 \item{eddy.data}{eddy.data data frame}
 
-\item{para}{parameters created by def.uoy.para}
+\item{missingMethod}{how should missing data be handeled if it is less than the threshold. "drop","mean"}
+
+\item{missingThreshold}{decimal percentage of missing data threshold per file}
+
+\item{aggregationPeriod}{flux aggregation period (s)}
+
+\item{freq}{data aquisition frequency of input data}
 }
 \value{
 eddy.data with missing values handled

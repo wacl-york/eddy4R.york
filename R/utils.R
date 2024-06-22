@@ -27,44 +27,47 @@ default_unit_list = function(){
 #' and sets the corresponding columns in eddy.data.
 #'
 #' @param eddy.data input data
-#' @param para parameter list
+#'
+#' @inheritParams def.para
 #'
 #' @export
 
 assign_input_units = function(eddy.data,
-                              para){
+                              unitList,
+                              idepVar,
+                              speciesRatioName){
   # temperature
-  attr(x = eddy.data$tempAir, which = "unit") = para$unitList$temp
+  attr(x = eddy.data$tempAir, which = "unit") = unitList$temp
 
   # pressure
-  attr(x = eddy.data$presAtm, which = "unit") = para$unitList$pres
+  attr(x = eddy.data$presAtm, which = "unit") = unitList$pres
 
   # wind vectors
   for(var in c("veloXaxs", "veloYaxs", "veloZaxs")){
-    attr(x = eddy.data[,var], which = "unit") = para$unitList$velo
+    attr(x = eddy.data[,var], which = "unit") = unitList$velo
   }
 
   # distances
   for(var in c("distZaxsAbl", "distZaxsMeas")){
-    attr(x = eddy.data[,var], which = "unit") = para$unitList$dist
+    attr(x = eddy.data[,var], which = "unit") = unitList$dist
   }
 
   # H2O
-  attr(x = eddy.data$rtioMoleDryH2o, which = "unit") = para$unitList$h2o
+  attr(x = eddy.data$rtioMoleDryH2o, which = "unit") = unitList$h2o
 
   # unix time
   attr(x = eddy.data$unixTime, which = "unit") = eddy4R.base::IntlUnit$Intl$Time
 
   # idep - for airc probably will want to define a different idep...
-  if(para$idepVar == "unixTime"){
+  if(idepVar == "unixTime"){
     attr(x = eddy.data$idep, which = "unit") = eddy4R.base::IntlUnit$Intl$Time
   }
 
 
   # species
-  if(!is.null(para$speciesRatioName)){
-    for(var in para$speciesRatioName){
-      attr(x = eddy.data[,var], which = "unit") = para$unitList$species[[var]]
+  if(!is.null(speciesRatioName)){
+    for(var in speciesRatioName){
+      attr(x = eddy.data[,var], which = "unit") = unitList$species[[var]]
     }
   }
 

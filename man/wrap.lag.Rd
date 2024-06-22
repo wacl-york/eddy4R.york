@@ -4,12 +4,36 @@
 \alias{wrap.lag}
 \title{UoY Lag definition wrapper}
 \usage{
-wrap.lag(eddy.data, para)
+wrap.lag(
+  eddy.data,
+  lagVars,
+  lagApplyRangeLimit,
+  lagRangeLimit,
+  lagDefaults,
+  lagNOc,
+  freq,
+  speciesRatioName,
+  lagNgtvPstv
+)
 }
 \arguments{
 \item{eddy.data}{eddy.data object}
 
-\item{para}{parameter list from \code{def.uoy.para}}
+\item{lagVars}{created from species plus temperature and water vapour}
+
+\item{lagApplyRangeLimit}{Should a window be applied to the ccf lag?}
+
+\item{lagRangeLimit}{vector or list of vectors containing boundary for acceptable lags}
+
+\item{lagDefaults}{numeric value or vector to apply to lag if ccf falls outside of range or is not used}
+
+\item{lagNOc}{when processing NOx, is NO2 actually NOc and therfore CE applied after lagging. T/F}
+
+\item{freq}{data aquisition frequency of input data}
+
+\item{speciesRatioName}{created automatically from species. name of gas species following the rtioMoleDry\if{html}{\out{<spc>}} format}
+
+\item{lagNgtvPstv}{what "direction" can lag occur? "n","p","np"}
 }
 \description{
 Wrapper for def.lag to use in UoY workflows. Returns data lag times and acf information

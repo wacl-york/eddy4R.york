@@ -4,12 +4,20 @@
 \alias{assign_input_units}
 \title{Assign Unit Inputs}
 \usage{
-assign_input_units(eddy.data, para)
+assign_input_units(eddy.data, unitList, idepVar, speciesRatioName)
 }
 \arguments{
 \item{eddy.data}{input data}
 
-\item{para}{parameter list}
+\item{unitList}{defaults to \code{default_unit_list()} plus species field based off of species argument
+speices is a list with names that match speciesRatioName describing the units per species. Defaults to mol\if{html}{\out{<spc>}} mol-1Dry}
+
+\item{idepVar}{required if Algbase is trend or ord03. Name of column
+containing independant variable for determining the base function. Column
+gets duplicated to a column called "idep" use use in
+\code{eddy4R.turb::def.stat.sta.diff}. Default unixTime.}
+
+\item{speciesRatioName}{created automatically from species. name of gas species following the rtioMoleDry\if{html}{\out{<spc>}} format}
 }
 \description{
 Takes the input list from \code{def.para()} or \code{default_unit_list()}

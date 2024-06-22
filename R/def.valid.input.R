@@ -12,15 +12,19 @@
 #' }
 #'
 #' @param eddy.data input data
-#' @param para params list
-#' @param aggregationPeriod \code{aggregationPeriod[i,]}
 #' @param logger logger object
+#'
+#' @inheritParams def.para
 #'
 #' @export
 
 def.valid.input = function(eddy.data,
-                           para,
+                           varsRequired,
+                           varsCritical,
+                           species,
+                           speciesRatioName,
                            aggregationPeriod,
+                           missingThreshold,
                            logger){
 
   skip_scalar = c()
@@ -32,9 +36,9 @@ def.valid.input = function(eddy.data,
   }
 
   # Are all sets of data nominally present?
-  req_names = c(para$varsRequired,
-                para$varsCritical,
-                para$speciesRatioName)
+  req_names = c(varsRequired,
+                varsCritical,
+                speciesRatioName)
 
   name_test = !(req_names %in% names(eddy.data))
 
@@ -66,12 +70,12 @@ def.valid.input = function(eddy.data,
 
   ## Test missing data
   #  Skip file
-  for(var in para$varsCritical){
+  for(var in varsCritical){
     missing_data = eddy.data[,var][is.na(eddy.data[,var])] %>% length
     sd_data = stats::sd(eddy.data[,var],na.rm = T)
 
-    if(missing_data/nrow(eddy.data) >= para$missingThreshold){
-      stop(paste0("Critical variable ",var," is missing greater than ",para$missingThreshold*100,"% of data"))
+    if(missing_data/nrow(eddy.data) >= missingThreshold){
+      stop(paste0("Critical variable ",var," is missing greater than ",missingThreshold*100,"% of data"))
     }
 
     if(sd_data == 0 | is.na(sd_data)){
@@ -81,9 +85,9 @@ def.valid.input = function(eddy.data,
   }
   #  Continue but missing scalars must be handled in the workflow
 
-  for(i in 1:length(para$speciesRatioName)){
+  for(i in 1:length(speciesRatioName)){
 
-    var = para$speciesRatioName[i]
+    var = speciesRatioName[i]
 
     missing_data = eddy.data[,var][is.na(eddy.data[,var])] %>%
       length()
@@ -92,11 +96,11 @@ def.valid.input = function(eddy.data,
 
 
     skipFlag = 0
-    if(missing_data/nrow(eddy.data) >= para$missingThreshold){
+    if(missing_data/nrow(eddy.data) >= missingThreshold){
 
       eddy4R.york::log_message(logger = logger,
                                logLevel = "warn",
-                               header = paste0("Optional scalar ",var," is missing greater than ",para$missingThreshold*100,"% of data"),
+                               header = paste0("Optional scalar ",var," is missing greater than ",missingThreshold*100,"% of data"),
                                aggregationPeriod)
       skipFlag = skipFlag+1
     }
@@ -114,7 +118,7 @@ def.valid.input = function(eddy.data,
 
     if(skipFlag > 0){
       eddy.data = dplyr::select(eddy.data, -tidyselect::all_of(var))
-      skip_scalar = c(skip_scalar,para$species[i])
+      skip_scalar = c(skip_scalar,species[i])
     }
   }
 
@@ -122,11 +126,11 @@ def.valid.input = function(eddy.data,
   if("rtioMoleDryH2o" %in% names(eddy.data)){
     missing_h2o = eddy.data$rtioMoleDryH2o[is.na(eddy.data$rtioMoleDryH2o)] %>% length()
 
-    if(missing_h2o/nrow(eddy.data) > para$missingThreshold)
+    if(missing_h2o/nrow(eddy.data) > missingThreshold)
       eddy.data$rtioMoleDryH2o = 1e-12
   }
 
-  if(!nrow(eddy.data)>((1-para$missingThreshold) * para$aggregationPeriod * para$freq)){
+  if(!nrow(eddy.data)>((1-missingThreshold) * aggregationPeriod * freq)){
     stop("Not enough data in file, < 90%")
   }
 

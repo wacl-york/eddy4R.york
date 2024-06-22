@@ -6,7 +6,8 @@
 #' * fill missing values with column mean
 #'
 #' @param eddy.data eddy.data data frame
-#' @param para parameters created by def.uoy.para
+#'
+#' @inheritParams def.para
 #'
 #' @author W. S. Drysdale
 #'
@@ -14,18 +15,22 @@
 #'
 #' @export
 
-def.miss.hndl = function(eddy.data,para){
+def.miss.hndl = function(eddy.data,
+                         missingMethod,
+                         missingThreshold,
+                         aggregationPeriod,
+                         freq){
 
-  if(para$missingMethod == "drop"){
+  if(missingMethod == "drop"){
     row.has.na <- apply(eddy.data, 1, function(x){any(is.na(x))})
     eddy.data <- eddy.data[!row.has.na,]
 
-    if(1-(nrow(eddy.data)/(para$aggregationPeriod*para$freq)) > para$missingThreshold)
+    if(1-(nrow(eddy.data)/(aggregationPeriod*freq)) > missingThreshold)
       stop("using missingMethod drop has caused avaliable data to fall belowing missingThreshold")
     return(eddy.data)
   }
 
-  if(para$missingMethod == "mean"){
+  if(missingMethod == "mean"){
     for(i in 1:ncol(eddy.data))
       eddy.data[,i][is.na(eddy.data[,i])] = mean(eddy.data[,i],na.rm = T)
 

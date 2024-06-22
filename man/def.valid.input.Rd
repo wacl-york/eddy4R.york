@@ -4,14 +4,31 @@
 \alias{def.valid.input}
 \title{Valid Input}
 \usage{
-def.valid.input(eddy.data, para, aggregationPeriod, logger)
+def.valid.input(
+  eddy.data,
+  varsRequired,
+  varsCritical,
+  species,
+  speciesRatioName,
+  aggregationPeriod,
+  missingThreshold,
+  logger
+)
 }
 \arguments{
 \item{eddy.data}{input data}
 
-\item{para}{params list}
+\item{varsRequired}{character vector of columns that must be nominally present to pass def.valid.input()}
 
-\item{aggregationPeriod}{\code{aggregationPeriod[i,]}}
+\item{varsCritical}{these must have greater than the missingThreshold to pass def.valid.input()}
+
+\item{species}{vector of species names. Match with IntlNatu naming}
+
+\item{speciesRatioName}{created automatically from species. name of gas species following the rtioMoleDry\if{html}{\out{<spc>}} format}
+
+\item{aggregationPeriod}{flux aggregation period (s)}
+
+\item{missingThreshold}{decimal percentage of missing data threshold per file}
 
 \item{logger}{logger object}
 }

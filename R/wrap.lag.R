@@ -3,29 +3,38 @@
 #' Wrapper for def.lag to use in UoY workflows. Returns data lag times and acf information
 #'
 #' @param eddy.data eddy.data object
-#' @param para parameter list from \code{def.uoy.para}
+#'
+#' @inheritParams def.para
 #'
 #' @export
 
-wrap.lag = function(eddy.data,para){
+wrap.lag = function(eddy.data,
+                    lagVars,
+                    lagApplyRangeLimit,
+                    lagRangeLimit,
+                    lagDefaults,
+                    lagNOc,
+                    freq,
+                    speciesRatioName,
+                    lagNgtvPstv){
 
-  lagged <- purrr::pmap(list(a = para$lagVars,
-                             b = para$lagRangeLimit,
-                             c = para$lagDefaults),
+  lagged <- purrr::pmap(list(a = lagVars,
+                             b = lagRangeLimit,
+                             c = lagDefaults),
                         function(a,b,c){
                           lagged = eddy4R.base::def.lag(refe=eddy.data$veloXaxs,
                                                         meas=eddy.data[,a],
                                                         dataRefe=eddy.data,
-                                                        lagMax=40*para$freq,
+                                                        lagMax=40*freq,
                                                         lagCnst=TRUE,
-                                                        lagNgtvPstv=para$lagNgtvPstv,
+                                                        lagNgtvPstv=lagNgtvPstv,
                                                         lagAll=TRUE,
-                                                        freq=para$freq,
+                                                        freq=freq,
                                                         hpf=TRUE)
 
-                          if(para$lagApplyRangeLimit){
-                            if(lagged$lag/para$freq < min(b) | lagged$lag/para$freq > max(b)){
-                              lagged$lag <- as.numeric(c)*para$freq
+                          if(lagApplyRangeLimit){
+                            if(lagged$lag/freq < min(b) | lagged$lag/freq > max(b)){
+                              lagged$lag <- as.numeric(c)*freq
                             }
                           }
 
@@ -35,12 +44,12 @@ wrap.lag = function(eddy.data,para){
 
                         })
 
-  lagTimes = tibble::tibble(name = para$lagVars,
+  lagTimes = tibble::tibble(name = lagVars,
                             lagTime = purrr::map_dbl(lagged, purrr::pluck("lag")),
                             corr = purrr::map_dbl(lagged, purrr::pluck("corrCross")))
 
   ACF = purrr::map2_df(lagged,
-                       para$lagVars,
+                       lagVars,
                        ~{
                          dat = purrr::pluck(.x, "corr")
 
@@ -59,7 +68,7 @@ wrap.lag = function(eddy.data,para){
   }
 
   #handle lagging no and noc channels of nox data separatly before combining into NO and NO2
-  if(para$lagNOc & sum(c("rtioMoleDryNO","rtioMoleDryNO2") %in% para$speciesRatioName) == 2){
+  if(lagNOc & sum(c("rtioMoleDryNO","rtioMoleDryNO2") %in% speciesRatioName) == 2){
     eddy.data$rtioMoleDryNO2 = (eddy.data$rtioMoleDryNO2 - eddy.data$rtioMoleDryNO)/eddy.data$ce
 
   }

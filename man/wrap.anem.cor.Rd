@@ -4,17 +4,19 @@
 \alias{wrap.anem.cor}
 \title{Anemometer Corrections Wrapper}
 \usage{
-wrap.anem.cor(eddy.data, para)
+wrap.anem.cor(eddy.data, anemometerOffset, wBoost)
 }
 \arguments{
 \item{eddy.data}{eddy.data data.frame}
 
-\item{para}{parameters list}
+\item{anemometerOffset}{rotation angle for uv plane of wind vectors (degrees)}
+
+\item{wBoost}{should w boost correction for certain Gill Anemometers be applied? Default false}
 }
 \description{
 Apply transformations to wind vectors easily. Steps in order: \cr
-Use def.rot.mat to rotate around the uv plane - para$anemometerOffset \cr
-Apply W-boost correction to Gill Anemometers - para$wBoost
+Use def.rot.mat to rotate around the uv plane - anemometerOffset \cr
+Apply W-boost correction to Gill Anemometers - wBoost
 }
 \author{
 W. S. Drysdale
