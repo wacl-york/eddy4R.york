@@ -52,3 +52,4 @@ rsconnect/
 # 
 testdata/*
 *.env
+launch_container.ps1
