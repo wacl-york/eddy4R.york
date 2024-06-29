@@ -16,7 +16,7 @@ The major feature allows for flux workflows to be defined by relatively short co
 
 ### Getting Started
 
-> :page_facing_up: **Note**  \
+> [!NOTE]
 > As eddy4R is provided as a docker image and as such eddy4R.york provides updated image - currently based on the [eddy4R:deve](https://quay.io/repository/battelleecology/eddy4r) image, but this will change to the stable annual releases when available.
 > Currently eddy4R.york uses development versions of `eddy4R.turb::wrap.flux()` and `eddy4R.turb::def.stna()` to enable the use of custom scalars. When these features are pulled in upstream it will no longer make direct changes to any of the base image's packages.
 
@@ -37,7 +37,7 @@ docker run --name eddy4r.york --rm -d -p 8787:8787 -v <extDir>:/home/rstudio/dat
 ```
 Where `<extDir>` is the path to the volume you wish to mount on your machine
 
-> :page_facing_up: **Note** 
+> [!NOTE]
 > The eddy4R.york image sets `DISABLE_AUTH=true` by default, which is different from the `eddy4R` and `rocker` images
 
 #### Configuring Run Parameters
@@ -142,7 +142,7 @@ module load Apptainer/latest
 
 apptainer exec /users/<usr>/scratch:/scratch /mnt/longship/users/<usr>/eddy4r.york R
 ```
-> :page_facing_up: **Note**  \
+> [!NOTE] 
 > The container must be launched using `exec` rather than `run` so that the RStudio server can be overridden with a simple R session. RStudio server requires some root permissions to run that are not available here. 
 
 You should now be inside the container, have access to scratch and be able to source a config script.
@@ -235,18 +235,10 @@ FILE=$(basename -- "$FULLFILE")
 srun apptainer exec --env FILE_SELECT=${FILE} --bind /users/<usr>/scratch:/scratch /mnt/longship/users/<usr>/eddy4r.york Rscript '/scratch/eddy4R/testdata/test_config2.R'
 ```
 
->:exclamation: **Important** \
+> [!IMPORTANT]
 > You must ammend the `--array=0-23%10` to match the number of containers you expect to spawn. Here we are processing 24 hours of data 10 jobs at a time. We filter the input files using the `$SLURM_ARRAY_TASK_ID` and pass this to the container using `--env`, which is then avalible to R via `Sys.getenv()`.
 
-> :page_facing_up: **Note** \
+> [!NOTE]
 > You can should adjust the `--time` argument to be greater than but close to the time you expect each container to take to run. For hourly input files this is around 1 min, but you may wish to test this in advance.
 
 You can then trigger the job via `sbatch` as usual. 
-
-
-
-
-
-
-
-
