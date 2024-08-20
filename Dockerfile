@@ -1,6 +1,6 @@
 # currently pulling from the latest public deve image
 # probably change to annual stable release when flux sclr changes are done
-FROM quay.io/battelleecology/eddy4r:deve 
+FROM quay.io/battelleecology/eddy4r:maps 
 
 # code for installing {eddy4R.york}, reinstalls the local copy of {eddy4R.turb} and installs {progress}
 # can remove the local install of eddy4R.turb once flux sclr changes are done
