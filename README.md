@@ -69,23 +69,23 @@ para = eddy4R.york::def.para(
 
 ```
 
-This has set up a run to calculate hourly fluxes of CO~2~ and O~3~ as well as sensible and latent heat. It will use using linear detrending, double rotation and perform a lag correction of all the scalars relative to the vertical wind. If the determined lag falls out of the ranges supplied per scalar, a fixed lag will be used instead.
+This has set up a run to calculate hourly fluxes of CO<sub>2</sub> and O<sub>3</sub> as well as sensible and latent heat. It will use using linear detrending, double rotation and perform a lag correction of all the scalars relative to the vertical wind. If the determined lag falls out of the ranges supplied per scalar, a fixed lag will be used instead.
 
 #### Input Data
 Input files contain the following columns. They should all be read by `read.csv()` as numeric. By default the listed units are expected, but this can be changed by using `def.para(unitList = ...)`
 
-| Column Header    | Description                                   | Unit                      |
-|------------------|-----------------------------------------------|---------------------------| 
-| unixTime         | seconds since midnight 1970-01-01             | s                         |
-| veloXaxs         | x component of the 3D wind*                   | m s^-1^                   |
-| veloYaxs         | y component of the 3D wind*                   | m s^-1^                   |
-| veloZaxs         | z component of the 3D wind*                   | m s^-1^                   |
-| tempAir          | air temperature                               | Kelvin                    |
-| presAtm          | atmospheric pressure                          | Pa                        |
-| distZaxsAbl      | Atmospheric Boundary Layer Height             | m                         |
-| distZaxsMeas     | measurement height above surface              | m                         |
-| rtioMoleDryH2o   | dry mole water vapour concentration           | mol~H2O~ mol~DryAir~^-1^  |
-| rtioMoleDry{Spc} | dry mole concentration of other species "spc" | mol~{spc}~ mol~DryAir~^-1^|
+| Column Header    | Description                                   | Unit                                                 |
+|------------------|-----------------------------------------------|------------------------------------------------------| 
+| unixTime         | seconds since midnight 1970-01-01             | s                                                    |
+| veloXaxs         | x component of the 3D wind*                   | m s<sup>-1</sup>                                     |
+| veloYaxs         | y component of the 3D wind*                   | m s<sup>-1</sup>                                     |
+| veloZaxs         | z component of the 3D wind*                   | m s<sup>-1</sup>                                     |
+| tempAir          | air temperature                               | Kelvin                                               |
+| presAtm          | atmospheric pressure                          | Pa                                                   |
+| distZaxsAbl      | Atmospheric Boundary Layer Height             | m                                                    |
+| distZaxsMeas     | measurement height above surface              | m                                                    |
+| rtioMoleDryH2o   | dry mole water vapour concentration           | mol<sub>H2O</sub> mol<sub>DryAir</sub><sup>-1</sup>  |
+| rtioMoleDry{Spc} | dry mole concentration of other species "spc" | mol<sub>{spc}</sub> mol<sub>DryAir</sub><sup>-1</sup>|
 
 *x/y/z == u/v/w == east/north/up
 
@@ -132,7 +132,7 @@ Once this is complete the file `eddy4r.york` should exist in `/mnt/longship/user
 Begin an interactive job with
 
 ```bash
-srun  srun --time=08:00:00 --partition=interactive --pty /bin/bash
+srun --time=08:00:00 --partition=interactive --pty /bin/bash
 ```
 
 Then load apptainer and launch the container. In this example we bind your Viking `scratch` directory to the `/scratch` directory inside the container. You can adjust the `def.para` example above to use: `DirWrk = "/scratch/path/to/data"`. 
@@ -140,7 +140,7 @@ Then load apptainer and launch the container. In this example we bind your Vikin
 ```
 module load Apptainer/latest
 
-apptainer exec /users/<usr>/scratch:/scratch /mnt/longship/users/<usr>/eddy4r.york R
+apptainer exec --bind /users/<usr>/scratch:/scratch /mnt/longship/users/<usr>/eddy4r.york R
 ```
 > [!NOTE] 
 > The container must be launched using `exec` rather than `run` so that the RStudio server can be overridden with a simple R session. RStudio server requires some root permissions to run that are not available here. 
