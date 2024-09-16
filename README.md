@@ -74,18 +74,18 @@ This has set up a run to calculate hourly fluxes of CO<sub>2</sub> and O<sub>3</
 #### Input Data
 Input files contain the following columns. They should all be read by `read.csv()` as numeric. By default the listed units are expected, but this can be changed by using `def.para(unitList = ...)`
 
-| Column Header    | Description                                   | Unit                                                 |
-|------------------|-----------------------------------------------|------------------------------------------------------| 
-| unixTime         | seconds since midnight 1970-01-01             | s                                                    |
-| veloXaxs         | x component of the 3D wind*                   | m s<sup>-1</sup>                                     |
-| veloYaxs         | y component of the 3D wind*                   | m s<sup>-1</sup>                                     |
-| veloZaxs         | z component of the 3D wind*                   | m s<sup>-1</sup>                                     |
-| tempAir          | air temperature                               | Kelvin                                               |
-| presAtm          | atmospheric pressure                          | Pa                                                   |
-| distZaxsAbl      | Atmospheric Boundary Layer Height             | m                                                    |
-| distZaxsMeas     | measurement height above surface              | m                                                    |
-| rtioMoleDryH2o   | dry mole water vapour concentration           | mol<sub>H2O</sub> mol<sub>DryAir</sub><sup>-1</sup>  |
-| rtioMoleDry{Spc} | dry mole concentration of other species "spc" | mol<sub>{spc}</sub> mol<sub>DryAir</sub><sup>-1</sup>|
+| Column Header    | Description                                   | Unit                                                  |
+|------------------|-----------------------------------------------|-------------------------------------------------------| 
+| unixTime         | seconds since midnight 1970-01-01             | s                                                     |
+| veloXaxs         | x component of the 3D wind*                   | m s<sup>-1</sup>                                      |
+| veloYaxs         | y component of the 3D wind*                   | m s<sup>-1</sup>                                      |
+| veloZaxs         | z component of the 3D wind*                   | m s<sup>-1</sup>                                      |
+| tempAir          | air temperature                               | Kelvin                                                |
+| presAtm          | atmospheric pressure                          | Pa                                                    |
+| distZaxsAbl      | Atmospheric Boundary Layer Height             | m                                                     |
+| distZaxsMeas     | measurement height above surface              | m                                                     |
+| rtioMoleDryH2o   | dry mole water vapour concentration           | mol<sub>H2O</sub> mol<sub>DryAir</sub><sup>-1</sup>   |
+| rtioMoleDry{Spc} | dry mole concentration of other species "spc" | mol<sub>{spc}</sub> mol<sub>DryAir</sub><sup>-1</sup> |
 
 *x/y/z == u/v/w == east/north/up
 
