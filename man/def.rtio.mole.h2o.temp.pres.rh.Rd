@@ -18,3 +18,6 @@ Uses the saturation water vapour pressure determined via \link{def.pres.h2o.sat.
 along with air temperature (K) and pressure (Pa) to calculate the dry mole fraction
 of H2O.
 }
+\author{
+W. S. Drysdale
+}

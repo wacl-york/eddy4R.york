@@ -7,6 +7,10 @@
 #' @param temp air temperature in K
 #' @param pres air pressure in Pa
 #' @param rh relative humidity as a percentage (e.g 50 for 50%)
+#'
+#' @author W. S. Drysdale
+#'
+#' @export
 
 def.rtio.mole.h2o.temp.pres.rh = function(temp, pres, rh){
 
