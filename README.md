@@ -17,8 +17,7 @@ The major feature allows for flux workflows to be defined by relatively short co
 ### Getting Started
 
 > [!NOTE]
-> As eddy4R is provided as a docker image and as such eddy4R.york provides updated image - currently based on the [eddy4R:deve](https://quay.io/repository/battelleecology/eddy4r) image, but this will change to the stable annual releases when available.
-> Currently eddy4R.york uses development versions of `eddy4R.turb::wrap.flux()` and `eddy4R.turb::def.stna()` to enable the use of custom scalars. When these features are pulled in upstream it will no longer make direct changes to any of the base image's packages.
+> As eddy4R is provided as a docker image and as such eddy4R.york provides updated image - currently based on the [eddy4R:maps](https://quay.io/repository/battelleecology/eddy4r) image, but this will change to the stable annual releases when available.
 
 #### Installation
 
