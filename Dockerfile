@@ -8,8 +8,6 @@ COPY docker/install.r .
 # Change the default prefs to dark mode
 # --chown=rstudio:rstudio stops RStudio showing an error when you connect
 COPY --chown=rstudio:rstudio docker/rstudio-prefs.json /home/rstudio/.config/rstudio/rstudio-prefs.json
-# once the flux sclr changes are done this can be removed
-COPY docker/eddy4R.turb /home/eddy/eddy4R/pack/eddy4R.turb/
 
 RUN --mount=type=secret,id=GITHUB_AUTH Rscript install.r
 
