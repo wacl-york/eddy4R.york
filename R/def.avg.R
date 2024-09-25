@@ -28,7 +28,8 @@ def.avg = function(files,
                    fileLastStart = NULL){
 
   #list of files in input directory
-  files = files[nchar(files) == nchar(fileMask)] %>% as.array
+  #files = files[nchar(files) == nchar(fileMask)] %>% as.array
+  files = as.array(files)
 
   #get file start times from names
   act_file_start = as.POSIXct(files, format = fileMask, tz = tz)
