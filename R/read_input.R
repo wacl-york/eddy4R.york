@@ -4,7 +4,7 @@
 #' TODO this can be substantially tidied
 #'
 #' @param DirInp input directory
-#' @param dateFormat format of date when reading csv for \code{as.POSIXct()}
+#' @param dateFormat format of date when reading csv for \code{as.POSIXct()} - reading from UNIX time to this format - default %Y-%m-%d %H:%M:%OS"
 #' @param agg_f files to aggregate
 #' @param agg_p period which files are relvant too
 #' @param tz time zone

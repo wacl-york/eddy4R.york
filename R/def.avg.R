@@ -5,7 +5,7 @@
 #' @param files vector of files
 #' @param fileMask string mask that can be passed to \code{as.POSIXct(format = fileMask)}
 #' @param fileDuration numeric length of files in seconds
-#' @param aggr_dur numeric required flux duration
+#' @param aggregationDuration numeric required flux duration
 #' @param tz string timezone of date in file name
 #' @param freq data aquistion frequency (Hz)
 #' @param fileFirstStart optional. This is usually equal to the timestamp in the first file name
@@ -21,7 +21,7 @@
 def.avg = function(files,
                    fileMask = "NOx_5Hz_yymmdd_HHMM0_170322_000015_cor_temp",
                    fileDuration = 3600,
-                   aggr_dur = 7200,
+                   aggregationDuration = 7200,
                    freq = 5,
                    tz,
                    fileFirstStart = NULL,
@@ -61,8 +61,8 @@ def.avg = function(files,
                                        file_list$act_file_start <= est_file_range$file_end[i]]
   }
 
-  aggregationPeriod = data.frame(avg_start = seq(act_file_start[1],act_file_start[length(act_file_start)]+(aggr_dur-1/freq),aggr_dur))
-  aggregationPeriod$avg_end = aggregationPeriod$avg_start + aggr_dur - (1/freq)
+  aggregationPeriod = data.frame(avg_start = seq(act_file_start[1],act_file_start[length(act_file_start)]+(aggregationDuration-1/freq),aggregationDuration))
+  aggregationPeriod$avg_end = aggregationPeriod$avg_start + aggregationDuration - (1/freq)
   aggregationPeriod$avg_mid = aggregationPeriod$avg_start + ((aggregationPeriod$avg_end - aggregationPeriod$avg_start)/2)
   aggregationPeriod$avg_mid = aggregationPeriod$avg_mid %>%
     lubridate::round_date("min")

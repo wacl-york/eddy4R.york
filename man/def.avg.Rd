@@ -8,7 +8,7 @@ def.avg(
   files,
   fileMask = "NOx_5Hz_yymmdd_HHMM0_170322_000015_cor_temp",
   fileDuration = 3600,
-  aggr_dur = 7200,
+  aggregationDuration = 7200,
   freq = 5,
   tz,
   fileFirstStart = NULL,
@@ -22,7 +22,7 @@ def.avg(
 
 \item{fileDuration}{numeric length of files in seconds}
 
-\item{aggr_dur}{numeric required flux duration}
+\item{aggregationDuration}{numeric required flux duration}
 
 \item{freq}{data aquistion frequency (Hz)}
 

@@ -9,7 +9,7 @@ read_input(DirInp, dateFormat, agg_f, agg_p, tz, freq, idepVar, PltfEc)
 \arguments{
 \item{DirInp}{input directory}
 
-\item{dateFormat}{format of date when reading csv for \code{as.POSIXct()}}
+\item{dateFormat}{format of date when reading csv for \code{as.POSIXct()} - reading from UNIX time to this format - default \%Y-\%m-\%d \%H:\%M:\%OS"}
 
 \item{agg_f}{files to aggregate}
 

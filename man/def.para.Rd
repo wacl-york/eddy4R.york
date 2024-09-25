@@ -27,7 +27,7 @@ def.para(
   varsCritical = c("veloXaxs", "veloYaxs", "veloZaxs", "tempAir"),
   AlgBase = "trnd",
   idepVar = "unixTime",
-  aggregationPeriod = 3600,
+  aggregationDuration = 3600,
   missingThreshold = 0.1,
   missingMethod = c("drop", "mean")[1],
   lagNOc = F,
@@ -112,7 +112,7 @@ containing independant variable for determining the base function. Column
 gets duplicated to a column called "idep" use use in
 \code{eddy4R.turb::def.stat.sta.diff}. Default unixTime.}
 
-\item{aggregationPeriod}{flux aggregation period (s)}
+\item{aggregationDuration}{flux aggregation period (s)}
 
 \item{missingThreshold}{decimal percentage of missing data threshold per file}
 

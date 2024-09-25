@@ -26,8 +26,6 @@ def.valid.input(
 
 \item{speciesRatioName}{created automatically from species. name of gas species following the rtioMoleDry\if{html}{\out{<spc>}} format}
 
-\item{aggregationPeriod}{flux aggregation period (s)}
-
 \item{missingThreshold}{decimal percentage of missing data threshold per file}
 
 \item{logger}{logger object}

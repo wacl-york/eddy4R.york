@@ -19,8 +19,6 @@ def.miss.hndl(
 
 \item{missingThreshold}{decimal percentage of missing data threshold per file}
 
-\item{aggregationPeriod}{flux aggregation period (s)}
-
 \item{freq}{data aquisition frequency of input data}
 }
 \value{
