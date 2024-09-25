@@ -42,21 +42,21 @@ wrap.towr = function(paraMain,
   det_avg = eddy4R.york::def.avg(files = paraMain$files,
                                  fileMask = paraMain$fileMask,
                                  fileDuration = paraMain$fileDuration,
-                                 aggr_dur = paraMain$aggPeriod,
+                                 aggregationDuration = paraMain$aggregationDuration,
                                  freq = paraMain$freq,
                                  tz = paraMain$tz,
                                  fileFirstStart = paraMain$fileFirstStart,
                                  fileLastStart = paraMain$fileLastStart)
 
   agg_files = det_avg$agg_files
-  aggPeriod = det_avg$aggPeriod
+  aggregationPeriod = det_avg$aggregationPeriod
 
   for(i in start:length(agg_files)){
 
     # if there are no files for this aggregationg period, skip
     if(is.na(agg_files[i])){
 
-      eddy4R.york::log_message(wrap_tower_log, "warn", "File Aggregation - no files", aggPeriod[i,])
+      eddy4R.york::log_message(wrap_tower_log, "warn", "File Aggregation - no files", aggregationPeriod[i,])
 
       next
     }
