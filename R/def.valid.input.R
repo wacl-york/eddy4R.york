@@ -23,8 +23,10 @@ def.valid.input = function(eddy.data,
                            varsCritical,
                            species,
                            speciesRatioName,
+                           aggregationDuration,
                            aggregationPeriod,
                            missingThreshold,
+                           freq,
                            logger){
 
   skip_scalar = c()
@@ -130,7 +132,7 @@ def.valid.input = function(eddy.data,
       eddy.data$rtioMoleDryH2o = 1e-12
   }
 
-  if(!nrow(eddy.data)>((1-missingThreshold) * aggregationPeriod * freq)){
+  if(!nrow(eddy.data)>((1-missingThreshold) * aggregationDuration * freq)){
     stop("Not enough data in file, < 90%")
   }
 
