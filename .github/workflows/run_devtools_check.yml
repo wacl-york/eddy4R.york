@@ -4,8 +4,6 @@ on: push
 jobs: 
   run-devtools-check:
     runs-on: ubuntu-latest
-    container: ghcr.io/wacl-york/eddy4r.york:0.1
+    container: ghcr.io/wacl-york/eddy4r.york:0.1.1
     steps:
-      - run: R
-      - run: setwd("home/york/eddy4R")
-      - run: devtools::check()
+      - run: Rscript /home/york/runtests.r 
