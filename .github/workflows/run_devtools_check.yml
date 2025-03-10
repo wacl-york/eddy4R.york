@@ -1,0 +1,10 @@
+name: Run Devtools Check
+on: push
+
+jobs: 
+  Run Devtools Check:
+    runs-on: ubuntu-latest
+    container: ghcr.io/wacl-york/eddy4r.york:0.1
+    steps:
+      - name: "Run devtools::check()"
+      run: R -e "devtools::check()"
