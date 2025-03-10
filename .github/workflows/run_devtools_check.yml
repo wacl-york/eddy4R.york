@@ -6,4 +6,6 @@ jobs:
     runs-on: ubuntu-latest
     container: ghcr.io/wacl-york/eddy4r.york:0.1
     steps:
-      - run: R -e "devtools::check()"
+      - run: R
+      - run: setwd("home/york/eddy4R")
+      - run: devtools::check()
