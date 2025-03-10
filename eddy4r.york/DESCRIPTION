@@ -17,8 +17,6 @@ Imports:
     eddy4R.turb (>= 0.0.17),
     lubridate,
     magrittr,
-    praise,
-    progress,
     purrr,
     stats,
     stringr,

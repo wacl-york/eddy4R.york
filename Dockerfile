@@ -2,9 +2,9 @@
 # probably change to annual stable release when flux sclr changes are done
 FROM quay.io/battelleecology/eddy4r:maps 
 
-# code for installing {eddy4R.york}, reinstalls the local copy of {eddy4R.turb} and installs {progress}
-# can remove the local install of eddy4R.turb once flux sclr changes are done
+WORKDIR /home/york/
 COPY docker/install.r .
+COPY eddy4r.york eddy4r.york
 # Change the default prefs to dark mode
 # --chown=rstudio:rstudio stops RStudio showing an error when you connect
 COPY --chown=rstudio:rstudio docker/rstudio-prefs.json /home/rstudio/.config/rstudio/rstudio-prefs.json
