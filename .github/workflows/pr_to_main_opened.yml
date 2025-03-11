@@ -2,7 +2,7 @@ name: PR to main Opened
 on: 
   pull_request:
     types: 
-      - opened
+      - [opened, synchronize]
     branches:
       - main
 
