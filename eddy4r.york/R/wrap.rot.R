@@ -113,7 +113,7 @@ wrap.rot = function(data,
     if(plnrFitType == "simple"){
 
       # Expect a vector for plnrFitCoef
-      if(class(plnrFitCoef) != "numeric")
+      if(!"numeric" %in% class(plnrFitCoef))
         stop("When plnrFitType == simple, plnrFitCoef must be a numeric vector")
 
       # Apply planar fit
@@ -130,7 +130,7 @@ wrap.rot = function(data,
     }
 
     if(plnrFitType %in% c("time","wind")){
-      if(class(plnrFitCoef) != "data.frame")
+      if(!"data.frame" %in%  class(plnrFitCoef))
         stop("When plnrFitType == time or wind, plnrFitCoef must be a data.frame")
 
       # Filter plnrFitCoef

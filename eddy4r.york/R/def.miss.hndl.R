@@ -18,14 +18,14 @@
 def.miss.hndl = function(eddy.data,
                          missingMethod,
                          missingThreshold,
-                         aggregationPeriod,
+                         aggregationDuration,
                          freq){
 
   if(missingMethod == "drop"){
     row.has.na <- apply(eddy.data, 1, function(x){any(is.na(x))})
     eddy.data <- eddy.data[!row.has.na,]
 
-    if(1-(nrow(eddy.data)/(aggregationPeriod*freq)) > missingThreshold)
+    if(1-(nrow(eddy.data)/(aggregationDuration*freq)) > missingThreshold)
       stop("using missingMethod drop has caused avaliable data to fall belowing missingThreshold")
     return(eddy.data)
   }
