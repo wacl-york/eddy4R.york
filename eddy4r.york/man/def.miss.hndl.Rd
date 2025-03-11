@@ -8,7 +8,7 @@ def.miss.hndl(
   eddy.data,
   missingMethod,
   missingThreshold,
-  aggregationPeriod,
+  aggregationDuration,
   freq
 )
 }
@@ -18,6 +18,8 @@ def.miss.hndl(
 \item{missingMethod}{how should missing data be handeled if it is less than the threshold. "drop","mean"}
 
 \item{missingThreshold}{decimal percentage of missing data threshold per file}
+
+\item{aggregationDuration}{flux aggregation period (s)}
 
 \item{freq}{data aquisition frequency of input data}
 }
