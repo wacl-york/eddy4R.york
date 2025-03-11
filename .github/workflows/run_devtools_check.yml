@@ -1,9 +1,0 @@
-name: Run Devtools Check
-on: push
-
-jobs: 
-  run-devtools-check:
-    runs-on: ubuntu-latest
-    container: ghcr.io/wacl-york/eddy4r.york:0.1.1
-    steps:
-      - run: Rscript /home/york/runtests.r 

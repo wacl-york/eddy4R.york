@@ -1,0 +1,32 @@
+name: PR to main Closed
+on: 
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+
+jobs:
+  pr-to-main-merged:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Build
+      run: docker build -t ghcr.io/wacl-york/eddy4r.york:dev .
+
+    #- name: Check
+    #  run: docker run --rm -it  eddy4r.york Rscript /home/york/runtests.r
+
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Publish
+      run: docker push ghcr.io/wacl-york/eddy4r.york:dev
+      
