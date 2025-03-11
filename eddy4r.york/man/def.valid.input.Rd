@@ -10,8 +10,10 @@ def.valid.input(
   varsCritical,
   species,
   speciesRatioName,
+  aggregationDuration,
   aggregationPeriod,
   missingThreshold,
+  freq,
   logger
 )
 }
@@ -26,7 +28,11 @@ def.valid.input(
 
 \item{speciesRatioName}{created automatically from species. name of gas species following the rtioMoleDry\if{html}{\out{<spc>}} format}
 
+\item{aggregationDuration}{flux aggregation period (s)}
+
 \item{missingThreshold}{decimal percentage of missing data threshold per file}
+
+\item{freq}{data aquisition frequency of input data}
 
 \item{logger}{logger object}
 }
