@@ -17,5 +17,5 @@ jobs:
         run: docker build -t eddy4r.york .
 
       - name: Check
-        run: docker run --rm -it  eddy4r.york Rscript /home/york/runtests.r
+        run: docker run --rm eddy4r.york Rscript /home/york/runtests.r
 
