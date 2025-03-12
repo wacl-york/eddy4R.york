@@ -69,9 +69,8 @@ write.REYN = function(REYN,
                   file = gzfile(file.path(DirOut,"fast_data", .y, outputFile)),
                   row.names = F)
 
-      }else{
-        next
       }
+
       # write other outputs
     }else{
       # write or append .csv
