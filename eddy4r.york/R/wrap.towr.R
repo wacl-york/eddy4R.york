@@ -156,6 +156,8 @@ wrap.towr = function(paraMain,
       if(is.null(lag_out)){next}
 
       eddy.data = lag_out$eddy.data
+    }else{
+      lag_out = NULL
     }
 
     # Handle missing values ---------------------------------------------------
