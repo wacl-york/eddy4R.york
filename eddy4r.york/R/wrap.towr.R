@@ -163,7 +163,7 @@ wrap.towr = function(paraMain,
       eddy4R.york::def.miss.hndl(eddy.data,
                                  missingMethod = para$missingMethod,
                                  missingThreshold = para$missingThreshold,
-                                 aggregationPeriod = para$aggregationPeriod,
+                                 aggregationDuration = para$aggregationDuration,
                                  freq = para$freq)},
       error = function(e){
         eddy4R.york::log_message(wrap_tower_log, "error", "Handel Missing Values", aggregationPeriod[i,], e)
