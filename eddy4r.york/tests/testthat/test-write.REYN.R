@@ -24,3 +24,12 @@ test_that("lag_out being NULL is ok",{
                              subDir = "none"))
 })
 
+test_that("writeFastData being FALSE is ok",{
+  expect_no_error(write.REYN(REYN = REYN,
+                             lag_out = lag_out,
+                             DirOut = file.path(tempdir(), "test_write.REYN"),
+                             analysis  ="test",
+                             tz = "UTC",
+                             writeFastData = F,
+                             subDir = "none"))
+})
