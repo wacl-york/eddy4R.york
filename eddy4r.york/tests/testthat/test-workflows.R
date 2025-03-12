@@ -1,5 +1,14 @@
 testScenarios = create_test_scenarios()
 
+
+tempDirs = list.dirs(tempdir(),recursive = F)
+
+testTempDirs = tempDirs[stringr::str_detect(tempDirs, "test_")]
+
+for(i in 1:length(testTempDirs)){
+  system(paste0("rm -rf ", testTempDirs[i]))
+}
+
 # Run test scenarios
 for(i in 1:length(testScenarios)){
 
