@@ -270,6 +270,13 @@ wrap.towr = function(paraMain,
 
     # flux error calculations -------------------------------------------------
     REYN$error = tryCatch({
+
+      if(!is.null(para$speciesRatioName)){
+        speciesFluxName = paste0("flux", para$species)
+      }else{
+        speciesFluxName = NULL
+      }
+
       eddy4R.turb::def.ucrt.samp(data = NULL,
                                  distIsca=REYN$isca,
                                  valuMean=REYN$mean,
@@ -277,7 +284,7 @@ wrap.towr = function(paraMain,
                                  distMean=mean(REYN$data$unixTime-min(REYN$data$unixTime)),
                                  timeFold = 0,
                                  spcsNameRtio = para$speciesRatioName,
-                                 spcsNameFlux = paste0("flux", para$species))},
+                                 spcsNameFlux = speciesFluxName)},
       error = function(e){
         eddy4R.york::log_message(wrap_tower_log, "error", "def.ucrt.samp", aggregationPeriod[i,], e)
         return(NULL)
