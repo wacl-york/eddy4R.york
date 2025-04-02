@@ -30,7 +30,7 @@ def.para.tmp = function(paraMain, skip_scalar){
   }
 
   # rebuild para list with new species argument
-  do.call(get("def.para", getNamespace("eddy4R.york")), as.list(paraCall))
+  eval(paraCall)
 
 }
 

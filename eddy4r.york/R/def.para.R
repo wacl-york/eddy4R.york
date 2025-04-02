@@ -151,6 +151,13 @@ def.para = function(
   #Ellipsis
   ...){
 
+  # This throws an error if an argument that doesn't have a default AND isn't used in the function has not had a value supplied.
+  # e.g x = function(y){print("hello")};x() doesn't error but the below does.
+  # x = function(y){sapply(ls(environment()), get, envir = environment(), inherits = FALSE);print("hello")};x()
+  # This means we can get away with using c(as.list(environment()), list(...)) to capture the args
+  # while being sure all the defaults have been supplied
+  sapply(ls(environment()), get, envir = environment(), inherits = FALSE)
+
   # Get all arguments into a list
   para = c(as.list(environment()), list(...))
 
