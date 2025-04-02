@@ -98,13 +98,21 @@ wrap.towr = function(paraMain,
       })
 
     if(!is.null(skip_scalar)){
-      if(skip_scalar == "valid_error"){
+      if("valid_error" %in% skip_scalar){
         next
       }
     }
 
     if(length(skip_scalar) > 0){
+
+      # need to actually remove the missing columns from eddy.data, otherwise we fall foul of unit checking in def.stat.sta.diff()
+      skipRtio = paraMain$speciesRatioName[which(paraMain$species %in% skip_scalar)]
+      eddy.data = eddy.data[!names(eddy.data) %in% skipRtio]
+      # eddy.data = eddy.data |>
+      #   dplyr::select(-dplyr::any_of(skipRtio))
+
       para = eddy4R.york::def.para.tmp(paraMain, skip_scalar)
+
     }else{
       para = paraMain
     }
