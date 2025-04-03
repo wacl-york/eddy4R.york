@@ -2,9 +2,9 @@ default_scenario = function(fileType = "o3"){
 
   switch (fileType,
 
-          # Good EC File with O3 data to calcualte a flux from
+          # Good EC File with O3 data to calculate a flux from
           o3 = eddy4R.york::def.para(
-            DirWrk = "/home/eddy4r.york/eddy4r.york/tests/fixtures/",
+            DirWrk = "/home/york/eddy4r.york/tests/fixtures/",
             DirInp = "example_data_o3",
             siteName = "siteName",
             lat = 32.2644,
@@ -29,7 +29,7 @@ default_scenario = function(fileType = "o3"){
 
           # One file is missing large amounts of NO and NO2 data - in this file both scalars should be rejected at sensible missing thresholds
           no = eddy4R.york::def.para(
-            DirWrk = "/home/eddy4r.york/eddy4r.york/tests/fixtures/",
+            DirWrk = "/home/york/eddy4r.york/tests/fixtures/",
             DirInp = "example_data_no_no2",
             DirOut = file.path(tempdir(), "test_skip2Scalars"), # write to temp dir for testing
             siteName = "siteName",
@@ -53,6 +53,7 @@ default_scenario = function(fileType = "o3"){
                                  c(0,-20),
                                  c(0,-20))
           )
+
   )
 
 }
