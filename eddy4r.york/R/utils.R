@@ -43,7 +43,7 @@ assign_input_units = function(eddy.data,
   attr(x = eddy.data$presAtm, which = "unit") = unitList$pres
 
   # wind vectors
-  for(var in c("veloXaxs", "veloYaxs", "veloZaxs")){
+  for(var in c("veloXaxs", "veloYaxs", "veloZaxs", "veloXaxsInp", "veloYaxsInp", "veloZaxsInp")){
     attr(x = eddy.data[,var], which = "unit") = unitList$velo
   }
 

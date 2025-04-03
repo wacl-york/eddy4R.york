@@ -1,6 +1,5 @@
 testScenarios = create_test_scenarios()
 
-
 tempDirs = list.dirs(tempdir(),recursive = F)
 
 testTempDirs = tempDirs[stringr::str_detect(tempDirs, "test_")]

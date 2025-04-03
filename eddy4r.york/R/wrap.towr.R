@@ -220,6 +220,17 @@ wrap.towr = function(paraMain,
 
     if(is.null(REYN)){next}
 
+
+    # Calculate Extra Parameters for Mean File --------------------------------
+    REYN$mean = REYN$mean |>
+      dplyr::mutate(distRgh = eddy4R.turb::def.dist.rgh(distZaxsMeas = distZaxsMeas,
+                                                        distObkv = distObkv,
+                                                        veloXaxs = veloXaxs,
+                                                        veloFric = veloFric),
+                    windDir = eddy4R.base::def.pol.cart(matrix(c(veloYaxsInp,veloXaxsInp),ncol=2))
+                    )
+
+
     # stationarity testing ----------------------------------------------------
     REYN$stna = tryCatch({
       eddy4R.turb::def.stna(data=REYN$data,
