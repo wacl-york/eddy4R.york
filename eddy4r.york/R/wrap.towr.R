@@ -223,11 +223,11 @@ wrap.towr = function(paraMain,
 
     # Calculate Extra Parameters for Mean File --------------------------------
     REYN$mean = REYN$mean |>
-      dplyr::mutate(distRgh = eddy4R.turb::def.dist.rgh(distZaxsMeas = distZaxsMeas,
-                                                        distObkv = distObkv,
-                                                        veloXaxs = veloXaxs,
-                                                        veloFric = veloFric),
-                    windDir = eddy4R.base::def.pol.cart(matrix(c(veloYaxsInp,veloXaxsInp),ncol=2))
+      dplyr::mutate(distRgh = eddy4R.turb::def.dist.rgh(distZaxsMeas = .data$distZaxsMeas,
+                                                        distObkv = .data$distObkv,
+                                                        veloXaxs = .data$veloXaxs,
+                                                        veloFric = .data$veloFric),
+                    windDir = eddy4R.base::def.pol.cart(matrix(c(.data$veloYaxsInp,.data$veloXaxsInp),ncol=2))
                     )
 
 
@@ -282,12 +282,6 @@ wrap.towr = function(paraMain,
     # flux error calculations -------------------------------------------------
     REYN$error = tryCatch({
 
-      if(!is.null(para$speciesRatioName)){
-        speciesFluxName = paste0("flux", para$species)
-      }else{
-        speciesFluxName = NULL
-      }
-
       eddy4R.turb::def.ucrt.samp(data = NULL,
                                  distIsca=REYN$isca,
                                  valuMean=REYN$mean,
@@ -295,7 +289,7 @@ wrap.towr = function(paraMain,
                                  distMean=mean(REYN$data$unixTime-min(REYN$data$unixTime)),
                                  timeFold = 0,
                                  spcsNameRtio = para$speciesRatioName,
-                                 spcsNameFlux = speciesFluxName)},
+                                 spcsNameFlux = para$speciesFluxName)},
       error = function(e){
         eddy4R.york::log_message(wrap_tower_log, "error", "def.ucrt.samp", aggregationPeriod[i,], e)
         return(NULL)
