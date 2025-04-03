@@ -58,22 +58,48 @@ default_scenario = function(fileType = "o3"){
 
 }
 
+run_workflow_tests = function(scenario, scenarioName){
 
-create_test_scenarios = function(){
+  testDir = file.path(tempdir(), scenarioName)
 
-  testScenarios = list()
+  scenario$DirOut = testDir
 
-  testScenarios$test_default = default_scenario()
-  testScenarios$test_default$DirOut = file.path(tempdir(), "test_default")
+  if(dir.exists(testDir)){
+    system(paste0("rm -rf ", testDir))
+  }
 
-  testScenarios$test_lagApplyCorrectionFALSE = default_scenario()
-  testScenarios$test_lagApplyCorrectionFALSE$DirOut = file.path(tempdir(), "test_lagApplyCorrectionFALSE")
-  testScenarios$test_lagApplyCorrectionFALSE$lagApplyCorrection = F
+  test_that(paste0("Scenario ", scenarioName, " runs without unhandled error"),{
+    expect_no_error(eddy4R.york::wrap.towr(scenario))
+  })
 
-  testScenarios$test_skip2Scalars = default_scenario(fileType = "no")
-  testScenarios$test_skip2Scalars$DirOut = file.path(tempdir(), "test_skip2Scalars")
+  # If the workflow catches an error, it should record it in the logfile.
+  # If there are no caught errors, there should be no lines with the word error in.
+  test_that(paste0("Scenario ", scenarioName, " runs without caught error"),{
+    logfile = readLines(file.path(testDir, "wrap_tower_logfile.txt" ))
 
-  #
-  testScenarios
+    logfile_errors = logfile[stringr::str_detect(logfile, "error")]
+
+    expect_equal(length(logfile_errors), 0)
+  })
 
 }
+
+
+# create_test_scenarios = function(){
+#
+#   testScenarios = list()
+#
+#   testScenarios$test_default = default_scenario()
+#   testScenarios$test_default$DirOut = file.path(tempdir(), "test_default")
+#
+#   testScenarios$test_lagApplyCorrectionFALSE = default_scenario()
+#   testScenarios$test_lagApplyCorrectionFALSE$DirOut = file.path(tempdir(), "test_lagApplyCorrectionFALSE")
+#   testScenarios$test_lagApplyCorrectionFALSE$lagApplyCorrection = F
+#
+#   testScenarios$test_skip2Scalars = default_scenario(fileType = "no")
+#   testScenarios$test_skip2Scalars$DirOut = file.path(tempdir(), "test_skip2Scalars")
+#
+#   #
+#   testScenarios
+#
+# }
