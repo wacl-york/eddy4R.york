@@ -17,6 +17,7 @@ def.para(
   subDir = c("none", "monthly", "daily")[1],
   species = NULL,
   speciesRatioName = NULL,
+  speciesFluxName = NULL,
   unitList = NULL,
   freq = 5,
   files = NULL,
@@ -87,6 +88,8 @@ def.para(
 \item{species}{vector of species names. Match with IntlNatu naming}
 
 \item{speciesRatioName}{created automatically from species. name of gas species following the rtioMoleDry\if{html}{\out{<spc>}} format}
+
+\item{speciesFluxName}{created automatically from species. name of gas species following the flux\if{html}{\out{<spc>}} format}
 
 \item{unitList}{defaults to \code{default_unit_list()} plus species field based off of species argument
 speices is a list with names that match speciesRatioName describing the units per species. Defaults to mol\if{html}{\out{<spc>}} mol-1Dry}

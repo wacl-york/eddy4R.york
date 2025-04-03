@@ -35,6 +35,13 @@ wrap.anem.cor = function(eddy.data,
     eddy.data$veloZaxs[eddy.data$veloZaxs < 0 ] = eddy.data$veloZaxs[eddy.data$veloZaxs < 0 ]*1.289
   }
 
+
+  # Preserve Input Vectors for Wind Direction Calculation -------------------
+
+  eddy.data$veloXaxsInp = eddy.data$veloXaxs
+  eddy.data$veloYaxsInp = eddy.data$veloYaxs
+  eddy.data$veloZaxsInp = eddy.data$veloZaxs
+
   # Return
   eddy.data
 }

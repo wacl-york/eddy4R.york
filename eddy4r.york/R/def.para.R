@@ -6,6 +6,7 @@
 #' @param fileMask string mask that can be passed to \code{as.POSIXct(format = mask)} to decode the date in the file name
 #' @param species vector of species names. Match with IntlNatu naming
 #' @param speciesRatioName created automatically from species. name of gas species following the rtioMoleDry<spc> format
+#' @param speciesFluxName created automatically from species. name of gas species following the flux<spc> format
 #' @param unitList defaults to \code{default_unit_list()} plus species field based off of species argument
 #' speices is a list with names that match speciesRatioName describing the units per species. Defaults to mol<spc> mol-1Dry
 #' @param freq data aquisition frequency of input data
@@ -87,6 +88,7 @@ def.para = function(
   subDir = c("none", "monthly", "daily")[1],
   species = NULL,
   speciesRatioName = NULL,
+  speciesFluxName = NULL,
   unitList = NULL,
   freq = 5,
   files = NULL,
@@ -151,6 +153,13 @@ def.para = function(
   #Ellipsis
   ...){
 
+  # This throws an error if an argument that doesn't have a default AND isn't used in the function has not had a value supplied.
+  # e.g x = function(y){print("hello")};x() doesn't error but the below does.
+  # x = function(y){sapply(ls(environment()), get, envir = environment(), inherits = FALSE);print("hello")};x()
+  # This means we can get away with using c(as.list(environment()), list(...)) to capture the args
+  # while being sure all the defaults have been supplied
+  sapply(ls(environment()), get, envir = environment(), inherits = FALSE)
+
   # Get all arguments into a list
   para = c(as.list(environment()), list(...))
 
@@ -178,11 +187,15 @@ def.para = function(
       para$speciesRatioName = paste0("rtioMoleDry", species)
     }
 
+    if(is.null(speciesFluxName)){
+      para$speciesFluxName = paste0("flux", species)
+    }
+
     if(is.null(para$unitList$species)){
       para$unitList$species = stats::setNames(as.list(paste0("mol", species, " mol-1Dry")), para$speciesRatioName)
     }
 
-    para$ListGasSclr = purrr::map2(para$species,
+    para$ListGasSclr = purrr::map2(para$speciesFluxName,
                                    para$unitList$species,
                                    ~{
                                      list(Conv = "densMoleAirDry",
@@ -190,7 +203,7 @@ def.para = function(
                                                                   InpSclr = .y,
                                                                   Conv = "mol m-3",
                                                                   Out = "mol m-2 s-1"),
-                                          NameOut = paste0("flux",.x))
+                                          NameOut = .x)
                                    }) %>%
       stats::setNames(para$speciesRatioName)
   }

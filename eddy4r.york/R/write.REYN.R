@@ -21,6 +21,7 @@ write.REYN = function(REYN,
                       subDir){
 
   REYN = c(REYN, lag_out)
+  # lag out can contain eddy.data, which is the same as REYN$data, so we NULL it here to avoid duplication
   REYN$eddy.data = NULL
 
   unixTimeMin = min(REYN$data$unixTime,na.rm = T)
@@ -68,9 +69,8 @@ write.REYN = function(REYN,
                   file = gzfile(file.path(DirOut,"fast_data", .y, outputFile)),
                   row.names = F)
 
-      }else{
-        next
       }
+
       # write other outputs
     }else{
       # write or append .csv

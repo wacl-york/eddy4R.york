@@ -98,13 +98,21 @@ wrap.towr = function(paraMain,
       })
 
     if(!is.null(skip_scalar)){
-      if(skip_scalar == "valid_error"){
+      if("valid_error" %in% skip_scalar){
         next
       }
     }
 
     if(length(skip_scalar) > 0){
+
+      # need to actually remove the missing columns from eddy.data, otherwise we fall foul of unit checking in def.stat.sta.diff()
+      skipRtio = paraMain$speciesRatioName[which(paraMain$species %in% skip_scalar)]
+      eddy.data = eddy.data[!names(eddy.data) %in% skipRtio]
+      # eddy.data = eddy.data |>
+      #   dplyr::select(-dplyr::any_of(skipRtio))
+
       para = eddy4R.york::def.para.tmp(paraMain, skip_scalar)
+
     }else{
       para = paraMain
     }
@@ -156,6 +164,8 @@ wrap.towr = function(paraMain,
       if(is.null(lag_out)){next}
 
       eddy.data = lag_out$eddy.data
+    }else{
+      lag_out = NULL
     }
 
     # Handle missing values ---------------------------------------------------
@@ -163,7 +173,7 @@ wrap.towr = function(paraMain,
       eddy4R.york::def.miss.hndl(eddy.data,
                                  missingMethod = para$missingMethod,
                                  missingThreshold = para$missingThreshold,
-                                 aggregationPeriod = para$aggregationPeriod,
+                                 aggregationDuration = para$aggregationDuration,
                                  freq = para$freq)},
       error = function(e){
         eddy4R.york::log_message(wrap_tower_log, "error", "Handel Missing Values", aggregationPeriod[i,], e)
@@ -209,6 +219,17 @@ wrap.towr = function(paraMain,
       })
 
     if(is.null(REYN)){next}
+
+
+    # Calculate Extra Parameters for Mean File --------------------------------
+    REYN$mean = REYN$mean |>
+      dplyr::mutate(distRgh = eddy4R.turb::def.dist.rgh(distZaxsMeas = .data$distZaxsMeas,
+                                                        distObkv = .data$distObkv,
+                                                        veloXaxs = .data$veloXaxs,
+                                                        veloFric = .data$veloFric),
+                    windDir = eddy4R.base::def.pol.cart(matrix(c(.data$veloYaxsInp,.data$veloXaxsInp),ncol=2))
+                    )
+
 
     # stationarity testing ----------------------------------------------------
     REYN$stna = tryCatch({
@@ -260,6 +281,7 @@ wrap.towr = function(paraMain,
 
     # flux error calculations -------------------------------------------------
     REYN$error = tryCatch({
+
       eddy4R.turb::def.ucrt.samp(data = NULL,
                                  distIsca=REYN$isca,
                                  valuMean=REYN$mean,
@@ -267,7 +289,7 @@ wrap.towr = function(paraMain,
                                  distMean=mean(REYN$data$unixTime-min(REYN$data$unixTime)),
                                  timeFold = 0,
                                  spcsNameRtio = para$speciesRatioName,
-                                 spcsNameFlux = paste0("flux", para$species))},
+                                 spcsNameFlux = para$speciesFluxName)},
       error = function(e){
         eddy4R.york::log_message(wrap_tower_log, "error", "def.ucrt.samp", aggregationPeriod[i,], e)
         return(NULL)

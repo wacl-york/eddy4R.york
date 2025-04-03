@@ -18,9 +18,13 @@ Imports:
     lubridate,
     magrittr,
     purrr,
+    rlang,
     stats,
     stringr,
     tibble,
     tidyr,
     tidyselect,
     utils
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3

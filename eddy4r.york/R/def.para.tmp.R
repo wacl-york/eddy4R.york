@@ -14,13 +14,15 @@ def.para.tmp = function(paraMain, skip_scalar){
 
   paraCall = paraMain$call
 
-  skipRtio = paraMain$speciesRatioName[which(paraMain$species %in% c(skip_scalar))]
-  skipCcvPos = which(paraMain$lagVars %in% skipRtio)
+  skipSpeciesPosition = which(paraMain$species %in% skip_scalar)
+  skipRtio = paraMain$speciesRatioName[which(paraMain$species %in% skip_scalar)]
+  skipLagVarPos = which(paraMain$lagVars %in% skipRtio)
 
   # edit the original call to only the species we have
-  paraCall$species = paraCall$species[paraCall$species != skip_scalar]
-  paraCall$lagDefaults = eval(paraCall$lagDefaults)[-skipCcvPos]
-  paraCall$lagRangeLimit = eval(paraCall$lagRangeLimit)[-skipCcvPos]
+  paraCall$species = eval(paraCall$species)[-skipSpeciesPosition]
+  paraCall$lagDefaults = eval(paraCall$lagDefaults)[-skipLagVarPos]
+  paraCall$lagRangeLimit = eval(paraCall$lagRangeLimit)[-skipLagVarPos]
+  paraCall$lagVars = eval(paraCall$lagVars)[-skipLagVarPos]
 
   # If there are no species left, make it NULL
   if(length(paraCall$species) == 0){
@@ -28,7 +30,7 @@ def.para.tmp = function(paraMain, skip_scalar){
   }
 
   # rebuild para list with new species argument
-  do.call(get("def.para", getNamespace("eddy4R.york")), as.list(paraCall))
+  eval(paraCall)
 
 }
 
