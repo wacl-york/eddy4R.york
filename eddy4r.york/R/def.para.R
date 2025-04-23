@@ -269,7 +269,7 @@ def.para = function(
 
 
   # What should have stationarity tests applied?
-  para$stnaVar = c("veloFricXaxsSq", "veloFricYaxsSq", "veloFric", "fluxTempEngy", "fluxH2oEngy", para$speciesRatioName)
+  para$stnaVar = c("veloFricXaxsSq", "veloFricYaxsSq", "veloFric", "fluxTempEngy", "fluxH2oEngy", para$speciesFluxName)
 
   para$call = match.call()
 
