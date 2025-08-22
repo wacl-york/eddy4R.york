@@ -22,7 +22,7 @@ wrap.lag = function(eddy.data,
                              b = lagRangeLimit,
                              c = lagDefaults),
                         function(a,b,c){
-                          lagged = eddy4R.base::def.lag(refe=eddy.data$veloXaxs,
+                          lagged = eddy4R.base::def.lag(refe=eddy.data$veloZaxs,
                                                         meas=eddy.data[,a],
                                                         dataRefe=eddy.data,
                                                         lagMax=40*freq,
