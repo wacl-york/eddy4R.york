@@ -34,7 +34,11 @@ wrap.rot = function(data,
                     MethRot = c("single","double","plnrFit","autoPlnrFit","none")[1],
                     plnrFitCoef = NULL,
                     plnrFitType = c("simple","time","wind")[1]){
-
+  
+  if(!MethRot %in% c("single","double","plnrFit","none")){
+    stop(paste('MethRot set as', MethRot, 'should be one of "single","double","plnrFit","none"'))
+  }
+  
   # rotation angle
   mnPSI_uv = eddy4R.base::def.pol.cart(matrix(c(mean(data$veloYaxs, na.rm = TRUE),
                                                 mean(data$veloXaxs, na.rm = TRUE)),
