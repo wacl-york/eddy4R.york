@@ -56,6 +56,8 @@ def.para(
   fileFirstStart = NULL,
   fileLastStart = NULL,
   spectralTaperingWeight = 0.5,
+  footprintResolutionM = 100,
+  footprintCumulativeThreshold = 0.8,
   wavelet_ec = FALSE,
   wavelet_av = "mean",
   wavelet_win = 5,
@@ -179,6 +181,10 @@ either numeric vector for plnrFitType = "simple" or data.frame for plnrFitType =
 \item{spectralTaperingWeight}{tapering value to be supplied to \code{eddy4R.turb::def.spec.fft.fwd()}
 and ultimately \code{stats::spec.taper()}. value < 0.5 or FALSE
 Default 0.05 as per \code{eddy4R.turb::def.spec.fft.fwd()}.}
+
+\item{footprintResolutionM}{Resolution of footprint model in meters (default 100)}
+
+\item{footprintCumulativeThreshold}{threshold for cumulative footprint extent (default 0.8)}
 
 \item{wavelet_ec}{supply argument true or false for conducting wavelet eddy-covariance}
 

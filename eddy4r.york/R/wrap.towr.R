@@ -319,6 +319,25 @@ wrap.towr = function(paraMain,
         return(NULL)
       })
 
+
+    # Footprint Modelling -----------------------------------------------------
+
+    wrap.foot.k04(
+      angZaxsErth = REYN$mean$windDir,
+      footprintResolutionM = para$footprintResolutionM,
+      veloYaxsHorSd = REYN$sd$veloYaxsHor,
+      veloZaxsHorSd = REYN$sd$veloZaxsHor,
+      veloFric = REYN$mean$veloFric,
+      distZaxsMeasDisp = REYN$mean$distZaxsMeas,
+      distZaxsAbl = REYN$mean$distZaxsAbl,
+      distZaxsRgh = REYN$mean$distRgh,
+      footprintCumulativeThreshold = para$footprintCumulativeThreshold,
+      univFunc = eddy4R.turb::def.func.univ(
+        distZaxsMeas = REYN$mean$distZaxsMeas,
+        distObkv = REYN$mean$distObkv
+      )$univFunc
+    )
+
     # Write -------------------------------------------------------------------
 
     #TODO add spec and foot to write.REYN once footprint is implemented as well
