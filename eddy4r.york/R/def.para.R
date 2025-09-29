@@ -50,7 +50,6 @@
 #' @param runID Used in file nameing
 #' @param siteName Used in file nameing
 #' @param analysis Used in file nameing
-#' @param writeFastData should high frequency intermediates be writen (diff,data, base, conv outputs from REYN)
 #' @param PltfEc switch for eddy4r functions between tower and aircraft. towr,airc
 #' @param ZoneUtm data.frame containing UTM info e.g data.frame(Zone=30, Estg=698478, Nthg=5711690)
 #' @param lat latitude of tower location
@@ -62,6 +61,11 @@
 #' @param subDir one of c("none", "monthly", "daily") - default none. Should the outputs be split into monthly or daily subdirectories
 #' @param lagVars created from species plus temperature and water vapour
 #' @param despikeVars created from species plus temperature and water vapour
+#' @param spectralTaperingWeight tapering value to be supplied to \code{eddy4R.turb::def.spec.fft.fwd()}
+#'                               and ultimately \code{stats::spec.taper()}. value < 0.5 or FALSE
+#'                               Default 0.05 as per \code{eddy4R.turb::def.spec.fft.fwd()}.
+#' @param footprintResolutionM Resolution of footprint model in meters (default 100)
+#' @param footprintCumulativeThreshold threshold for cumulative footprint extent (default 0.8)
 #' @param wavelet_ec supply argument true or false for conducting wavelet eddy-covariance
 #' @param wavelet_av supply argument "mean" or "band" for conducting wavelet eddy-covariance averaging.
 #' @param wavelet_win supply value for data window to use for wavelet averaging. Tower setup give value in minutes, e.g. 5. Aircraft give distance in meters.
@@ -84,7 +88,6 @@ def.para = function(
   fileDuration,
   DirOut = NULL,
   siteName = NULL,
-  writeFastData = TRUE,
   subDir = c("none", "monthly", "daily")[1],
   species = NULL,
   speciesRatioName = NULL,
@@ -141,6 +144,14 @@ def.para = function(
   # Should be auto-generated in many cases
   fileFirstStart = NULL,
   fileLastStart = NULL,
+
+  # Spectral Analysis
+  spectralTaperingWeight = 0.5,
+
+  # Footprint Modelling
+  footprintResolutionM = 100,
+  footprintCumulativeThreshold = 0.8,
+
 
   # Wavelet settings
   wavelet_ec = FALSE,

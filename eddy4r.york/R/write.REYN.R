@@ -37,63 +37,54 @@ write.REYN = function(REYN,
     }else{
       DirOut = file.path(DirOut, fileYear, fileMonth, fileDay)
     }
-
-
   }
 
-  if(!dir.exists(DirOut)){
-    dir.create(DirOut, recursive = T)
-  }
+  files = REYN |>
+    dplyr::tibble() |>
+    dplyr::mutate(fileBase = names(REYN)) |>
+    dplyr::mutate(
+      alwaysWrite = !.data$fileBase %in% c("base", "conv", "data","diff"),
+      compress = .data$fileBase %in% c("ACF","foot", "spec", "base", "conv", "data","diff"),
+      dirName = ifelse(.data$compress, .data$fileBase, NA),
+      write = .data$alwaysWrite | writeFastData,
+      dirForFile = ifelse(is.na(.data$dirName), DirOut, file.path(DirOut, "compressedData" , .data$dirName)),
+      fileSuffix = paste0(analysis,"_", .data$fileBase, ifelse(.data$compress, ".csv.gz", ".csv")),
+      fileName = ifelse(.data$compress, paste0(format(fileStart, "%Y%m%d_%H"),"_", .data$fileSuffix), .data$fileSuffix),
+      fileOut = file.path(.data$dirForFile, .data$fileName),
+      flatten = .data$fileBase %in% c("itc", "isca","error","stna","mtrxRot01")) |>
+    dplyr::filter(.data$write)
 
+  for(i in 1:nrow(files)){
 
-  fastFolders = c("base", "conv", "data", "diff")
-  DirFast = file.path(DirOut, "fast_data", fastFolders)
-  purrr::walk(DirFast[!dir.exists(DirFast)], ~dir.create(.x, recursive = T))
-
-  purrr::iwalk(REYN, ~{
-    # flatten list data
-    if(.y %in% c("itc", "isca","error","stna","mtrxRot01")){
-      .x = as.data.frame(.x)
+    if(!dir.exists(files$dirForFile[i])){
+      dir.create(files$dirForFile[i], recursive = T)
     }
 
-    # give all outputs a common date column.
-    .x$unixTimeMin = unixTimeMin
+    if(files$flatten[i]){
+      files$REYN[[i]] = as.data.frame(files$REYN[[i]])
+    }
 
-    # write fast data if set to.
-    if(.y %in% fastFolders){
-      if(writeFastData){
+    files$REYN[[i]]$unixTimeMin = unixTimeMin
 
-        outputFile = paste0(format(fileStart, "%Y%m%d_%H"),"_",analysis,"_",.y, ".csv.gz")
-
-        write.csv(REYN[[.y]],
-                  file = gzfile(file.path(DirOut,"fast_data", .y, outputFile)),
-                  row.names = F)
-
-      }
-
-      # write other outputs
+    if(files$compress[i]){
+      utils::write.csv(files$REYN[[i]],
+                       file = files$fileOut[i],
+                       row.names = F)
     }else{
-      # write or append .csv
-
-      outputFile = file.path(DirOut, paste0(analysis,"_",.y, ".csv"))
-
-      if(!file.exists(outputFile)){
-        write.table(REYN[[.y]],
-                    file = outputFile,
-                    row.names = F,
-                    sep = ",")
+      if(!file.exists(files$fileOut[i])){
+        utils::write.table(files$REYN[[i]],
+                           file = files$fileOut[i],
+                           row.names = F,
+                           sep = ",")
       }else{
-        write.table(REYN[[.y]],
-                    file = outputFile,
-                    row.names = F,
-                    append = T,
-                    col.names = F,
-                    sep = ",")
+        utils::write.table(files$REYN[[i]],
+                           file = files$fileOut[i],
+                           row.names = F,
+                           append = T,
+                           col.names = F,
+                           sep = ",")
       }
-
-
     }
-
-  })
+  }
 
 }

@@ -13,7 +13,6 @@ def.para(
   fileDuration,
   DirOut = NULL,
   siteName = NULL,
-  writeFastData = TRUE,
   subDir = c("none", "monthly", "daily")[1],
   species = NULL,
   speciesRatioName = NULL,
@@ -55,6 +54,9 @@ def.para(
   ZoneUtm = data.frame(Zone = 30, Estg = 698478, Nthg = 5711690),
   fileFirstStart = NULL,
   fileLastStart = NULL,
+  spectralTaperingWeight = 0.5,
+  footprintResolutionM = 100,
+  footprintCumulativeThreshold = 0.8,
   wavelet_ec = FALSE,
   wavelet_av = "mean",
   wavelet_win = 5,
@@ -80,8 +82,6 @@ def.para(
 \item{DirOut}{by default is created as \code{file.path(DirWrk,"out",siteName, runID, analysis)}, can be overridden here.}
 
 \item{siteName}{Used in file nameing}
-
-\item{writeFastData}{should high frequency intermediates be writen (diff,data, base, conv outputs from REYN)}
 
 \item{subDir}{one of c("none", "monthly", "daily") - default none. Should the outputs be split into monthly or daily subdirectories}
 
@@ -174,6 +174,14 @@ either numeric vector for plnrFitType = "simple" or data.frame for plnrFitType =
 \item{fileFirstStart}{used to aid def.avg - should be created internally}
 
 \item{fileLastStart}{used to aid def.avg - should be created internally}
+
+\item{spectralTaperingWeight}{tapering value to be supplied to \code{eddy4R.turb::def.spec.fft.fwd()}
+and ultimately \code{stats::spec.taper()}. value < 0.5 or FALSE
+Default 0.05 as per \code{eddy4R.turb::def.spec.fft.fwd()}.}
+
+\item{footprintResolutionM}{Resolution of footprint model in meters (default 100)}
+
+\item{footprintCumulativeThreshold}{threshold for cumulative footprint extent (default 0.8)}
 
 \item{wavelet_ec}{supply argument true or false for conducting wavelet eddy-covariance}
 
