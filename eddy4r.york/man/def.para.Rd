@@ -55,6 +55,7 @@ def.para(
   ZoneUtm = data.frame(Zone = 30, Estg = 698478, Nthg = 5711690),
   fileFirstStart = NULL,
   fileLastStart = NULL,
+  spectralTaperingWeight = 0.5,
   wavelet_ec = FALSE,
   wavelet_av = "mean",
   wavelet_win = 5,
@@ -174,6 +175,10 @@ either numeric vector for plnrFitType = "simple" or data.frame for plnrFitType =
 \item{fileFirstStart}{used to aid def.avg - should be created internally}
 
 \item{fileLastStart}{used to aid def.avg - should be created internally}
+
+\item{spectralTaperingWeight}{tapering value to be supplied to \code{eddy4R.turb::def.spec.fft.fwd()}
+and ultimately \code{stats::spec.taper()}. value < 0.5 or FALSE
+Default 0.05 as per \code{eddy4R.turb::def.spec.fft.fwd()}.}
 
 \item{wavelet_ec}{supply argument true or false for conducting wavelet eddy-covariance}
 

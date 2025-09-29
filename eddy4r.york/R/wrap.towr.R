@@ -307,7 +307,21 @@ wrap.towr = function(paraMain,
 
 
 
+    # Spectral Analysis -------------------------------------------------------
+    spec = tryCatch({
+      wrap.spec(
+        eddy.data = eddy.data,
+        speciesRatioName = para$speciesRatioName,
+        freq = para$freq,
+        spectralTaperingWeight = para$spectralTaperingWeight)},
+      error = function(e) {
+        eddy4R.york::log_message(wrap_tower_log, "error", "wrap.spec", aggregationPeriod[i,], e)
+        return(NULL)
+      })
+
     # Write -------------------------------------------------------------------
+
+    #TODO add spec and foot to write.REYN once footprint is implemented as well
     tryCatch({
       eddy4R.york::write.REYN(REYN,
                               lag_out,

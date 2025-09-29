@@ -62,6 +62,9 @@
 #' @param subDir one of c("none", "monthly", "daily") - default none. Should the outputs be split into monthly or daily subdirectories
 #' @param lagVars created from species plus temperature and water vapour
 #' @param despikeVars created from species plus temperature and water vapour
+#' @param spectralTaperingWeight tapering value to be supplied to \code{eddy4R.turb::def.spec.fft.fwd()}
+#'                               and ultimately \code{stats::spec.taper()}. value < 0.5 or FALSE
+#'                               Default 0.05 as per \code{eddy4R.turb::def.spec.fft.fwd()}.
 #' @param wavelet_ec supply argument true or false for conducting wavelet eddy-covariance
 #' @param wavelet_av supply argument "mean" or "band" for conducting wavelet eddy-covariance averaging.
 #' @param wavelet_win supply value for data window to use for wavelet averaging. Tower setup give value in minutes, e.g. 5. Aircraft give distance in meters.
@@ -141,6 +144,9 @@ def.para = function(
   # Should be auto-generated in many cases
   fileFirstStart = NULL,
   fileLastStart = NULL,
+
+  # Spectral Analysis
+  spectralTaperingWeight = 0.5,
 
   # Wavelet settings
   wavelet_ec = FALSE,
