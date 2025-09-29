@@ -228,7 +228,7 @@ wrap.towr = function(paraMain,
                                                         veloXaxs = .data$veloXaxs,
                                                         veloFric = .data$veloFric),
                     windDir = eddy4R.base::def.pol.cart(matrix(c(.data$veloYaxsInp,.data$veloXaxsInp),ncol=2))
-                    )
+      )
 
 
     # stationarity testing ----------------------------------------------------
@@ -308,7 +308,7 @@ wrap.towr = function(paraMain,
 
 
     # Spectral Analysis -------------------------------------------------------
-    spec = tryCatch({
+    REYN$spec = tryCatch({
       wrap.spec(
         eddy.data = eddy.data,
         speciesRatioName = para$speciesRatioName,
@@ -322,33 +322,39 @@ wrap.towr = function(paraMain,
 
     # Footprint Modelling -----------------------------------------------------
 
-    wrap.foot.k04(
-      angZaxsErth = REYN$mean$windDir,
-      footprintResolutionM = para$footprintResolutionM,
-      veloYaxsHorSd = REYN$sd$veloYaxsHor,
-      veloZaxsHorSd = REYN$sd$veloZaxsHor,
-      veloFric = REYN$mean$veloFric,
-      distZaxsMeasDisp = REYN$mean$distZaxsMeas,
-      distZaxsAbl = REYN$mean$distZaxsAbl,
-      distZaxsRgh = REYN$mean$distRgh,
-      footprintCumulativeThreshold = para$footprintCumulativeThreshold,
-      univFunc = eddy4R.turb::def.func.univ(
-        distZaxsMeas = REYN$mean$distZaxsMeas,
-        distObkv = REYN$mean$distObkv
-      )$univFunc
-    )
+    REYN$foot = tryCatch({
+      wrap.foot.k04(
+        angZaxsErth = REYN$mean$windDir,
+        footprintResolutionM = para$footprintResolutionM,
+        veloYaxsHorSd = REYN$sd$veloYaxsHor,
+        veloZaxsHorSd = REYN$sd$veloZaxsHor,
+        veloFric = REYN$mean$veloFric,
+        distZaxsMeasDisp = REYN$mean$distZaxsMeas,
+        distZaxsAbl = REYN$mean$distZaxsAbl,
+        distZaxsRgh = REYN$mean$distRgh,
+        footprintCumulativeThreshold = para$footprintCumulativeThreshold,
+        univFunc = eddy4R.turb::def.func.univ(
+          distZaxsMeas = REYN$mean$distZaxsMeas,
+          distObkv = REYN$mean$distObkv
+        )$univFunc
+      )},
+      error = function(e){
+        eddy4R.york::log_message(wrap_tower_log, "error", "wrap.foot.k04", aggregationPeriod[i,], e)
+        return(NULL)
+      })
 
     # Write -------------------------------------------------------------------
 
     #TODO add spec and foot to write.REYN once footprint is implemented as well
     tryCatch({
-      eddy4R.york::write.REYN(REYN,
-                              lag_out,
-                              DirOut = para$DirOut,
-                              analysis = para$analysis,
-                              tz = para$tz,
-                              writeFastData = para$writeFastData,
-                              subDir = para$subDir)},
+      eddy4R.york::write.REYN(
+        REYN,
+        lag_out,
+        DirOut = para$DirOut,
+        analysis = para$analysis,
+        tz = para$tz,
+        writeFastData = para$writeFastData,
+        subDir = para$subDir)},
       error = function(e){
         eddy4R.york::log_message(wrap_tower_log, "error", "File Writing", aggregationPeriod[i,], e)
         return(NULL)

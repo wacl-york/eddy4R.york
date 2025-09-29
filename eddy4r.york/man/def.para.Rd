@@ -13,7 +13,6 @@ def.para(
   fileDuration,
   DirOut = NULL,
   siteName = NULL,
-  writeFastData = TRUE,
   subDir = c("none", "monthly", "daily")[1],
   species = NULL,
   speciesRatioName = NULL,
@@ -83,8 +82,6 @@ def.para(
 \item{DirOut}{by default is created as \code{file.path(DirWrk,"out",siteName, runID, analysis)}, can be overridden here.}
 
 \item{siteName}{Used in file nameing}
-
-\item{writeFastData}{should high frequency intermediates be writen (diff,data, base, conv outputs from REYN)}
 
 \item{subDir}{one of c("none", "monthly", "daily") - default none. Should the outputs be split into monthly or daily subdirectories}
 

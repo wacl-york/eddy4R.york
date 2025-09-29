@@ -50,7 +50,6 @@
 #' @param runID Used in file nameing
 #' @param siteName Used in file nameing
 #' @param analysis Used in file nameing
-#' @param writeFastData should high frequency intermediates be writen (diff,data, base, conv outputs from REYN)
 #' @param PltfEc switch for eddy4r functions between tower and aircraft. towr,airc
 #' @param ZoneUtm data.frame containing UTM info e.g data.frame(Zone=30, Estg=698478, Nthg=5711690)
 #' @param lat latitude of tower location
@@ -89,7 +88,6 @@ def.para = function(
   fileDuration,
   DirOut = NULL,
   siteName = NULL,
-  writeFastData = TRUE,
   subDir = c("none", "monthly", "daily")[1],
   species = NULL,
   speciesRatioName = NULL,
