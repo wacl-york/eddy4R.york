@@ -19,7 +19,8 @@ def.para(
   speciesFluxName = NULL,
   unitList = NULL,
   freq = 5,
-  files = NULL,
+  fileNames = NULL,
+  filePaths = NULL,
   filePattern = ".csv",
   tz = "UTC",
   dateFormat = "\%Y-\%m-\%d \%H:\%M:\%OS",
@@ -67,7 +68,7 @@ def.para(
 )
 }
 \arguments{
-\item{DirInp}{must be supplied - relative to DirWrk}
+\item{DirInp}{must be supplied - relative to DirWrk. If input files are in subfolders (e.g. DirWrk/in/yyyy/mm) , specify just the top level here ('in')}
 
 \item{DirWrk}{root of the data directory}
 
@@ -75,7 +76,7 @@ def.para(
 
 \item{analysis}{Used in file nameing}
 
-\item{fileMask}{string mask that can be passed to \code{as.POSIXct(format = mask)} to decode the date in the file name}
+\item{fileMask}{string mask that can be passed to \code{as.POSIXct(format = mask)} to decode the date in the fileName}
 
 \item{fileDuration}{expected duration of a complete input file (Hz)}
 
@@ -96,9 +97,12 @@ speices is a list with names that match speciesRatioName describing the units pe
 
 \item{freq}{data aquisition frequency of input data}
 
-\item{files}{list of file names}
+\item{fileNames}{vector of file names, created as \code{basename(filePaths)}. fileMask should operate on this.}
 
-\item{filePattern}{pattern to help filter input directory - default .csv}
+\item{filePaths}{vector of file paths, from which fileNames can be created using \code{basename(filePaths)}.
+By default this is populated by running the find system command on the DirInp, in the format \code{find DirInp -type f -name *filePattern}}
+
+\item{filePattern}{pattern to help filter input directory - default .csv.}
 
 \item{tz}{default "UTC".}
 

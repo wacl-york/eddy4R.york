@@ -24,20 +24,22 @@ The major feature allows for flux workflows to be defined by relatively short co
 The docker image can be installed using:
 
 ```
-docker pull ghcr.io/wacl-york/eddy4r.york:0.1
+docker pull ghcr.io/wacl-york/eddy4r.york:dev
 ```
+
+> [!NOTE]
+> This example is for the development version of the container, which should be considered 'unstable'. Packages with a tagged version number will be released in the future, or by request to be able to be included alongside publications.
 
 #### Run the container
 
 To run the container as an interactive session run the following:
 
 ```
-docker run --name eddy4r.york --rm -d -p 8787:8787 -v <extDir>:/home/rstudio/data eddy4r.york
+docker run --name eddy4r.york --rm -d -p 8787:8787 -v <extDir>:/home/rstudio/data ghcr.io/wacl-york/eddy4r.york:dev
 ```
 Where `<extDir>` is the path to the volume you wish to mount on your machine
 
-> [!NOTE]
-> The eddy4R.york image sets `DISABLE_AUTH=true` by default, which is different from the `eddy4R` and `rocker` images
+
 
 #### Configuring Run Parameters
 
@@ -231,7 +233,7 @@ FULLFILE=${FILES[$SLURM_ARRAY_TASK_ID]}
 FILE=$(basename -- "$FULLFILE")
 
 # run container
-srun apptainer exec --env FILE_SELECT=${FILE} --bind /users/<usr>/scratch:/scratch /mnt/longship/users/<usr>/eddy4r.york Rscript '/scratch/eddy4R/testdata/test_config2.R'
+apptainer exec --env FILE_SELECT=${FILE} --bind /users/<usr>/scratch:/scratch /mnt/longship/users/<usr>/eddy4r.york Rscript '/scratch/eddy4R/testdata/test_config2.R'
 ```
 
 > [!IMPORTANT]
