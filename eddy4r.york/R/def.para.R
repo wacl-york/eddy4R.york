@@ -58,7 +58,7 @@
 #' @param fileFirstStart used to aid def.avg - should be created internally
 #' @param fileLastStart used to aid def.avg - should be created internally
 #' @param DirWrk root of the data directory
-#' @param DirInp must be supplied - relative to DirWrk
+#' @param DirInp must be supplied - relative to DirWrk. If input files are in subfolders (e.g. DirWrk/in/yyyy/mm) , specify just the top level here ('in')
 #' @param DirOut by default is created as \code{file.path(DirWrk,"out",siteName, runID, analysis)}, can be overridden here.
 #' @param subDir one of c("none", "monthly", "daily") - default none. Should the outputs be split into monthly or daily subdirectories
 #' @param lagVars created from species plus temperature and water vapour

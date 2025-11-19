@@ -68,7 +68,7 @@ def.para(
 )
 }
 \arguments{
-\item{DirInp}{must be supplied - relative to DirWrk}
+\item{DirInp}{must be supplied - relative to DirWrk. If input files are in subfolders (e.g. DirWrk/in/yyyy/mm) , specify just the top level here ('in')}
 
 \item{DirWrk}{root of the data directory}
 
