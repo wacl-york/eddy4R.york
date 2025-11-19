@@ -4,7 +4,14 @@
 \alias{log_message}
 \title{Log eddy4.york}
 \usage{
-log_message(logger, logLevel, header, aggregationPeriod, error = NULL)
+log_message(
+  logger,
+  logLevel,
+  header,
+  periodStartDate,
+  periodEndDate,
+  error = NULL
+)
 }
 \arguments{
 \item{logger}{the logger object}
@@ -13,7 +20,9 @@ log_message(logger, logLevel, header, aggregationPeriod, error = NULL)
 
 \item{header}{character string describing the succinctly describing where in the workflow this is being logged from.}
 
-\item{aggregationPeriod}{\code{aggregationPeriod[i, ]}}
+\item{periodStartDate}{periodStartDate}
+
+\item{periodEndDate}{description}
 
 \item{error}{the simpleError caught by tryCatch}
 }

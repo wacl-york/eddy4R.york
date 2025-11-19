@@ -1,93 +1,65 @@
-#' Define Avgeraging Period
+#' Define Averaging Period
 #'
-#' Determing the files that correspond to the selected flux averaging period using a mask for the file name
+#' Determine the files that correspond to the selected flux averaging period using a mask for the file name
 #'
-#' @param files vector of files
+#' @param filePaths vector of file names
+#' @param fileNames vector of file paths
 #' @param fileMask string mask that can be passed to \code{as.POSIXct(format = fileMask)}
 #' @param fileDuration numeric length of files in seconds
 #' @param aggregationDuration numeric required flux duration
-#' @param tz string timezone of date in file name
-#' @param freq data aquistion frequency (Hz)
-#' @param fileFirstStart optional. This is usually equal to the timestamp in the first file name
-#' can be overridden here if the first file does not at the begining of a theoretical aggregation period
-#' @param fileLastStart optional. as first file begin but for the last file.
 #'
 #'
-#' @author W S Drysdale
+#' @author W. S. Drysdale
 #'
 #' @export
 
 
-def.avg = function(files,
-                   fileMask = "NOx_5Hz_yymmdd_HHMM0_170322_000015_cor_temp",
-                   fileDuration = 3600,
-                   aggregationDuration = 7200,
-                   freq = 5,
-                   tz,
-                   fileFirstStart = NULL,
-                   fileLastStart = NULL){
+def.avg = function(
+    filePaths,
+    fileNames,
+    fileMask,
+    fileDuration,
+    aggregationDuration
+){
 
-  #list of files in input directory
-  #files = files[nchar(files) == nchar(fileMask)] %>% as.array
-  files = as.array(files)
+  fileData = tibble::tibble(
+    filePaths,
+    fileNames,
+    fileMask
+  ) |>
+    dplyr::mutate(
+      fileStartDate = as.POSIXct(fileNames, format = fileMask),
+    )
 
-  #get file start times from names
-  act_file_start = as.POSIXct(files, format = fileMask, tz = tz)
+  # Floor the minimum start and maximum end times so we start on an round time stamp
+  minStartUnix = as.numeric(min(fileData$fileStartDate))
+  minStartFloorDate = as.POSIXct(minStartUnix - (minStartUnix %% aggregationDuration), origin = "1970-01-01", tz = "UTC")
 
+  maxStartUnix = as.numeric(max(fileData$fileStartDate))
+  maxStartFloorDate = as.POSIXct(maxStartUnix - (maxStartUnix %% aggregationDuration), origin = "1970-01-01", tz = "UTC")
 
-  #user can input a fileFirstStart time if the first file starts at an unusual interval e.g. most files start on an hour but this
-  #particular file starts at 20 past the hour
-  if(is.null(fileFirstStart)){
-    fileFirstStart = act_file_start[1]
-  }
+  aggregationPeriods = tibble::tibble(
+    periodStartDate = seq(minStartFloorDate, maxStartFloorDate, aggregationDuration) # create regular sequence of aggregation period start times
+  ) |>
+    dplyr::mutate(
+      periodEndDate = .data$periodStartDate + aggregationDuration, # period end times
+      earliestFileStartDate = .data$periodStartDate - fileDuration, # broaden the periods so we catch files that might span start times.
+      latestFileStartDate = .data$periodEndDate + fileDuration # likely looking too wide here, but its fine to read in a few more files to ensure coverage
+    )
 
-  if(is.null(fileLastStart)){
-    fileLastStart = act_file_start[length(act_file_start)]
-  }
+  # Satify R CMD check.  the .data$ method is beyond me for the join_by()
+  between = fileStartDate = earliestFileStartDate = latestFileStartDate = NULL
 
-  #create a list of 'theoretical' file ranges i.e. if all files were complete
-  #Files can be assigned to this list which in turn can be associated with an agg period (avoids problems where files aren't complete/have
-  #irregular start times)
-  est_file_range = data.frame(file_start = seq(fileFirstStart,fileLastStart,fileDuration))
-  est_file_range$file_end = est_file_range$file_start + fileDuration - (1/freq)
-  est_file_range$index = 1:nrow(est_file_range)
+  dplyr::left_join(
+    fileData,
+    aggregationPeriods,
+    by = dplyr::join_by(
+      between(fileStartDate, earliestFileStartDate, latestFileStartDate)
+    )
+  ) |>
+    dplyr::group_by(.data$periodStartDate, .data$periodEndDate) |>
+    dplyr::summarise(filePaths = list(filePaths), .groups = "drop") |>
+    dplyr::arrange(.data$periodStartDate)
 
-  file_list <- data.frame(act_file_start, files)
-
-  #match up real data files to theoretical file periods
-  act_files = list()
-  for(i in 1:nrow(est_file_range)){
-    act_files[[i]] = file_list$files[file_list$act_file_start >= est_file_range$file_start[i] &
-                                       file_list$act_file_start <= est_file_range$file_end[i]]
-  }
-
-  aggregationPeriod = data.frame(avg_start = seq(act_file_start[1],act_file_start[length(act_file_start)]+(aggregationDuration-1/freq),aggregationDuration))
-  aggregationPeriod$avg_end = aggregationPeriod$avg_start + aggregationDuration - (1/freq)
-  aggregationPeriod$avg_mid = aggregationPeriod$avg_start + ((aggregationPeriod$avg_end - aggregationPeriod$avg_start)/2)
-  aggregationPeriod$avg_mid = aggregationPeriod$avg_mid %>%
-    lubridate::round_date("min")
-  agg_files = list()
-
-  #select files associated with the aggregation period
-  #rephrase as lapply?
-  for (i in 1:nrow(aggregationPeriod)){
-    file_ref = est_file_range$index[est_file_range$file_end >= aggregationPeriod$avg_start[i] & est_file_range$file_start <= aggregationPeriod$avg_end[i]]
-    temp = c()
-
-    for(j in file_ref)
-      temp = c(temp,act_files[[j]])
-
-    agg_files[[i]] = temp
-  }
-
-  for(i in 1:length(agg_files)){
-    if(identical(agg_files[[i]], character(0)))
-      agg_files[[i]] = NA
-  }
-
-  #return
-  list(
-    agg_files = agg_files,
-    aggregationPeriod = tibble::tibble(aggregationPeriod))
 }
 

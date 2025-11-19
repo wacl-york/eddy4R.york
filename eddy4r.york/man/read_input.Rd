@@ -4,23 +4,35 @@
 \alias{read_input}
 \title{Read eddy4R input}
 \usage{
-read_input(DirInp, dateFormat, agg_f, agg_p, tz, freq, idepVar, PltfEc)
+read_input(
+  DirInp,
+  dateFormat,
+  filePaths,
+  periodStartDate,
+  periodEndDate,
+  tz,
+  freq,
+  idepVar,
+  PltfEc
+)
 }
 \arguments{
 \item{DirInp}{input directory}
 
 \item{dateFormat}{format of date when reading csv for \code{as.POSIXct()} - reading from UNIX time to this format - default \%Y-\%m-\%d \%H:\%M:\%OS"}
 
-\item{agg_f}{files to aggregate}
+\item{filePaths}{files to aggregate}
 
-\item{agg_p}{period which files are relvant too}
+\item{periodStartDate}{start of aggregation period}
+
+\item{periodEndDate}{end of aggregation period}
 
 \item{tz}{time zone}
 
 \item{freq}{data acquisition frequency}
 
 \item{idepVar}{variable that could be used if Algbase in "trend" or "ord03"
-column gets duplicated to a column called "idep" use use in \code{eddy4R.turb::def.stat.sta.diff}}
+column gets duplicated to a column called "idep" used in \code{eddy4R.turb::def.stat.sta.diff}}
 
 \item{PltfEc}{platform either "towr" or "airc"}
 }
