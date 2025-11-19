@@ -2,40 +2,24 @@
 % Please edit documentation in R/def.avg.R
 \name{def.avg}
 \alias{def.avg}
-\title{Define Avgeraging Period}
+\title{Define Averaging Period}
 \usage{
-def.avg(
-  files,
-  fileMask = "NOx_5Hz_yymmdd_HHMM0_170322_000015_cor_temp",
-  fileDuration = 3600,
-  aggregationDuration = 7200,
-  freq = 5,
-  tz,
-  fileFirstStart = NULL,
-  fileLastStart = NULL
-)
+def.avg(filePaths, fileNames, fileMask, fileDuration, aggregationDuration)
 }
 \arguments{
-\item{files}{vector of files}
+\item{filePaths}{vector of file names}
+
+\item{fileNames}{vector of file paths}
 
 \item{fileMask}{string mask that can be passed to \code{as.POSIXct(format = fileMask)}}
 
 \item{fileDuration}{numeric length of files in seconds}
 
 \item{aggregationDuration}{numeric required flux duration}
-
-\item{freq}{data aquistion frequency (Hz)}
-
-\item{tz}{string timezone of date in file name}
-
-\item{fileFirstStart}{optional. This is usually equal to the timestamp in the first file name
-can be overridden here if the first file does not at the begining of a theoretical aggregation period}
-
-\item{fileLastStart}{optional. as first file begin but for the last file.}
 }
 \description{
-Determing the files that correspond to the selected flux averaging period using a mask for the file name
+Determine the files that correspond to the selected flux averaging period using a mask for the file name
 }
 \author{
-W S Drysdale
+W. S. Drysdale
 }

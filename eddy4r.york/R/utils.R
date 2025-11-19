@@ -103,12 +103,13 @@ def.rot.mat = function(degrees){
 #' @param logger the logger object
 #' @param logLevel one of warn, error, info or debug
 #' @param header character string describing the succinctly describing where in the workflow this is being logged from.
-#' @param aggregationPeriod \code{aggregationPeriod[i, ]}
+#' @param periodStartDate periodStartDate
+#' @param periodEndDate description
 #' @param error the simpleError caught by tryCatch
 #'
 #' @export
 
-log_message = function(logger, logLevel, header, aggregationPeriod, error = NULL){
+log_message = function(logger, logLevel, header, periodStartDate, periodEndDate, error = NULL){
 
   quiet <- function(x) {
     sink(tempfile())
@@ -116,7 +117,7 @@ log_message = function(logger, logLevel, header, aggregationPeriod, error = NULL
     invisible(force(x))
   }
 
-  aggregationPeriodText = paste(aggregationPeriod$avg_start,aggregationPeriod$avg_end, sep = " - ")
+  aggregationPeriodText = paste(periodStartDate,periodEndDate, sep = " - ")
 
   if(is.null(error)){
     quiet(
