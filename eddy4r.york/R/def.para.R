@@ -3,17 +3,19 @@
 #' Create para list, use arguments to overide defaults
 #'
 #' @param fileDuration expected duration of a complete input file (Hz)
-#' @param fileMask string mask that can be passed to \code{as.POSIXct(format = mask)} to decode the date in the file name
+#' @param fileMask string mask that can be passed to \code{as.POSIXct(format = mask)} to decode the date in the fileName
 #' @param species vector of species names. Match with IntlNatu naming
 #' @param speciesRatioName created automatically from species. name of gas species following the rtioMoleDry<spc> format
 #' @param speciesFluxName created automatically from species. name of gas species following the flux<spc> format
 #' @param unitList defaults to \code{default_unit_list()} plus species field based off of species argument
 #' speices is a list with names that match speciesRatioName describing the units per species. Defaults to mol<spc> mol-1Dry
 #' @param freq data aquisition frequency of input data
-#' @param files list of file names
+#' @param fileNames vector of file names, created as \code{basename(filePaths)}. fileMask should operate on this.
+#' @param filePaths vector of file paths, from which fileNames can be created using \code{basename(filePaths)}.
+#'        By default this is populated by running the find system command on the DirInp, in the format \code{find DirInp -type f -name *filePattern}
 #' @param tz default "UTC".
 #' @param dateFormat default %Y-%m-%d %H:%M:%OS"
-#' @param filePattern pattern to help filter input directory - default .csv
+#' @param filePattern pattern to help filter input directory - default .csv.
 #' @param varsRequired character vector of columns that must be nominally present to pass def.valid.input()
 #' @param varsCritical these must have greater than the missingThreshold to pass def.valid.input()
 #' @param AlgBase detrending method for def.base.ec "mean","trend","ord03"
@@ -94,7 +96,8 @@ def.para = function(
   speciesFluxName = NULL,
   unitList = NULL,
   freq = 5,
-  files = NULL,
+  fileNames = NULL,
+  filePaths = NULL,
   filePattern = ".csv",
   tz = "UTC",
   dateFormat = "%Y-%m-%d %H:%M:%OS",
@@ -233,13 +236,20 @@ def.para = function(
     para$despikeVars = despikeVars
   }
 
-  if(is.null(files)){
-    para$files = list.files(paste0(para$DirInp),pattern = para$filePattern)
+  if(is.null(filePaths)){
+    para$filePaths = system(paste0("find ",file.path(DirWrk,DirInp)," -type f -name *",filePattern), intern = T) |>
+      sort()
   }else{
-    para$files = files
+    para$filePaths = filePaths
   }
 
-  if(length(para$files) < 1){
+  if(is.null(fileNames)){
+    para$fileNames = basename(para$filePaths)
+  }else{
+    para$fileNames = fileNames
+  }
+
+  if(length(para$filePaths) < 1){
     warning("No files found")
   }
 

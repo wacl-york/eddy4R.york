@@ -39,7 +39,7 @@ wrap.towr = function(paraMain,
   saveRDS(paraMain,file = file.path(paraMain$DirOut, paste0(paraMain$analysis,"_para.RDS")))
 
   #determine flux aggregation
-  det_avg = eddy4R.york::def.avg(files = paraMain$files,
+  det_avg = eddy4R.york::def.avg(files = paraMain$fileNames,
                                  fileMask = paraMain$fileMask,
                                  fileDuration = paraMain$fileDuration,
                                  aggregationDuration = paraMain$aggregationDuration,
