@@ -164,7 +164,7 @@ wrap.towr = function(paraMain,
                                  aggregationDuration = para$aggregationDuration,
                                  freq = para$freq)},
       error = function(e){
-        eddy4R.york::log_message(wrap_tower_log, "error", "Handel Missing Values", det_avg$periodStartDate[i], det_avg$periodEndDate[i], e)
+        eddy4R.york::log_message(wrap_tower_log, "error", "Handle Missing Values", det_avg$periodStartDate[i], det_avg$periodEndDate[i], e)
         return(NULL)
       })
 
