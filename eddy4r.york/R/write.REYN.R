@@ -67,9 +67,9 @@ write.REYN = function(REYN,
     files$REYN[[i]]$unixTimeMin = unixTimeMin
 
     if(files$compress[i]){
-      utils::write.csv(files$REYN[[i]],
-                       file = files$fileOut[i],
-                       row.names = F)
+      # readr::write_csv automatically compresses the data when the extension is .gz (in this case .csv.gz)
+      readr::write_csv(files$REYN[[i]],
+                       file = files$fileOut[i])
     }else{
       if(!file.exists(files$fileOut[i])){
         utils::write.table(files$REYN[[i]],
