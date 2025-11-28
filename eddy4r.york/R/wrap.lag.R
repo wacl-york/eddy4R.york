@@ -70,7 +70,7 @@ wrap.lag = function(eddy.data,
   #handle lagging no and noc channels of nox data separatly before combining into NO and NO2
   if(lagNOc & sum(c("rtioMoleDryNO","rtioMoleDryNO2") %in% speciesRatioName) == 2){
     eddy.data$rtioMoleDryNO2 = (eddy.data$rtioMoleDryNO2 - eddy.data$rtioMoleDryNO)/eddy.data$ce
-
+    eddy.data$ce = NULL # remove CE after calculation so we don't into unit errors in def.stat.sta.diff()
   }
 
   ret = list(eddy.data = eddy.data,
