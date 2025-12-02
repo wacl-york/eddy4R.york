@@ -4,7 +4,7 @@
 \alias{def.lod}
 \title{Flux Limit of Detection}
 \usage{
-def.lod(REYN, measCol, freq, refCol = "veloXaxs")
+def.lod(REYN, measCol, freq, refCol = "veloZaxs")
 }
 \arguments{
 \item{REYN}{eddy4R REYN list - requires mean and diff}
