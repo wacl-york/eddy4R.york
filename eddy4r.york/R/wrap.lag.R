@@ -33,13 +33,29 @@ wrap.lag = function(eddy.data,
                                                         hpf=TRUE)
 
                           if(lagApplyRangeLimit){
+                            # if the determined lag has fallen outside of the range
                             if(lagged$lag/freq < min(b) | lagged$lag/freq > max(b)){
-                              lagged$lag <- as.numeric(c)*freq
+
+                              # If a lag default has been supplied, then use that
+                              if(!is.na(c)){
+                                lagged$lag <- as.numeric(c)*freq
+                              }else{ # otherwise, lets pick the best lag in the given window
+                                # filter the ACF between the supplied lag ranges
+                                tempDat = data.frame(
+                                  lag = lagged$corr$lag[,,1],
+                                  acf = lagged$corr$acf[,,1]
+                                ) |>
+                                  dplyr::filter(
+                                    dplyr::between(.data$lag/freq, min(b), max(b))
+                                    )
+                                # find the maximum acf in that range
+                                lagged$lag = tempDat$lag[which(abs(tempDat$acf) == max(abs(tempDat$acf)))]
+                              }
                             }
                           }
 
                           list(lag = lagged$lag,
-                               corrCross =lagged$corrCros,
+                               corrCross = lagged$corrCros,
                                corr = lagged$corr)
 
                         })

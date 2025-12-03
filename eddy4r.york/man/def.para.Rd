@@ -145,7 +145,7 @@ negative for anticlockwise}
 
 \item{lagNgtvPstv}{what "direction" can lag occur? "n","p","np"}
 
-\item{lagDefaults}{numeric value or vector to apply to lag if ccf falls outside of range or is not used}
+\item{lagDefaults}{numeric value or vector to apply to lag if ccf falls outside of range or is not used. If this is NULL, then the lag will be the value of maxmimum absolute ACF within the given lag ranges}
 
 \item{lagApplyRangeLimit}{Should a window be applied to the ccf lag?}
 

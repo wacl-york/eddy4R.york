@@ -37,7 +37,7 @@
 #' @param wBoost should w boost correction for certain Gill Anemometers be applied? Default false
 #' @param lagApplyCorrection Should lag correction be undertaken? T/F
 #' @param lagNgtvPstv what "direction" can lag occur? "n","p","np"
-#' @param lagDefaults numeric value or vector to apply to lag if ccf falls outside of range or is not used
+#' @param lagDefaults numeric value or vector to apply to lag if ccf falls outside of range or is not used. If this is NA, then the lag will be the value of maxmimum absolute ACF within the given lag ranges
 #' @param lagApplyRangeLimit Should a window be applied to the ccf lag?
 #' @param lagRangeLimit vector or list of vectors containing boundary for acceptable lags
 #' @param despike Should despiking be undertaken? T/F
