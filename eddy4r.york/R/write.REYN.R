@@ -4,11 +4,8 @@
 #'
 #' @param REYN REYN List of objects at the end of calcualtions
 #' @param lag_out output list from \code{wrap.lag()}
-#' @param DirOut output directory (if subDirMonthly == TRUE, annual and monthly subfolders will be created here)
-#' @param analysis name of analysis - used to construct file name
-#' @param tz timezone
-#' @param writeFastData TRUE/FALSE should the fast (base, diff, conv, data) outputs be written to disk. They will be compressed using gzip
-#' @param subDir one of c("none", "monthly", "daily") - default none. Should the outputs be split into monthly or daily subdirectories
+#'
+#' @inheritParams def.para
 #'
 #' @export
 
@@ -17,7 +14,7 @@ write.REYN = function(REYN,
                       DirOut,
                       analysis,
                       tz,
-                      writeFastData,
+                      writeCompressedData,
                       subDir){
 
   REYN = c(REYN, lag_out)
@@ -46,7 +43,7 @@ write.REYN = function(REYN,
       alwaysWrite = !.data$fileBase %in% c("base", "conv", "data","diff"),
       compress = .data$fileBase %in% c("ACF","foot", "spec", "base", "conv", "data","diff"),
       dirName = ifelse(.data$compress, .data$fileBase, NA),
-      write = .data$alwaysWrite | writeFastData,
+      write = .data$alwaysWrite | writeCompressedData,
       dirForFile = ifelse(is.na(.data$dirName), DirOut, file.path(DirOut, "compressedData" , .data$dirName)),
       fileSuffix = paste0(analysis,"_", .data$fileBase, ifelse(.data$compress, ".csv.gz", ".csv")),
       fileName = ifelse(.data$compress, paste0(format(fileStart, "%Y%m%d_%H"),"_", .data$fileSuffix), .data$fileSuffix),

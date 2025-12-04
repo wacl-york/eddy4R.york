@@ -341,7 +341,7 @@ wrap.towr = function(paraMain,
         DirOut = para$DirOut,
         analysis = para$analysis,
         tz = para$tz,
-        writeFastData = para$writeFastData,
+        writeCompressedData = para$writeCompressedData,
         subDir = para$subDir)},
       error = function(e){
         eddy4R.york::log_message(wrap_tower_log, "error", "File Writing", det_avg$periodStartDate[i], det_avg$periodEndDate[i], e)

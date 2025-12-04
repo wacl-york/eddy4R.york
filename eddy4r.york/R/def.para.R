@@ -13,7 +13,7 @@
 #' @param fileNames vector of file names, created as \code{basename(filePaths)}. fileMask should operate on this.
 #' @param filePaths vector of file paths, from which fileNames can be created using \code{basename(filePaths)}.
 #'        By default this is populated by running the find system command on the DirInp, in the format \code{find DirInp -type f -name *filePattern}
-#' @param tz default "UTC".
+#' @param tz timezone, default "UTC".
 #' @param dateFormat default %Y-%m-%d %H:%M:%OS"
 #' @param filePattern pattern to help filter input directory - default .csv.
 #' @param varsRequired character vector of columns that must be nominally present to pass def.valid.input()
@@ -60,6 +60,7 @@
 #' @param DirWrk root of the data directory
 #' @param DirInp must be supplied - relative to DirWrk. If input files are in subfolders (e.g. DirWrk/in/yyyy/mm) , specify just the top level here ('in')
 #' @param DirOut by default is created as \code{file.path(DirWrk,"out",siteName, runID, analysis)}, can be overridden here.
+#' @param writeCompressedData TRUE/FALSE should the larger outputs that need compression ("ACF","foot", "spec", "base", "conv", "data","diff") outputs be written to disk. They will be compressed using gzip
 #' @param subDir one of c("none", "monthly", "daily") - default none. Should the outputs be split into monthly or daily subdirectories
 #' @param lagVars created from species plus temperature and water vapour
 #' @param despikeVars created from species plus temperature and water vapour
@@ -89,6 +90,7 @@ def.para = function(
   fileMask,
   fileDuration,
   DirOut = NULL,
+  writeCompressedData = TRUE,
   siteName = NULL,
   subDir = c("none", "monthly", "daily")[1],
   species = NULL,
@@ -105,6 +107,7 @@ def.para = function(
   varsRequired = c("unixTime","distZaxsMeas","presAtm","distZaxsAbl"),
   # these must have greater than the missingThreshold to pass def.valid.input()
   varsCritical = c("veloXaxs","veloYaxs","veloZaxs","tempAir"),
+
   # Eddy Covariance Settings
   AlgBase = "trnd",
   idepVar = "unixTime",
@@ -131,7 +134,7 @@ def.para = function(
 
   ## Despike
   despike = T,
-  despikeThreshold = c(5,8,8),
+  despikeThreshold = NULL,
   despikeVars = NULL,
 
   ## Rotation
@@ -231,9 +234,20 @@ def.para = function(
   }
 
   if(is.null(despikeVars)){
-    para$despikeVars = c("veloZaxs",para$speciesRatioName)
+    para$despikeVars = c("veloZaxs", "tempAir", "rtioMoleDryH2o",para$speciesRatioName)
   }else{
     para$despikeVars = despikeVars
+  }
+
+  if(is.null(despikeThreshold)){
+
+    if(!is.null(para$speciesRatioName)){
+      speciesDespike = rep(8, length(para$speciesRatioName))
+    }else{
+      speciesDespike = NULL
+    }
+    # 5 8 8 for Z, temp h2o plus any species
+    para$despikeThreshold = c(5, 8, 8, speciesDespike)
   }
 
   if(is.null(filePaths)){
@@ -287,7 +301,6 @@ def.para = function(
   if(para$AlgBase != "mean" & is.null(para$idepVar)){
     stop("When AlgBase is trend or ord03 idepVar needs to be assigned to a column e.g. unixTime")
   }
-
 
   # What should have stationarity tests applied?
   para$stnaVar = c("veloFricXaxsSq", "veloFricYaxsSq", "veloFric", "fluxTempEngy", "fluxH2oEngy", para$speciesFluxName)

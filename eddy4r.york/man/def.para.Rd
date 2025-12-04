@@ -12,6 +12,7 @@ def.para(
   fileMask,
   fileDuration,
   DirOut = NULL,
+  writeCompressedData = TRUE,
   siteName = NULL,
   subDir = c("none", "monthly", "daily")[1],
   species = NULL,
@@ -45,7 +46,7 @@ def.para(
   lagRangeLimit = NULL,
   lagVars = NULL,
   despike = T,
-  despikeThreshold = c(5, 8, 8),
+  despikeThreshold = NULL,
   despikeVars = NULL,
   MethRot = c("single", "double", "planarFit")[2],
   plnrFitCoef = NULL,
@@ -82,6 +83,8 @@ def.para(
 
 \item{DirOut}{by default is created as \code{file.path(DirWrk,"out",siteName, runID, analysis)}, can be overridden here.}
 
+\item{writeCompressedData}{TRUE/FALSE should the larger outputs that need compression ("ACF","foot", "spec", "base", "conv", "data","diff") outputs be written to disk. They will be compressed using gzip}
+
 \item{siteName}{Used in file nameing}
 
 \item{subDir}{one of c("none", "monthly", "daily") - default none. Should the outputs be split into monthly or daily subdirectories}
@@ -104,7 +107,7 @@ By default this is populated by running the find system command on the DirInp, i
 
 \item{filePattern}{pattern to help filter input directory - default .csv.}
 
-\item{tz}{default "UTC".}
+\item{tz}{timezone, default "UTC".}
 
 \item{dateFormat}{default \%Y-\%m-\%d \%H:\%M:\%OS"}
 
@@ -145,7 +148,7 @@ negative for anticlockwise}
 
 \item{lagNgtvPstv}{what "direction" can lag occur? "n","p","np"}
 
-\item{lagDefaults}{numeric value or vector to apply to lag if ccf falls outside of range or is not used. If this is NULL, then the lag will be the value of maxmimum absolute ACF within the given lag ranges}
+\item{lagDefaults}{numeric value or vector to apply to lag if ccf falls outside of range or is not used. If this is NA, then the lag will be the value of maxmimum absolute ACF within the given lag ranges}
 
 \item{lagApplyRangeLimit}{Should a window be applied to the ccf lag?}
 
