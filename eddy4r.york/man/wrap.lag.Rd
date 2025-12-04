@@ -25,7 +25,7 @@ wrap.lag(
 
 \item{lagRangeLimit}{vector or list of vectors containing boundary for acceptable lags}
 
-\item{lagDefaults}{numeric value or vector to apply to lag if ccf falls outside of range or is not used. If this is NULL, then the lag will be the value of maxmimum absolute ACF within the given lag ranges}
+\item{lagDefaults}{numeric value or vector to apply to lag if ccf falls outside of range or is not used. If this is NA, then the lag will be the value of maxmimum absolute ACF within the given lag ranges}
 
 \item{lagNOc}{when processing NOx, is NO2 actually NOc and therfore CE applied after lagging. T/F}
 

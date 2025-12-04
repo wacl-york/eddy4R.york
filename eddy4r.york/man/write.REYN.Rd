@@ -4,20 +4,20 @@
 \alias{write.REYN}
 \title{Write REYN}
 \usage{
-write.REYN(REYN, lag_out, DirOut, analysis, tz, writeFastData, subDir)
+write.REYN(REYN, lag_out, DirOut, analysis, tz, writeCompressedData, subDir)
 }
 \arguments{
 \item{REYN}{REYN List of objects at the end of calcualtions}
 
 \item{lag_out}{output list from \code{wrap.lag()}}
 
-\item{DirOut}{output directory (if subDirMonthly == TRUE, annual and monthly subfolders will be created here)}
+\item{DirOut}{by default is created as \code{file.path(DirWrk,"out",siteName, runID, analysis)}, can be overridden here.}
 
-\item{analysis}{name of analysis - used to construct file name}
+\item{analysis}{Used in file nameing}
 
-\item{tz}{timezone}
+\item{tz}{timezone, default "UTC".}
 
-\item{writeFastData}{TRUE/FALSE should the fast (base, diff, conv, data) outputs be written to disk. They will be compressed using gzip}
+\item{writeCompressedData}{TRUE/FALSE should the larger outputs that need compression ("ACF","foot", "spec", "base", "conv", "data","diff") outputs be written to disk. They will be compressed using gzip}
 
 \item{subDir}{one of c("none", "monthly", "daily") - default none. Should the outputs be split into monthly or daily subdirectories}
 }

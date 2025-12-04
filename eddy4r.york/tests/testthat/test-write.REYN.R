@@ -20,7 +20,7 @@ test_that("lag_out being NULL is ok",{
                              DirOut = file.path(tempdir(), "test_write.REYN"),
                              analysis  ="test",
                              tz = "UTC",
-                             writeFastData = T,
+                             writeCompressedData = T,
                              subDir = "none"))
 })
 
@@ -30,6 +30,6 @@ test_that("writeFastData being FALSE is ok",{
                              DirOut = file.path(tempdir(), "test_write.REYN"),
                              analysis  ="test",
                              tz = "UTC",
-                             writeFastData = F,
+                             writeCompressedData = F,
                              subDir = "none"))
 })
