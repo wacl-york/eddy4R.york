@@ -70,8 +70,8 @@ wrap.lag = function(eddy.data,
                          dat = purrr::pluck(.x, "corr")
 
                          tibble::tibble(date = eddy.data$date[1],
-                                        lag = dat$lag[ , 1, 1],
-                                        acf = dat$acf[ , 1, 1],
+                                        lag = as.numeric(dat$lag[ , 1, 1]),
+                                        acf = as.numeric(dat$acf[ , 1, 1]),
                                         name = .y)
                        }
   )
