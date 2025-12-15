@@ -35,6 +35,8 @@
 #' @param veloYaxs wind vector definition for wrap.anem.cor
 #' @param veloZaxs wind vector definition for wrap.anem.cor
 #' @param wBoost should w boost correction for certain Gill Anemometers be applied? Default false
+#' @param lagMax maximum lag range in timesteps (Hz) to search for a lag over. Defaults to 40*freq
+#' @param freqThsh cutoff frequency for the low end of the high pass filter. defaults to 1 / (2 * lagMax / freq)
 #' @param lagApplyCorrection Should lag correction be undertaken? T/F
 #' @param lagNgtvPstv what "direction" can lag occur? "n","p","np"
 #' @param lagDefaults numeric value or vector to apply to lag if ccf falls outside of range or is not used. If this is NA, then the lag will be the value of maxmimum absolute ACF within the given lag ranges
@@ -131,6 +133,8 @@ def.para = function(
   lagApplyRangeLimit = F,
   lagRangeLimit = NULL,
   lagVars = NULL,
+  lagMax = 40*freq,
+  freqThsh = (1 / (2 * lagMax / freq)),
 
   ## Despike
   despike = T,

@@ -16,20 +16,20 @@ def.lod.from.wrap.lag = function(
     freq){
 
   specDf = lag_out$ACF |>
-    dplyr::filter(lag > 150*freq | lag < -150*freq)
+    dplyr::filter(.data$lag > 150*freq | .data$lag < -150*freq)
 
   output = specDf |>
-    dplyr::group_by(name) |>
-    dplyr::summarise(er = stats::sd(acf)) |>
+    dplyr::group_by(.data$name) |>
+    dplyr::summarise(er = stats::sd(.data$acf)) |>
     dplyr::mutate(
-      er = ifelse(name == "tempAir", er, er*REYN$mean$densMoleAirDry),# This is the same as "conv" that is passed to def.flux.sclr. This is nothing for sens heat, but is the desity of air for latent heat and gas scalars. Definied in listGasSclr as densMoleAirDry
-      `95` = er*1.96,
-      `99` = er*3
+      er = ifelse(.data$name == "tempAir", .data$er, .data$er*REYN$mean$densMoleAirDry),# This is the same as "conv" that is passed to def.flux.sclr. This is nothing for sens heat, but is the desity of air for latent heat and gas scalars. Definied in listGasSclr as densMoleAirDry
+      `95` = .data$er*1.96,
+      `99` = .data$er*3
       ) |>
-    dplyr::select(-er) |>
-    tidyr::pivot_longer(-name, names_to = "conf") |>
-    dplyr::mutate(conf = as.numeric(conf)) |>
-    dplyr::select(conf, name, value)
+    dplyr::select(-"er") |>
+    tidyr::pivot_longer(-tidyselect::all_of("name"), names_to = "conf") |>
+    dplyr::mutate(conf = as.numeric(.data$conf)) |>
+    dplyr::select("conf", "name", "value")
 
   #
   output

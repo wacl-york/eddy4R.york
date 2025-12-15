@@ -3,6 +3,7 @@
 export("%>%")
 export(assign_input_units)
 export(def.avg)
+export(def.lag2)
 export(def.lod)
 export(def.lod.from.wrap.lag)
 export(def.miss.hndl)

@@ -14,5 +14,5 @@ def.lod.from.wrap.lag(lag_out, REYN, freq)
 \item{freq}{measurement frequency}
 }
 \description{
-Uses the output of \code{wrap.lag} to calculate the LOD followling Langford et al 2015 and \code{def.lod}.
+Uses the output of \code{wrap.lag} to calculate the LOD following Langford et al 2015 and \code{def.lod}.
 }

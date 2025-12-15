@@ -141,9 +141,12 @@ wrap.towr = function(paraMain,
                  lagRangeLimit = para$lagRangeLimit,
                  lagDefaults = para$lagDefaults,
                  lagNOc = para$lagNOc,
+                 lagMax = para$lagMax,
+                 freqThsh = para$freqThsh,
                  freq = para$freq,
                  speciesRatioName = para$speciesRatioName,
-                 lagNgtvPstv = para$lagNgtvPstv)},
+                 lagNgtvPstv = para$lagNgtvPstv)
+        },
         error = function(e){
           log_message(wrap_tower_log, "error", "Lag Correction", det_avg$periodStartDate[i], det_avg$periodEndDate[i], e)
           return(NULL)
@@ -293,15 +296,19 @@ wrap.towr = function(paraMain,
         return(NULL)
       })
 
-    REYN$lod_wrap_lag  <-  tryCatch({
-      def.lod.from.wrap.lag(lag_out = lag_out,
-                            REYN = REYN,
-                            freq = para$freq)
+    if(para$lagMax >= 900){
+      REYN$lod_wrap_lag  <-  tryCatch({
+        def.lod.from.wrap.lag(lag_out = lag_out,
+                              REYN = REYN,
+                              freq = para$freq)
       },
       error = function(e) {
         log_message(wrap_tower_log, "error", "def.ucrt.samp", det_avg$periodStartDate[i], det_avg$periodEndDate[i], e)
         return(NULL)
       })
+    }
+
+
 
     # Spectral Analysis -------------------------------------------------------
     REYN$spec = tryCatch({
