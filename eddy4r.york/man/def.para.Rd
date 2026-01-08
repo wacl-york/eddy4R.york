@@ -22,7 +22,7 @@ def.para(
   freq = 5,
   fileNames = NULL,
   filePaths = NULL,
-  filePattern = ".csv",
+  filePattern = "*.csv",
   tz = "UTC",
   dateFormat = "\%Y-\%m-\%d \%H:\%M:\%OS",
   varsRequired = c("unixTime", "distZaxsMeas", "presAtm", "distZaxsAbl"),
@@ -105,7 +105,7 @@ speices is a list with names that match speciesRatioName describing the units pe
 \item{filePaths}{vector of file paths, from which fileNames can be created using \code{basename(filePaths)}.
 By default this is populated by running the find system command on the DirInp, in the format \code{find DirInp -type f -name *filePattern}}
 
-\item{filePattern}{pattern to help filter input directory - default .csv.}
+\item{filePattern}{pattern to help filter input directory - default '*.csv'.}
 
 \item{tz}{timezone, default "UTC".}
 

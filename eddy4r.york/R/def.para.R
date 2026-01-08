@@ -15,7 +15,7 @@
 #'        By default this is populated by running the find system command on the DirInp, in the format \code{find DirInp -type f -name *filePattern}
 #' @param tz timezone, default "UTC".
 #' @param dateFormat default %Y-%m-%d %H:%M:%OS"
-#' @param filePattern pattern to help filter input directory - default .csv.
+#' @param filePattern pattern to help filter input directory - default '*.csv'.
 #' @param varsRequired character vector of columns that must be nominally present to pass def.valid.input()
 #' @param varsCritical these must have greater than the missingThreshold to pass def.valid.input()
 #' @param AlgBase detrending method for def.base.ec "mean","trend","ord03"
@@ -100,7 +100,7 @@ def.para = function(
   freq = 5,
   fileNames = NULL,
   filePaths = NULL,
-  filePattern = ".csv",
+  filePattern = "*.csv",
   tz = "UTC",
   dateFormat = "%Y-%m-%d %H:%M:%OS",
   # columns must be nominally present to pass def.valid.input()
@@ -251,7 +251,7 @@ def.para = function(
   }
 
   if(is.null(filePaths)){
-    para$filePaths = system(paste0("find ",file.path(DirWrk,DirInp)," -type f -name *",filePattern), intern = T) |>
+    para$filePaths = system(paste0("find ",file.path(DirWrk,DirInp)," -type f -name '",filePattern,"'"), intern = T) |>
       sort()
   }else{
     para$filePaths = filePaths
