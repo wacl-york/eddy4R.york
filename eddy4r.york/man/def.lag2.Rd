@@ -8,7 +8,7 @@ def.lag2(
   refe,
   meas,
   freq,
-  freqThsh = NULL,
+  freqThsh = (1/(2 * lagMax/freq)),
   dataRefe = refe,
   dataMeas = meas,
   measVar = NULL,
@@ -27,7 +27,7 @@ def.lag2(
 
 \item{freq}{Acquisition frequency of refe and meas. Of class ingeter. (Hz)}
 
-\item{freqThsh}{cutoff frequency for the low end of the high pass filter. If NULL defaults to 1 / (2 * lagMax / freq), the same as \code{eddy4r.base::def.lag()} (Hz)}
+\item{freqThsh}{cutoff frequency for the low end of the high pass filter. Defaults to 1 / (2 * lagMax / freq), the same as \code{eddy4r.base::def.lag()} (Hz)}
 
 \item{dataRefe}{A matrix or data.frame with all data that carries the time frame of refe. Defaults to refe. Of any class. (-)}
 

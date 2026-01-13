@@ -11,7 +11,7 @@
 #' @param refe A vector with variable in reference time frame. Of class numeric. (-)
 #' @param meas A vector with variable in time frame to be adjusted. Of class numeric. (-)
 #' @param freq Acquisition frequency of refe and meas. Of class ingeter. (Hz)
-#' @param freqThsh cutoff frequency for the low end of the high pass filter. If NULL defaults to 1 / (2 * lagMax / freq), the same as \code{eddy4r.base::def.lag()} (Hz)
+#' @param freqThsh cutoff frequency for the low end of the high pass filter. Defaults to 1 / (2 * lagMax / freq), the same as \code{eddy4r.base::def.lag()} (Hz)
 #' @param dataRefe A matrix or data.frame with all data that carries the time frame of refe. Defaults to refe. Of any class. (-)
 #' @param dataMeas A matrix or data.frame with all data that carries the time frame of meas. Defaults to meas. Of any class. (-)
 #' @param measVar A vector specifying if only several columns in dataMeas shall be lagged. Defaults to NULL. Of class integer or character. (-)
@@ -60,7 +60,7 @@ def.lag2 <- function(
     refe,
     meas,
     freq,
-    freqThsh = NULL,   #cutoff frequency [Hz]
+    freqThsh = (1 / (2 * lagMax / freq)),   #cutoff frequency [Hz]
     dataRefe = refe,
     dataMeas = meas,
     measVar = NULL,
@@ -71,10 +71,6 @@ def.lag2 <- function(
     hpf = TRUE,
     fracMin = 0.1
 ) {
-
-  if(is.null(freqThsh)){
-    freqThsh = 1 / (2 * lagMax / freq)
-  }
 
   ###
   #start escape if too few non-NAs in period
