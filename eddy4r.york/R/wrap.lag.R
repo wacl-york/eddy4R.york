@@ -15,22 +15,27 @@ wrap.lag = function(eddy.data,
                     lagDefaults,
                     lagNOc,
                     freq,
+                    freqThsh = NULL,
                     speciesRatioName,
+                    lagMax,
                     lagNgtvPstv){
 
   lagged <- purrr::pmap(list(a = lagVars,
                              b = lagRangeLimit,
                              c = lagDefaults),
                         function(a,b,c){
-                          lagged = eddy4R.base::def.lag(refe=eddy.data$veloZaxs,
-                                                        meas=eddy.data[,a],
-                                                        dataRefe=eddy.data,
-                                                        lagMax=40*freq,
-                                                        lagCnst=TRUE,
-                                                        lagNgtvPstv=lagNgtvPstv,
-                                                        lagAll=TRUE,
-                                                        freq=freq,
-                                                        hpf=TRUE)
+                          lagged = def.lag2(
+                            refe=eddy.data$veloZaxs,
+                            meas=eddy.data[,a],
+                            freqThsh = freqThsh,
+                            dataRefe=eddy.data,
+                            lagMax=lagMax,
+                            lagCnst=TRUE,
+                            lagNgtvPstv=lagNgtvPstv,
+                            lagAll=TRUE,
+                            freq=freq,
+                            hpf=TRUE
+                            )
 
                           if(lagApplyRangeLimit){
                             # if the determined lag has fallen outside of the range
@@ -70,8 +75,8 @@ wrap.lag = function(eddy.data,
                          dat = purrr::pluck(.x, "corr")
 
                          tibble::tibble(date = eddy.data$date[1],
-                                        lag = dat$lag[ , 1, 1],
-                                        acf = dat$acf[ , 1, 1],
+                                        lag = as.numeric(dat$lag[ , 1, 1]),
+                                        acf = as.numeric(dat$acf[ , 1, 1]),
                                         name = .y)
                        }
   )

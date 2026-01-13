@@ -45,6 +45,8 @@ def.para(
   lagApplyRangeLimit = F,
   lagRangeLimit = NULL,
   lagVars = NULL,
+  lagMax = 40 * freq,
+  freqThsh = (1/(2 * lagMax/freq)),
   despike = T,
   despikeThreshold = NULL,
   despikeVars = NULL,
@@ -155,6 +157,10 @@ negative for anticlockwise}
 \item{lagRangeLimit}{vector or list of vectors containing boundary for acceptable lags}
 
 \item{lagVars}{created from species plus temperature and water vapour}
+
+\item{lagMax}{maximum lag range in timesteps (Hz) to search for a lag over. Defaults to 40*freq}
+
+\item{freqThsh}{cutoff frequency for the low end of the high pass filter. defaults to 1 / (2 * lagMax / freq)}
 
 \item{despike}{Should despiking be undertaken? T/F}
 

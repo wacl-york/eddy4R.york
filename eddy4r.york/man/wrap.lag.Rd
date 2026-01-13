@@ -12,7 +12,9 @@ wrap.lag(
   lagDefaults,
   lagNOc,
   freq,
+  freqThsh = NULL,
   speciesRatioName,
+  lagMax,
   lagNgtvPstv
 )
 }
@@ -31,7 +33,11 @@ wrap.lag(
 
 \item{freq}{data aquisition frequency of input data}
 
+\item{freqThsh}{cutoff frequency for the low end of the high pass filter. defaults to 1 / (2 * lagMax / freq)}
+
 \item{speciesRatioName}{created automatically from species. name of gas species following the rtioMoleDry\if{html}{\out{<spc>}} format}
+
+\item{lagMax}{maximum lag range in timesteps (Hz) to search for a lag over. Defaults to 40*freq}
 
 \item{lagNgtvPstv}{what "direction" can lag occur? "n","p","np"}
 }
