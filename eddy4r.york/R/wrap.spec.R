@@ -5,7 +5,7 @@
 #' containing measured, relative (0-1) and normalised (f*(U/(z-d))) frequency,
 #' as well as the power and cospectra, which are marked by the "spectrumType" column
 #'
-#' @param eddy.data time domain data including "veloZaxs" and "tempAir".
+#' @param eddy.data time domain data including "velo(X-Y-Z)axs" and "tempAir".
 #'                  It is expected that lag corrections and other QA/QC has been
 #'                  performed on these data already.
 #' @param speciesRatioName chemical species for flux calculations, can be NULL if
@@ -28,7 +28,7 @@ wrap.spec = function(
     time = eddy.data$unixTime,
     data = eddy.data[, c("veloZaxs", "tempAir",speciesRatioName)] |>
       as.matrix(),
-    veloRltv = sqrt(eddy.data$veloXaxs^2 + eddy.data$veloZaxs^2),
+    veloRltv = sqrt(eddy.data$veloXaxs^2 + eddy.data$veloYaxs^2),
     distZaxsMeas = eddy.data$distZaxsMeas,
     FreqSamp = freq,
     WghtTape = spectralTaperingWeight

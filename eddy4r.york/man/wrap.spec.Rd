@@ -7,7 +7,7 @@
 wrap.spec(eddy.data, speciesRatioName, freq, spectralTaperingWeight = 0.05)
 }
 \arguments{
-\item{eddy.data}{time domain data including "veloZaxs" and "tempAir".
+\item{eddy.data}{time domain data including "velo(X-Y-Z)axs" and "tempAir".
 It is expected that lag corrections and other QA/QC has been
 performed on these data already.}
 
