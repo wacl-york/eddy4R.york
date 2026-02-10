@@ -1,4 +1,6 @@
 url: https://wacl-york.github.io/eddy4R.york/
 template:
   bootstrap: 5
+  bootswatch: darkly
+  theme: github-dark
 

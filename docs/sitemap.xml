@@ -1,102 +1,108 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>/404.html</loc>
+    <loc>https://wacl-york.github.io/eddy4R.york/404.html</loc>
   </url>
   <url>
-    <loc>/LICENSE.html</loc>
+    <loc>https://wacl-york.github.io/eddy4R.york/LICENSE.html</loc>
   </url>
   <url>
-    <loc>/authors.html</loc>
+    <loc>https://wacl-york.github.io/eddy4R.york/articles/index.html</loc>
   </url>
   <url>
-    <loc>/index.html</loc>
+    <loc>https://wacl-york.github.io/eddy4R.york/articles/running-on-viking.html</loc>
   </url>
   <url>
-    <loc>/reference/assign_input_units.html</loc>
+    <loc>https://wacl-york.github.io/eddy4R.york/authors.html</loc>
   </url>
   <url>
-    <loc>/reference/def.avg.html</loc>
+    <loc>https://wacl-york.github.io/eddy4R.york/index.html</loc>
   </url>
   <url>
-    <loc>/reference/def.lag2.html</loc>
+    <loc>https://wacl-york.github.io/eddy4R.york/reference/assign_input_units.html</loc>
   </url>
   <url>
-    <loc>/reference/def.lod.from.wrap.lag.html</loc>
+    <loc>https://wacl-york.github.io/eddy4R.york/reference/def.avg.html</loc>
   </url>
   <url>
-    <loc>/reference/def.lod.html</loc>
+    <loc>https://wacl-york.github.io/eddy4R.york/reference/def.lag2.html</loc>
   </url>
   <url>
-    <loc>/reference/def.miss.hndl.html</loc>
+    <loc>https://wacl-york.github.io/eddy4R.york/reference/def.lod.from.wrap.lag.html</loc>
   </url>
   <url>
-    <loc>/reference/def.para.html</loc>
+    <loc>https://wacl-york.github.io/eddy4R.york/reference/def.lod.html</loc>
   </url>
   <url>
-    <loc>/reference/def.para.tmp.html</loc>
+    <loc>https://wacl-york.github.io/eddy4R.york/reference/def.miss.hndl.html</loc>
   </url>
   <url>
-    <loc>/reference/def.pres.h2o.sat.temp.huang.html</loc>
+    <loc>https://wacl-york.github.io/eddy4R.york/reference/def.para.html</loc>
   </url>
   <url>
-    <loc>/reference/def.rot.mat.html</loc>
+    <loc>https://wacl-york.github.io/eddy4R.york/reference/def.para.tmp.html</loc>
   </url>
   <url>
-    <loc>/reference/def.rtio.mole.h2o.temp.pres.rh.html</loc>
+    <loc>https://wacl-york.github.io/eddy4R.york/reference/def.pres.h2o.sat.temp.huang.html</loc>
   </url>
   <url>
-    <loc>/reference/def.valid.input.html</loc>
+    <loc>https://wacl-york.github.io/eddy4R.york/reference/def.rot.mat.html</loc>
   </url>
   <url>
-    <loc>/reference/def.vect.orie.html</loc>
+    <loc>https://wacl-york.github.io/eddy4R.york/reference/def.rtio.mole.h2o.temp.pres.rh.html</loc>
   </url>
   <url>
-    <loc>/reference/default_unit_list.html</loc>
+    <loc>https://wacl-york.github.io/eddy4R.york/reference/def.valid.input.html</loc>
   </url>
   <url>
-    <loc>/reference/eddy4R.york-package.html</loc>
+    <loc>https://wacl-york.github.io/eddy4R.york/reference/def.vect.orie.html</loc>
   </url>
   <url>
-    <loc>/reference/index.html</loc>
+    <loc>https://wacl-york.github.io/eddy4R.york/reference/default_unit_list.html</loc>
   </url>
   <url>
-    <loc>/reference/log_message.html</loc>
+    <loc>https://wacl-york.github.io/eddy4R.york/reference/eddy4R.york-package.html</loc>
   </url>
   <url>
-    <loc>/reference/pipe.html</loc>
+    <loc>https://wacl-york.github.io/eddy4R.york/reference/index.html</loc>
   </url>
   <url>
-    <loc>/reference/read_input.html</loc>
+    <loc>https://wacl-york.github.io/eddy4R.york/reference/log_message.html</loc>
   </url>
   <url>
-    <loc>/reference/wrap.anem.cor.html</loc>
+    <loc>https://wacl-york.github.io/eddy4R.york/reference/pipe.html</loc>
   </url>
   <url>
-    <loc>/reference/wrap.despike.html</loc>
+    <loc>https://wacl-york.github.io/eddy4R.york/reference/read_input.html</loc>
   </url>
   <url>
-    <loc>/reference/wrap.foot.k04.html</loc>
+    <loc>https://wacl-york.github.io/eddy4R.york/reference/wrap.anem.cor.html</loc>
   </url>
   <url>
-    <loc>/reference/wrap.isca.html</loc>
+    <loc>https://wacl-york.github.io/eddy4R.york/reference/wrap.despike.html</loc>
   </url>
   <url>
-    <loc>/reference/wrap.lag.html</loc>
+    <loc>https://wacl-york.github.io/eddy4R.york/reference/wrap.foot.k04.html</loc>
   </url>
   <url>
-    <loc>/reference/wrap.qf.voc.html</loc>
+    <loc>https://wacl-york.github.io/eddy4R.york/reference/wrap.isca.html</loc>
   </url>
   <url>
-    <loc>/reference/wrap.rot.html</loc>
+    <loc>https://wacl-york.github.io/eddy4R.york/reference/wrap.lag.html</loc>
   </url>
   <url>
-    <loc>/reference/wrap.spec.html</loc>
+    <loc>https://wacl-york.github.io/eddy4R.york/reference/wrap.qf.voc.html</loc>
   </url>
   <url>
-    <loc>/reference/wrap.towr.html</loc>
+    <loc>https://wacl-york.github.io/eddy4R.york/reference/wrap.rot.html</loc>
   </url>
   <url>
-    <loc>/reference/write.REYN.html</loc>
+    <loc>https://wacl-york.github.io/eddy4R.york/reference/wrap.spec.html</loc>
+  </url>
+  <url>
+    <loc>https://wacl-york.github.io/eddy4R.york/reference/wrap.towr.html</loc>
+  </url>
+  <url>
+    <loc>https://wacl-york.github.io/eddy4R.york/reference/write.REYN.html</loc>
   </url>
 </urlset>
