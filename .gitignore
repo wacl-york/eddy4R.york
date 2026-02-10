@@ -50,6 +50,6 @@ rsconnect/
 .Rproj.user
 
 # 
-testdata/*
+testdata
 *.env
 launch_container.ps1
