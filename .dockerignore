@@ -1,0 +1,6 @@
+.env
+docker/*.ps1
+.Rhistory
+testdata
+.github
+docs

@@ -3,15 +3,13 @@
 FROM quay.io/battelleecology/eddy4r:maps 
 
 WORKDIR /home/york/
-COPY docker/install.r .
-COPY docker/runtests.r .
-COPY eddy4r.york eddy4r.york
+COPY . .
 
 # Change the default prefs to dark mode
 # --chown=rstudio:rstudio stops RStudio showing an error when you connect
 COPY --chown=rstudio:rstudio docker/rstudio-prefs.json /home/rstudio/.config/rstudio/rstudio-prefs.json
 
-RUN Rscript install.r
+RUN Rscript docker/install.r
 
 # Update Labels
 LABEL org.opencontainers.image.authors="Will Drysdale"
