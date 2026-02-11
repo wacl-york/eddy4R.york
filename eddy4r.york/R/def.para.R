@@ -24,6 +24,7 @@
 #' gets duplicated to a column called "idep" use use in
 #' \code{eddy4R.turb::def.stat.sta.diff}. Default unixTime.
 #' @param aggregationDuration flux aggregation period (s)
+#' @param motionScaleCorrection applying a motion scale correction to shipborne data according to Eqn2 Prytherch et al. (2015)
 #' @param missingThreshold decimal percentage of missing data threshold per file
 #' @param missingMethod how should missing data be handeled if it is less than the threshold. "drop","mean"
 #' @param lagNOc when processing NOx, is NO2 actually NOc and therfore CE applied after lagging. T/F
@@ -150,6 +151,9 @@ def.para = function(
   lat,
   PltfEc = "towr",
   ZoneUtm = data.frame(Zone=30, Estg=698478, Nthg=5711690),
+
+  # Shipborne motion scale correction
+  motionScaleCorrection = F,
 
   # Should be auto-generated in many cases
   fileFirstStart = NULL,
@@ -304,6 +308,12 @@ def.para = function(
 
   if(para$AlgBase != "mean" & is.null(para$idepVar)){
     stop("When AlgBase is trend or ord03 idepVar needs to be assigned to a column e.g. unixTime")
+  }
+
+  # When attempting to apply motion scale corrections, make it so def.valid.input checks that
+  # the platform velocity and acceleration are present and greater than the missing threshold
+  if(motionScaleCorrection){
+    varsCritical = c(varsCritical,"veloZpltf", "accZpltf")
   }
 
   # What should have stationarity tests applied?

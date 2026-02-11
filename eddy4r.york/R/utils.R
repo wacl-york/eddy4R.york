@@ -15,6 +15,8 @@ default_unit_list = function(){
                   eddy4R.base::IntlUnit$Intl$Time, "-1"),
     h2o = paste0(eddy4R.base::IntlUnit$Intl$Num,"H2o ",
                  eddy4R.base::IntlUnit$Intl$Num,"-1Dry"),
+    acc = paste0(eddy4R.base::IntlUnit$Intl$Dist, " ", # Used in motionScaleCorrections
+                 eddy4R.base::IntlUnit$Intl$Time, "-2"),
     dist = eddy4R.base::IntlUnit$Intl$Dist,
     species = NULL
   )
@@ -43,13 +45,20 @@ assign_input_units = function(eddy.data,
   attr(x = eddy.data$presAtm, which = "unit") = unitList$pres
 
   # wind vectors
-  for(var in c("veloXaxs", "veloYaxs", "veloZaxs", "veloXaxsInp", "veloYaxsInp", "veloZaxsInp")){
-    attr(x = eddy.data[,var], which = "unit") = unitList$velo
+  for(var in c("veloXaxs", "veloYaxs", "veloZaxs", "veloXaxsInp", "veloYaxsInp", "veloZaxsInp", "veloZpltf")){
+    if(var %in% names(eddy.data)){
+      attr(x = eddy.data[,var], which = "unit") = unitList$velo
+    }
   }
 
   # distances
   for(var in c("distZaxsAbl", "distZaxsMeas")){
     attr(x = eddy.data[,var], which = "unit") = unitList$dist
+  }
+
+  # accelerations
+  if("accZpltf" %in% names(eddy.data)){
+    attr(x = eddy.data$accZpltf, which = "unit") = unitList$acc
   }
 
   # H2O

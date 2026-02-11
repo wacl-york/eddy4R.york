@@ -56,6 +56,7 @@ def.para(
   lat,
   PltfEc = "towr",
   ZoneUtm = data.frame(Zone = 30, Estg = 698478, Nthg = 5711690),
+  motionScaleCorrection = F,
   fileFirstStart = NULL,
   fileLastStart = NULL,
   spectralTaperingWeight = 0.5,
@@ -183,6 +184,8 @@ either numeric vector for plnrFitType = "simple" or data.frame for plnrFitType =
 \item{PltfEc}{switch for eddy4r functions between tower and aircraft. towr,airc}
 
 \item{ZoneUtm}{data.frame containing UTM info e.g data.frame(Zone=30, Estg=698478, Nthg=5711690)}
+
+\item{motionScaleCorrection}{applying a motion scale correction to shipborne data according to Eqn2 Prytherch et al. (2015)}
 
 \item{fileFirstStart}{used to aid def.avg - should be created internally}
 

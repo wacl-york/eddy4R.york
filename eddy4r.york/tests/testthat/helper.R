@@ -50,6 +50,30 @@ default_scenario = function(fileType = "o3"){
                                  c(0,0),
                                  c(0,-20),
                                  c(0,-20))
+          ),
+
+          o3_msc = eddy4R.york::def.para(
+            DirWrk = "/home/york/eddy4r.york/tests/fixtures/",
+            DirInp = "example_data_o3_with_msc",
+            siteName = "siteName",
+            lat = 32.2644,
+            runID = "runID",
+            analysis = "analysis",
+            fileMask = "fast_motion_cruise1_%Y_%m_%d_%H_%M_%S.csv",
+            fileDuration = 3600,
+            species = "O3",
+            aggregationDuration = 3600,
+            AlgBase = "trnd",
+            idepVar = "unixTime",
+            MethRot = "double",
+            missingMethod = "mean",
+            lagApplyCorrection = T,
+            lagDefaults = c(0,0,-6),
+            lagApplyRangeLimit = TRUE,
+            motionScaleCorrection = T,
+            lagRangeLimit = list(c(0,0),
+                                 c(0,0),
+                                 c(0,-20))
           )
 
   )

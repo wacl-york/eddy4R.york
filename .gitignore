@@ -49,7 +49,9 @@ po/*~
 rsconnect/
 .Rproj.user
 
-# 
-testdata/*
+#
+testdata
+testcode
 *.env
 launch_container.ps1
+out
