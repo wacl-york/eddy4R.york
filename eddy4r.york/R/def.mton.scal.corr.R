@@ -13,9 +13,9 @@
 def.mton.scal.corr  <- function(eddy.data){
 
   # Compute linear coefficients
-  alpha1 <- (lm(eddy.data$veloZaxs ~ eddy.data$accZpltf)$coefficients[2])
+  alpha1 <- stats::lm(eddy.data$veloZaxs ~ eddy.data$accZpltf)$coefficients[2]
 
-  alpha2 <- (lm(eddy.data$veloZaxs ~ eddy.data$veloZpltf)$coefficients[2])
+  alpha2 <- stats::lm(eddy.data$veloZaxs ~ eddy.data$veloZpltf)$coefficients[2]
 
   # Apply correction
   eddy.data$veloZaxs <- eddy.data$veloZaxs -
