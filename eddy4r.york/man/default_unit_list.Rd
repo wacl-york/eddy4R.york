@@ -11,6 +11,3 @@ Returns a list containing the default units for temperature pressure and
 velocity. Useful as a base if the user needs to change the defaults in
 \code{def.para()$unitList}
 }
-\details{
-On 06/02/26, CGS added in unit assignment for vertical velocity (veloZplat) and acceleration (accZplat)
-}

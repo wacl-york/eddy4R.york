@@ -1,26 +1,26 @@
-#' Motion Scale Correction Wrapper
+#' Definition Function: Motion Scale Correction
 #'
 #' Apply motion scale correction to the vertical wind vector (veloZaxs).
 #' Correction is outlined in Prytherch et al. (2015) equation 2.
 #' C. G. Stapleton tested to check there was no difference if applied to raw data vs applied to instantaneous deviations
 #'
-#' @param eddy.data eddy.data data.frame
+#' @param eddy.data eddy.data input data.frame containing veloZaxs, veloZpltf and accZpltf
 #'
 #' @author C. G. Stapleton
 #'
 #' @export
 
-wrap.mton.scale.corr <- function(eddy.data){
+def.mton.scal.corr  <- function(eddy.data){
 
   # Compute linear coefficients
-  alpha1 <- (lm(eddy.data$veloZaxs ~ eddy.data$accZplat)$coefficients[2])
+  alpha1 <- (lm(eddy.data$veloZaxs ~ eddy.data$accZpltf)$coefficients[2])
 
-  alpha2 <- (lm(eddy.data$veloZaxs ~ eddy.data$veloZplat)$coefficients[2])
+  alpha2 <- (lm(eddy.data$veloZaxs ~ eddy.data$veloZpltf)$coefficients[2])
 
   # Apply correction
   eddy.data$veloZaxs <- eddy.data$veloZaxs -
-    (alpha1 * eddy.data$accZplat) -
-    (alpha2 * eddy.data$veloZplat)
+    (alpha1 * eddy.data$accZpltf) -
+    (alpha2 * eddy.data$veloZpltf)
 
   return(eddy.data)
 }
