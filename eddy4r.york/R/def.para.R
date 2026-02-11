@@ -310,6 +310,12 @@ def.para = function(
     stop("When AlgBase is trend or ord03 idepVar needs to be assigned to a column e.g. unixTime")
   }
 
+  # When attempting to apply motion scale corrections, make it so def.valid.input checks that
+  # the platform velocity and acceleration are present and greater than the missing threshold
+  if(motionScaleCorrection){
+    varsCritical = c(varsCritical,"veloZpltf", "accZpltf")
+  }
+
   # What should have stationarity tests applied?
   para$stnaVar = c("veloFricXaxsSq", "veloFricYaxsSq", "veloFric", "fluxTempEngy", "fluxH2oEngy", para$speciesFluxName)
 
