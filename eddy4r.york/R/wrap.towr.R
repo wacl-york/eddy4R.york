@@ -199,6 +199,20 @@ wrap.towr = function(paraMain,
 
     if(is.null(eddy.data)){next}
 
+    # option to apply motion scale correction (motionscalecorr) ---------------------------------
+
+    if(para$motionscalecorr){
+      eddy.data <- tryCatch({
+        wrap.mton.scale.corr(eddy.data)
+      }, error = function(e){
+        log_message(wrap_tower_log, "error", "Motion Scale Correction",
+                    det_avg$periodStartDate[i], det_avg$periodEndDate[i], e)
+        return(NULL)
+      })
+
+      if(is.null(eddy.data)){next}
+    }
+
     # calculate time-domain fluxes (classical EC) -----------------------------
     REYN = tryCatch({
       eddy4R.turb::wrap.flux(data = eddy.data,

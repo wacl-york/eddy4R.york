@@ -4,6 +4,8 @@
 #' velocity. Useful as a base if the user needs to change the defaults in
 #' \code{def.para()$unitList}
 #'
+#' On 06/02/26, CGS added in unit assignment for vertical velocity (veloZplat) and acceleration (accZplat)
+#'
 #' @export
 
 default_unit_list = function(){
@@ -15,6 +17,8 @@ default_unit_list = function(){
                   eddy4R.base::IntlUnit$Intl$Time, "-1"),
     h2o = paste0(eddy4R.base::IntlUnit$Intl$Num,"H2o ",
                  eddy4R.base::IntlUnit$Intl$Num,"-1Dry"),
+    acc = paste0(eddy4R.base::IntlUnit$Intl$Dist, " ", # Added this unit definition in for accelerations ms-2
+                 eddy4R.base::IntlUnit$Intl$Time, "-2"),
     dist = eddy4R.base::IntlUnit$Intl$Dist,
     species = NULL
   )
@@ -43,14 +47,17 @@ assign_input_units = function(eddy.data,
   attr(x = eddy.data$presAtm, which = "unit") = unitList$pres
 
   # wind vectors
-  for(var in c("veloXaxs", "veloYaxs", "veloZaxs", "veloXaxsInp", "veloYaxsInp", "veloZaxsInp")){
-    attr(x = eddy.data[,var], which = "unit") = unitList$velo
+  for(var in c("veloXaxs", "veloYaxs", "veloZaxs", "veloXaxsInp", "veloYaxsInp", "veloZaxsInp", "veloZplat")){
+    attr(x = eddy.data[,var], which = "unit") = unitList$velo # Above is where I have added in the unit assignment for the vertical platform velocity
   }
 
   # distances
   for(var in c("distZaxsAbl", "distZaxsMeas")){
     attr(x = eddy.data[,var], which = "unit") = unitList$dist
   }
+
+  # accelerations
+  attr(x = eddy.data$accZplat, which = "unit") = unitList$acc # Add in the unit assignment for the vertical acceleration from Motion pack
 
   # H2O
   attr(x = eddy.data$rtioMoleDryH2o, which = "unit") = unitList$h2o
