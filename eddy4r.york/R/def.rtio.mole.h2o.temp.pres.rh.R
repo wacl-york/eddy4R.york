@@ -25,7 +25,7 @@ def.rtio.mole.h2o.temp.pres.rh = function(temp, pres, rh){
   rtioMolmAirH2o = eddy4R.base::IntlNatu$MolmDry/eddy4R.base::IntlNatu$MolmH2o
 
   # specific humidity in dry air (kg kg-1)
-  rtioMassDryH2o = (rtioMolmH2oAir*presH2oSat)/(pres - ((1-rtioMolmH2oAir)*presH2oSat))
+  rtioMassDryH2o = (rtioMolmH2oAir*presH2o)/(pres - ((1-rtioMolmH2oAir)*presH2o))
 
   # specific humidity in dry air (mol mol-1)
   rtioMoleDryH2o = rtioMassDryH2o*rtioMolmAirH2o
