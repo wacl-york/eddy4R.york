@@ -57,7 +57,9 @@ wrap.towr = function(paraMain,
                  tz = paraMain$tz,
                  freq = paraMain$freq,
                  idepVar = paraMain$idepVar,
-                 PltfEc=paraMain$PltfEc)
+                 PltfEc=paraMain$PltfEc,
+                 readFunction = paraMain$readFunction
+                 )
     },
     error = function(e){
       log_message(wrap_tower_log, "error", "Read Files", det_avg$periodStartDate[i], det_avg$periodEndDate[i], e)

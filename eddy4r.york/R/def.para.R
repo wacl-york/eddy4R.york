@@ -16,6 +16,7 @@
 #' @param tz timezone, default "UTC".
 #' @param dateFormat default %Y-%m-%d %H:%M:%OS"
 #' @param filePattern pattern to help filter input directory - default '*.csv'.
+#' @param readFunction the read function to use, defaults to \code{utils::read.csv}. Assumes the first argument is the file path to read.
 #' @param varsRequired character vector of columns that must be nominally present to pass def.valid.input()
 #' @param varsCritical these must have greater than the missingThreshold to pass def.valid.input()
 #' @param AlgBase detrending method for def.base.ec "mean","trend","ord03"
@@ -104,6 +105,7 @@ def.para = function(
   fileNames = NULL,
   filePaths = NULL,
   filePattern = "*.csv",
+  readFunction = utils::read.csv,
   tz = "UTC",
   dateFormat = "%Y-%m-%d %H:%M:%OS",
   # columns must be nominally present to pass def.valid.input()
