@@ -13,6 +13,7 @@
 #' @param idepVar variable that could be used if Algbase in "trend" or "ord03"
 #' column gets duplicated to a column called "idep" used in \code{eddy4R.turb::def.stat.sta.diff}
 #' @param PltfEc platform either "towr" or "airc"
+#' @param readFunction the read function to use, defaults to \code{utils::read.csv}. Assumes the first argument is the file path to read.
 #'
 #' @author W. S. Drysdale
 #'
@@ -26,7 +27,8 @@ read_input = function(DirInp,
                       tz,
                       freq,
                       idepVar,
-                      PltfEc){
+                      PltfEc,
+                      readFunction = utils::read.csv){
 
   # R CMD check
   unixTime = NULL
@@ -34,7 +36,7 @@ read_input = function(DirInp,
   # load Tower analysis files, with option to time clip
   if(PltfEc=="towr"){
 
-    flux_agg = purrr::map_df(filePaths, utils::read.csv) |>
+    flux_agg = purrr::map_df(filePaths, readFunction) |>
       dplyr::mutate(
         date = as.POSIXct(unixTime, format = dateFormat, origin = "1970-01-01 00:00:00", tz = tz))
 

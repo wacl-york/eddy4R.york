@@ -13,7 +13,8 @@ read_input(
   tz,
   freq,
   idepVar,
-  PltfEc
+  PltfEc,
+  readFunction = utils::read.csv
 )
 }
 \arguments{
@@ -35,6 +36,8 @@ read_input(
 column gets duplicated to a column called "idep" used in \code{eddy4R.turb::def.stat.sta.diff}}
 
 \item{PltfEc}{platform either "towr" or "airc"}
+
+\item{readFunction}{the read function to use, defaults to \code{utils::read.csv}. Assumes the first argument is the file path to read.}
 }
 \description{
 reads the files relevant for a given flux aggregation period

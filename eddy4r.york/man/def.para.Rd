@@ -23,6 +23,7 @@ def.para(
   fileNames = NULL,
   filePaths = NULL,
   filePattern = "*.csv",
+  readFunction = utils::read.csv,
   tz = "UTC",
   dateFormat = "\%Y-\%m-\%d \%H:\%M:\%OS",
   varsRequired = c("unixTime", "distZaxsMeas", "presAtm", "distZaxsAbl"),
@@ -109,6 +110,8 @@ speices is a list with names that match speciesRatioName describing the units pe
 By default this is populated by running the find system command on the DirInp, in the format \code{find DirInp -type f -name *filePattern}}
 
 \item{filePattern}{pattern to help filter input directory - default '*.csv'.}
+
+\item{readFunction}{the read function to use, defaults to \code{utils::read.csv}. Assumes the first argument is the file path to read.}
 
 \item{tz}{timezone, default "UTC".}
 
